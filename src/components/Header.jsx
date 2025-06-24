@@ -128,7 +128,10 @@ const Header = () => {
                 to={item.path}
                 className={({ isActive }) =>
                   `text-xl font-bold tracking-wide transition-all duration-300 ease-in-out 
-                   ${isActive ? "text-[#FFFFFF] drop-shadow-lg scale-105" : "text-[#000000] hover:text-[#FFFFFF] hover:scale-110"}`
+         ${isActive ? "text-[#FFFFFF] drop-shadow-lg scale-105" :
+                    (item.name === "Login" || item.name === "Register") ?
+                      "text-[#1A4314] hover:text-[#FFFFFF] hover:scale-110" :
+                      "text-[#000000] hover:text-[#FFFFFF] hover:scale-110"}`
                 }
               >
                 {item.name}
@@ -217,8 +220,11 @@ const Header = () => {
                     key={item.path}
                     to={item.path}
                     className={({ isActive }) =>
-                      `text-lg font-medium capitalize transition duration-200 ${isActive ? "text-[#FFFFFF]" : "text-[#000000] hover:text-[#FFFFFF]"
-                      }`
+                      `text-lg font-medium capitalize transition duration-200 
+         ${isActive ? "text-[#FFFFFF]" :
+                        (item.name === "Login" || item.name === "Register") ?
+                          "text-[#1A4314] hover:text-[#FFFFFF]" :
+                          "text-[#000000] hover:text-[#FFFFFF]"}`
                     }
                     onClick={toggleMobileMenu}
                   >

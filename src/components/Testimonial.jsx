@@ -4,19 +4,16 @@ import { FaFacebook, FaTwitter, FaGooglePlus, FaLinkedin } from "react-icons/fa"
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-// Import customer images
-import customer1 from "../assets/gallery/customer1.png"; // Make sure the path is correct
-import customer2 from "../assets/gallery/customer2.png";
-import customer3 from "../assets/gallery/customer3.png";
+
 
 const testimonialsData = [
   {
     id: 1,
-    name: "Amanda R",
+    name: "Amanda",
     position: "MDH",
     description:
       "These guys are fast and spot-on every time. Total lifesavers for my last-minute orders!",
-    image: customer1,
+    image: '' ,
     social: {
       facebook: "#",
       twitter: "#",
@@ -26,11 +23,11 @@ const testimonialsData = [
   },
   {
     id: 2,
-    name: "James L",
+    name: "James",
     position: "MDH",
     description:
       "Sent my logo in the evening, had a perfect file the next day. Super impressed!",
-        image: customer2,
+        image: '' ,
     social: {
       facebook: "#",
       twitter: "#",
@@ -40,11 +37,11 @@ const testimonialsData = [
   },
   {
     id: 3,
-    name: "Hilpton Broad",
+    name: "Michelle",
     position: "MDH",
     description:
      "Really easy to work with, and the quality is always solid.",
-    image: customer3,
+    image: '' ,
     social: {
       facebook: "#",
       twitter: "#",
@@ -54,10 +51,10 @@ const testimonialsData = [
   },
   {
     id: 4,
-    name: "Carlos D.",
+    name: "Carlos",
     position: "MDH",
     description: "Quick, friendly, and the stitch files come out clean every time. Love working with them!",
-    image: customer1,
+    image: '' ,
     social: {
       facebook: "#",
       twitter: "#",
@@ -67,10 +64,10 @@ const testimonialsData = [
   },
   {
     id: 5,
-    name: "Steve B.",
+    name: "Steve",
     position: "MDH",
     description: "Been using Quick Digitizing for years now—never had an issue they can’t fix. Just solid work.",
-    image: customer2,
+    image: '' ,
     social: {
       facebook: "#",
       twitter: "#",
@@ -80,10 +77,10 @@ const testimonialsData = [
   },
   {
     id: 6,
-    name: "Nina K.",
+    name: "Nina",
     position: "MDH",
     description: "They made a complicated design look easy. Stitch quality was amazing!",
-    image: customer3,
+    image: '' ,
     social: {
       facebook: "#",
       twitter: "#",
@@ -93,10 +90,10 @@ const testimonialsData = [
   },
   {
     id: 7,
-    name: "Trevor M.",
+    name: "Trevor",
     position: "MDH",
     description: "Fast replies, quick edits, no fuss. They make my job way easier.",
-    image: customer1,
+    image:''  ,
     social: {
       facebook: "#",
       twitter: "#",
@@ -106,10 +103,10 @@ const testimonialsData = [
   },
   {
     id: 8,
-    name: "Lena F.",
+    name: "Lena",
     position: "MDH",
     description: "Tried a bunch of digitizers before—these folks are the real deal. Super reliable.",
-    image: customer1,
+    image:''  ,
     social: {
       facebook: "#",
       twitter: "#",
@@ -119,10 +116,10 @@ const testimonialsData = [
   },
   {
     id: 9,
-    name: "Marcus J.",
+    name: "Marcus",
     position: "MDH",
     description: "Always on time, always clean files. They’ve totally earned my trust.",
-    image: customer1,
+    image: '' ,
     social: {
       facebook: "#",
       twitter: "#",

@@ -16,22 +16,22 @@ const Hero = () => {
       <div className="relative text-center px-4 animate-fadeIn">
         <h1 className="text-6xl text-[#93C572] md:text-8xl font-great-vibes mb-4"
             >
-          Creative
+          Quick Digitizing
         </h1>
-        <h2 className="text-3xl text-[#AFE1AF] md:text-6xl font-roboto-slab mb-6"
+        <h2 className="text-3xl text-[#AFE1AF] md:text-4xl font-roboto-slab mb-6"
         >
-          HANDMADE DESIGN
+          PROFESSIONAL DIGITIZING YOU CAN COUNT ON 
         </h2>
         <p className="text-lg md:text-2xl text-[#9FE2BF] mb-8"
            >
           {/* Add descriptive text here if needed */}
         </p>
-        <Link
+        {/* <Link
           to="/contact"
           className="inline-block hover:bg-[#93C572] text-white font-roboto font-medium text-lg md:text-xl py-3 px-8 rounded border border-[#93C572] transition duration-300"
         >
           Contact
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

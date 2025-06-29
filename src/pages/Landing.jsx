@@ -18,8 +18,8 @@ const Landing = () => {
       <Hero />
       <Stats />
       <Ourexpert />
-      <Testimonial />
       <Chooseus />
+      <Testimonial />
 
       {/* <div className="selected-products">
         <h2 className="text-4xl text-center my-12 max-md:text-3xl text-accent-content">

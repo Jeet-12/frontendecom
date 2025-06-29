@@ -17,8 +17,9 @@ const ListQuotation = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const toast = useRef(null);
     const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+    const isAdmin = user?.role === 'admin';
 
-    // Using a reliable free image from Google (via Freepik)
     const emptyStateImage = "https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg";
 
     useEffect(() => {
@@ -44,8 +45,7 @@ const ListQuotation = () => {
     }, [token]);
 
     const handleView = (quotation) => {
-        const user = JSON.parse(localStorage.getItem("user"));
-        const route = user?.role === 'admin' ? `/admin/quotation/${quotation._id}` : `/quotation/${quotation._id}`;
+        const route = isAdmin ? `/admin/quotation/${quotation._id}` : `/quotation/${quotation._id}`;
         navigate(route);
     };
 
@@ -55,6 +55,8 @@ const ListQuotation = () => {
             header: "Confirmation",
             icon: "pi pi-exclamation-triangle",
             accept: () => performDelete(quotation),
+            acceptClassName: "p-button", 
+            rejectClassName: "p-button-text", 
         });
     };
 
@@ -80,7 +82,9 @@ const ListQuotation = () => {
             <ConfirmDialog />
             <div className="bg-white shadow-lg rounded-lg p-6">
                 <div className="flex flex-col md:flex-row items-center justify-between mb-6">
-                    <h2 className="text-3xl font-bold text-gray-800 mb-4 md:mb-0">Your Quotations</h2>
+                    <h2 className="text-3xl font-bold text-gray-800 mb-4 md:mb-0">
+                        {isAdmin ? "All Quotations" : "Your Quotations"}
+                    </h2>
                     <Button
                         label="Add Quote"
                         icon="pi pi-plus"
@@ -112,9 +116,9 @@ const ListQuotation = () => {
                     </div>
                 ) : filteredQuotations.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12">
-                        <img 
-                            src={emptyStateImage} 
-                            alt="No quotations" 
+                        <img
+                            src={emptyStateImage}
+                            alt="No quotations"
                             className="w-64 h-64 mb-6 object-contain"
                             onError={(e) => {
                                 e.target.onerror = null;
@@ -123,7 +127,7 @@ const ListQuotation = () => {
                         />
                         <h3 className="text-2xl font-semibold text-gray-700 mb-2">No Quotations Found</h3>
                         <p className="text-gray-500 mb-6 text-center max-w-md">
-                            You haven't created any quotations yet. Start by creating your first quotation.
+                            {isAdmin ? "There are no quotations in the system." : "You haven't created any quotations yet."}
                         </p>
                         <Button
                             label="Create Quotation"
@@ -133,7 +137,60 @@ const ListQuotation = () => {
                             onClick={() => navigate("form")}
                         />
                     </div>
+                ) : isAdmin ? (
+                    // Admin view - List format
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-12 gap-4 p-2 font-bold bg-gray-100 rounded-t-lg">
+                            <div className="col-span-2">ID</div>
+                            <div className="col-span-2">Design Name</div>
+                            <div className="col-span-2">Fabric</div>
+                            <div className="col-span-2">Colors</div>
+                            <div className="col-span-1">Quantity</div>
+                            <div className="col-span-1">Status</div>
+                            <div className="col-span-2 text-right">Actions</div>
+                        </div>
+                        {filteredQuotations.map((quotation) => (
+                            <div 
+                                key={quotation._id}
+                                className="grid grid-cols-12 gap-4 p-2 items-center border-b border-gray-200 hover:bg-gray-50"
+                            >
+                                <div className="col-span-2 truncate text-sm text-gray-600">{quotation._id}</div>
+                                <div className="col-span-2 font-medium">{quotation.designName}</div>
+                                <div className="col-span-2">{quotation.fabric}</div>
+                                <div className="col-span-2">{renderColors(quotation.colors)}</div>
+                                <div className="col-span-1">{quotation.quantity ?? 0}</div>
+                                <div className="col-span-1">
+                                    <span className={`px-2 py-1 rounded-full text-xs ${
+                                        quotation.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                        quotation.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                        'bg-yellow-100 text-yellow-800'
+                                    }`}>
+                                        {quotation.status || 'pending'}
+                                    </span>
+                                </div>
+                                <div className="col-span-2 flex justify-end space-x-2">
+                                    <Button
+                                        icon="pi pi-eye"
+                                        tooltip="View"
+                                        tooltipOptions={{ position: 'top' }}
+                                        className="p-button-rounded p-button-outlined p-button-success"
+                                        style={{ borderStyle: "none" }}
+                                        onClick={() => handleView(quotation)}
+                                    />
+                                    <Button
+                                        icon="pi pi-trash"
+                                        tooltip="Delete"
+                                        tooltipOptions={{ position: 'top' }}
+                                        className="p-button-rounded p-button-outlined p-button-danger"
+                                        style={{ borderStyle: "none" }}
+                                        onClick={() => handleDelete(quotation)}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 ) : (
+                    // Regular user view - Card format
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredQuotations.map((quotation) => (
                             <Card
@@ -152,22 +209,21 @@ const ListQuotation = () => {
                                     <strong>Colors:</strong> {renderColors(quotation.colors)}
                                 </p>
                                 <p className="text-gray-600 text-sm mb-3">
-                                    <strong>Quantity:</strong> {quotation.quantity??0}
+                                    <strong>Quantity:</strong> {quotation.quantity ?? 0}
                                 </p>
                                 <div className="flex justify-between items-center">
                                     <Button
                                         label="View"
                                         icon="pi pi-eye"
                                         className="p-button-outlined p-button-success"
-                                        style={{ backgroundColor: "rgb(147, 197, 114)",borderStyle:"none" }}
+                                        style={{ backgroundColor: themeColor, borderStyle: "none" }}
                                         onClick={() => handleView(quotation)}
                                     />
                                     <Button
                                         icon="pi pi-trash"
                                         className="p-button-outlined p-button-danger"
-                                        style={{ backgroundColor: "#D40000",borderStyle:"none" }}
+                                        style={{ backgroundColor: "#D40000", borderStyle: "none" }}
                                         onClick={() => handleDelete(quotation)}
-                                        
                                     />
                                 </div>
                             </Card>

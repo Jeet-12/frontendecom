@@ -219,7 +219,7 @@ const Register = () => {
                   type="text"
                   {...register("zipcode", {
                     required: "ZIP code is required",
-                    pattern: { value: /^\d{6}$/, message: "Must be exactly 6 digits" }
+        
                   })}
                   className={`
                     w-full px-4 py-3

@@ -1223,4 +1223,18 @@ ps-menu-button:hover {
 .slick-slide {
   height: auto !important;
 }
+/* Force styling of ConfirmDialog Accept (Yes) and Reject (No) buttons */
+.p-confirm-dialog .p-confirm-dialog-footer .p-button.p-confirm-dialog-accept {
+    background-color: #93C572 !important;   /* Light green */
+    border-color: #93C572 !important;
+    color: white !important;
+    box-shadow: none !important;
+}
+
+.p-confirm-dialog .p-confirm-dialog-footer .p-button.p-confirm-dialog-reject {
+    background-color: #D40000 !important;   /* Red */
+    border-color: #D40000 !important;
+    color: white !important;
+    box-shadow: none !important;
+}
 

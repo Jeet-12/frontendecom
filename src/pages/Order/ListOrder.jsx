@@ -15,7 +15,7 @@ const ListQuotation = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const toast = useRef(null);
   const token = localStorage.getItem("token");
-  const[isAdmin,setISAdmin] = useState();
+  const[isAdmin,setISAdmin] = useState('user');
 
 
   const emptyStateImage = "https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg";

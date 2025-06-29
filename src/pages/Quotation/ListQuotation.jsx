@@ -137,60 +137,8 @@ const ListQuotation = () => {
                             onClick={() => navigate("form")}
                         />
                     </div>
-                ) : isAdmin ? (
-                    // Admin view - List format
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-12 gap-4 p-2 font-bold bg-gray-100 rounded-t-lg">
-                            <div className="col-span-2">ID</div>
-                            <div className="col-span-2">Design Name</div>
-                            <div className="col-span-2">Fabric</div>
-                            <div className="col-span-2">Colors</div>
-                            <div className="col-span-1">Quantity</div>
-                            <div className="col-span-1">Status</div>
-                            <div className="col-span-2 text-right">Actions</div>
-                        </div>
-                        {filteredQuotations.map((quotation) => (
-                            <div 
-                                key={quotation._id}
-                                className="grid grid-cols-12 gap-4 p-2 items-center border-b border-gray-200 hover:bg-gray-50"
-                            >
-                                <div className="col-span-2 truncate text-sm text-gray-600">{quotation._id}</div>
-                                <div className="col-span-2 font-medium">{quotation.designName}</div>
-                                <div className="col-span-2">{quotation.fabric}</div>
-                                <div className="col-span-2">{renderColors(quotation.colors)}</div>
-                                <div className="col-span-1">{quotation.quantity ?? 0}</div>
-                                <div className="col-span-1">
-                                    <span className={`px-2 py-1 rounded-full text-xs ${
-                                        quotation.status === 'approved' ? 'bg-green-100 text-green-800' :
-                                        quotation.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                                        'bg-yellow-100 text-yellow-800'
-                                    }`}>
-                                        {quotation.status || 'pending'}
-                                    </span>
-                                </div>
-                                <div className="col-span-2 flex justify-end space-x-2">
-                                    <Button
-                                        icon="pi pi-eye"
-                                        tooltip="View"
-                                        tooltipOptions={{ position: 'top' }}
-                                        className="p-button-rounded p-button-outlined p-button-success"
-                                        style={{ borderStyle: "none" }}
-                                        onClick={() => handleView(quotation)}
-                                    />
-                                    <Button
-                                        icon="pi pi-trash"
-                                        tooltip="Delete"
-                                        tooltipOptions={{ position: 'top' }}
-                                        className="p-button-rounded p-button-outlined p-button-danger"
-                                        style={{ borderStyle: "none" }}
-                                        onClick={() => handleDelete(quotation)}
-                                    />
-                                </div>
-                            </div>
-                        ))}
-                    </div>
                 ) : (
-                    // Regular user view - Card format
+                    // Card layout for both admin and regular users
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredQuotations.map((quotation) => (
                             <Card
@@ -198,6 +146,11 @@ const ListQuotation = () => {
                                 className="p-4 rounded-lg shadow-md border border-gray-200 hover:shadow-xl transform hover:-translate-y-1 transition duration-300"
                                 style={{ backgroundColor: "#f9fafb" }}
                             >
+                                {isAdmin && (
+                                    <p className="text-gray-600 text-xs mb-2">
+                                        <strong>ID:</strong> {quotation._id}
+                                    </p>
+                                )}
                                 <h3 className="text-xl font-bold text-gray-800 mb-2">{quotation.designName}</h3>
                                 <p className="text-gray-600 text-sm mb-1">
                                     <strong>Fabric:</strong> {quotation.fabric}
@@ -208,10 +161,22 @@ const ListQuotation = () => {
                                 <p className="text-gray-600 text-sm mb-1">
                                     <strong>Colors:</strong> {renderColors(quotation.colors)}
                                 </p>
-                                <p className="text-gray-600 text-sm mb-3">
+                                <p className="text-gray-600 text-sm mb-1">
                                     <strong>Quantity:</strong> {quotation.quantity ?? 0}
                                 </p>
-                                <div className="flex justify-between items-center">
+                                {isAdmin && (
+                                    <p className="text-gray-600 text-sm mb-3">
+                                        <strong>Status:</strong> 
+                                        <span className={`px-2 py-1 rounded-full text-xs ml-2 ${
+                                            quotation.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                            quotation.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                            'bg-yellow-100 text-yellow-800'
+                                        }`}>
+                                            {quotation.status || 'pending'}
+                                        </span>
+                                    </p>
+                                )}
+                                <div className="flex justify-between items-center mt-4">
                                     <Button
                                         label="View"
                                         icon="pi pi-eye"

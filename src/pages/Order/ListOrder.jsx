@@ -170,7 +170,7 @@ const ListOrder = () => {
                         {order.designName}
                       </h3>
                       <p className="text-sm text-gray-500">
-                        Order ID: {order._id.substring(order._id.length - 6)}
+                        Order ID: {order._id}
                       </p>
                     </div>
                     <span className={`px-2 py-1 rounded-full text-xs font-semibold ${order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :

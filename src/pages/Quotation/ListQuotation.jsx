@@ -27,6 +27,7 @@ const ListQuotation = () => {
             try {
                 const data = await getQuotations(token);
                 setQuotations(data);
+                console.log(data);
                 setLoading(false);
             } catch (err) {
                 setError(err.message || "Failed to fetch quotations");
@@ -92,11 +93,13 @@ const ListQuotation = () => {
     const getStatusBadge = (status) => {
         switch (status) {
             case 'approved':
-                return <Badge value="Approved" severity="success" className="ml-2" />;
+                return <Badge value="Approved" severity="success" className="ml-2" style={{ display: "flex", alignItems: "center" }} />;
             case 'rejected':
-                return <Badge value="Rejected" severity="danger" className="ml-2" />;
+                return <Badge value="Rejected" severity="danger" className="ml-2" style={{ display: "flex", alignItems: "center" }}
+                />;
             default:
-                return <Badge value="Pending" severity="warning" className="ml-2" />;
+                return <Badge value="Pending" severity="warning" className="ml-2" style={{ display: "flex", alignItems: "center" }}
+                />;
         }
     };
 
@@ -179,7 +182,7 @@ const ListQuotation = () => {
                         />
                     </div>
                 ) : isAdmin == "admin" ? (
-                   
+
                     <div className="space-y-4">
                         {filteredQuotations.map((quotation) => (
                             <div
@@ -238,12 +241,14 @@ const ListQuotation = () => {
                                                 label="View Details"
                                                 icon={<FaEye className="mr-2" />}
                                                 className="p-button p-button-outlined"
+                                                style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
                                                 onClick={() => handleView(quotation)}
                                             />
                                             <Button
                                                 label="Delete"
                                                 icon={<FaTrash className="mr-2" />}
                                                 className="p-button p-button-outlined p-button-danger"
+                                                style={{ backgroundColor: "#D40000", borderStyle: "none" }}
                                                 onClick={() => handleDelete(quotation)}
                                             />
                                         </div>
@@ -260,31 +265,31 @@ const ListQuotation = () => {
                 ) : (
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {filteredQuotations.map((order) => (
+                        {filteredQuotations.map((quotation) => (
                             <div
-                                key={order._id}
+                                key={quotation._id}
                                 className="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 transform hover:scale-105 p-6"
                             >
                                 <div className="mb-4">
                                     <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                                        {order.designName}
+                                        {quotation.designName}
                                     </h3>
                                     <p className="text-sm text-gray-600 mb-1">
-                                        <strong>Fabric:</strong> {order.fabric}
+                                        <strong>Fabric:</strong> {quotation.fabric}
                                     </p>
                                     <p className="text-sm text-gray-600 mb-1">
-                                        <strong>Fabric Type:</strong> {order.fabricType}
+                                        <strong>Fabric Type:</strong> {quotation.fabricType}
                                     </p>
                                     <p className="text-sm text-gray-600 mb-1">
-                                        <strong>Colors:</strong> {order.colors.join(", ")}
+                                        <strong>Colors:</strong> {quotation.colors.join(", ")}
                                     </p>
                                     <p className="text-sm text-gray-600 mb-1">
-                                        <strong>Dimensions:</strong> {order.height} x {order.width} cm
+                                        <strong>Dimensions:</strong> {quotation.height} x {quotation.width} cm
                                     </p>
                                     <p className="text-sm text-gray-600">
                                         <strong>Total Price:</strong>{" "}
                                         <span className="text-green-500 font-semibold">
-                                            ${order.totalPrice}
+                                            ${quotation.totalPrice}
                                         </span>
                                     </p>
                                 </div>
@@ -294,12 +299,12 @@ const ListQuotation = () => {
                                         icon="pi pi-eye"
                                         className="p-button-raised p-button-success"
                                         style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
-                                        onClick={() => handleView(order)}
+                                        onClick={() => handleView(quotation)}
                                     />
                                     <Button
                                         icon="pi pi-trash"
                                         style={{ backgroundColor: "#D40000", borderStyle: "none" }}
-                                        onClick={() => handleDelete(order)}
+                                        onClick={() => handleDelete(quotation)}
                                     />
                                 </div>
                             </div>

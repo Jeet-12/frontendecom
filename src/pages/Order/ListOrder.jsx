@@ -12,7 +12,7 @@ const ListOrder = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchQuery, setSearchQuery] = useState(""); 
+  const [searchQuery, setSearchQuery] = useState("");
   const toast = useRef(null);
   const token = localStorage.getItem("token");
   const location = useLocation();
@@ -131,12 +131,12 @@ const ListOrder = () => {
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <img 
-              src={noDataImage} 
-              alt="No orders found" 
+            <img
+              src={noDataImage}
+              alt="No orders found"
               className="w-64 h-64 object-contain mb-6"
               onError={(e) => {
-                e.target.onerror = null; 
+                e.target.onerror = null;
                 e.target.src = "https://cdn-icons-png.flaticon.com/512/4076/4076478.png";
               }}
             />
@@ -144,7 +144,7 @@ const ListOrder = () => {
               No Orders Found
             </h3>
             <p className="text-gray-500 mb-6 text-center max-w-md">
-              {status 
+              {status
                 ? `There are currently no ${status.toLowerCase()} orders.`
                 : "No orders have been created yet."}
             </p>
@@ -152,7 +152,7 @@ const ListOrder = () => {
               label="Create New Order"
               icon="pi pi-plus"
               className="p-button-raised p-button-success"
-              style={{ backgroundColor: "rgb(147, 197, 114)",borderStyle:"none" }}
+              style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
               onClick={() => navigate("/order/form")}
             />
           </div>
@@ -164,39 +164,105 @@ const ListOrder = () => {
                 className="bg-white rounded-xl shadow-md hover:shadow-xl transition duration-300 transform hover:scale-105 p-6"
               >
                 <div className="mb-4">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-2">
-                    {order.designName}
-                  </h3>
-                  <p className="text-sm text-gray-600 mb-1">
-                    <strong>Fabric:</strong> {order.fabric}
-                  </p>
-                  <p className="text-sm text-gray-600 mb-1">
-                    <strong>Fabric Type:</strong> {order.fabricType}
-                  </p>
-                  <p className="text-sm text-gray-600 mb-1">
-                    <strong>Colors:</strong> {order.colors.join(", ")}
-                  </p>
-                  <p className="text-sm text-gray-600 mb-1">
-                    <strong>Dimensions:</strong> {order.height} x {order.width} cm
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    <strong>Total Price:</strong>{" "}
-                    <span className="text-green-500 font-semibold">
-                      ${order.totalPrice}
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-800 mb-1">
+                        {order.designName}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        Order ID: {order._id.substring(order._id.length - 6)}
+                      </p>
+                    </div>
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        order.status === 'completed' ? 'bg-green-100 text-green-800' :
+                          order.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                            'bg-blue-100 text-blue-800'
+                      }`}>
+                      {order.status}
                     </span>
-                  </p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <div className="flex items-start">
+                      <span className="text-sm font-medium text-gray-600 w-28">Customer:</span>
+                      <span className="text-sm text-gray-800 flex-1">
+                        {order.user?.firstName} {order.user?.lastName}
+                      </span>
+                    </div>
+
+                    <div className="flex items-start">
+                      <span className="text-sm font-medium text-gray-600 w-28">Date:</span>
+                      <span className="text-sm text-gray-800 flex-1">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    <div className="flex items-start">
+                      <span className="text-sm font-medium text-gray-600 w-28">Dimensions:</span>
+                      <span className="text-sm text-gray-800 flex-1">
+                        {order.height} x {order.width} cm
+                      </span>
+                    </div>
+
+                    <div className="flex items-start">
+                      <span className="text-sm font-medium text-gray-600 w-28">Fabric Type:</span>
+                      <span className="text-sm text-gray-800 flex-1">
+                        {order.fabricType}
+                      </span>
+                    </div>
+
+                    <div className="flex items-start">
+                      <span className="text-sm font-medium text-gray-600 w-28">Fabric:</span>
+                      <span className="text-sm text-gray-800 flex-1">
+                        {order.fabric}
+                      </span>
+                    </div>
+
+                    <div className="flex items-start">
+                      <span className="text-sm font-medium text-gray-600 w-28">Colors:</span>
+                      <span className="text-sm text-gray-800 flex-1">
+                        {order.colors.join(", ")}
+                      </span>
+                    </div>
+
+                    <div className="flex items-start">
+                      <span className="text-sm font-medium text-gray-600 w-28">Comments:</span>
+                      <span className="text-sm text-gray-800 flex-1">
+                        {order.additionalComments || "None"}
+                      </span>
+                    </div>
+
+                    {order.attachment && (
+                      <div className="flex items-start">
+                        <span className="text-sm font-medium text-gray-600 w-28">Attachment:</span>
+                        <span className="text-sm text-blue-600 flex-1 underline">
+                          <a href={order.attachment} target="_blank" rel="noopener noreferrer">
+                            View File
+                          </a>
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="flex items-start">
+                      <span className="text-sm font-medium text-gray-600 w-28">Total Price:</span>
+                      <span className="text-sm font-semibold text-green-600 flex-1">
+                        ${order.totalPrice}
+                      </span>
+                    </div>
+                  </div>
                 </div>
+
                 <div className="flex justify-between mt-4">
                   <Button
-                    label="View"
+                    label="View Details"
                     icon="pi pi-eye"
                     className="p-button-raised p-button-success"
-                    style={{ backgroundColor: "rgb(147, 197, 114)",borderStyle:"none"  }}
+                    style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
                     onClick={() => handleView(order)}
                   />
                   <Button
                     icon="pi pi-trash"
-                    style={{ backgroundColor: "#D40000" ,borderStyle:"none" }}
+                    style={{ backgroundColor: "#D40000", borderStyle: "none" }}
                     onClick={() => handleDelete(order)}
                   />
                 </div>

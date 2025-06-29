@@ -22,8 +22,7 @@ const ListQuotation = () => {
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
-    const roleValue = user?.role === 'admin';
-    setISAdmin(roleValue);
+    setISAdmin(user.role);
     const fetchQuotations = async () => {
       try {
         const data = await getQuotations(token);

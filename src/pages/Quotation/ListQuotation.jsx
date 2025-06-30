@@ -166,7 +166,7 @@ const ListQuotation = () => {
                                 label="New Quotation"
                                 icon={<FaPlus className="mr-2" />}
                                 className="p-button p-button-success"
-                                style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
+                                style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none",height:"2.7rem" }}
                                 onClick={() => navigate("form")}
                             />
                         </div>
@@ -185,7 +185,7 @@ const ListQuotation = () => {
                             label="New Quotation"
                             icon={<FaPlus className="mr-2" />}
                             className="p-button p-button-success"
-                            style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
+                            style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none",height:"2.7rem" }}
                             onClick={() => navigate("form")}
                         />
                     </div>)}

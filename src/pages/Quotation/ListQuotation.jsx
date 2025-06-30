@@ -113,7 +113,7 @@ const ListQuotation = () => {
             <Toast ref={toast} />
             <ConfirmDialog />
 
-            <div className="max-w-7xl mx-auto">
+            <div className="bg-white shadow-lg rounded-lg p-8">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
@@ -174,12 +174,17 @@ const ListQuotation = () => {
                         <p className="text-gray-500 mb-6 max-w-md mx-auto">
                             {isAdmin ? "There are no quotations in the system yet." : "You haven't created any quotations yet. Start by creating a new one!"}
                         </p>
-                        <Button
+                        {isAdmin == "admin" ? (<Button
                             label="Create Quotation"
                             icon={<FaPlus className="mr-2" />}
                             className="p-button p-button-success"
+                            style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
                             onClick={() => navigate("form")}
                         />
+                        ) : (
+                            <>
+                            </>
+                        )}
                     </div>
                 ) : isAdmin == "admin" ? (
 
@@ -295,14 +300,16 @@ const ListQuotation = () => {
                                 </div>
                                 <div className="flex justify-between mt-4">
                                     <Button
-                                        label="View"
-                                        icon="pi pi-eye"
-                                        className="p-button-raised p-button-success"
+                                        label="View Details"
+                                        icon={<FaEye className="mr-2" />}
+                                        className="p-button p-button-outlined"
                                         style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
                                         onClick={() => handleView(quotation)}
                                     />
                                     <Button
-                                        icon="pi pi-trash"
+                                        label="Delete"
+                                        icon={<FaTrash className="mr-2" />}
+                                        className="p-button p-button-outlined p-button-danger"
                                         style={{ backgroundColor: "#D40000", borderStyle: "none" }}
                                         onClick={() => handleDelete(quotation)}
                                     />

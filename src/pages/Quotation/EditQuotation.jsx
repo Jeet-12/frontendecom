@@ -17,14 +17,17 @@ const EditQuotation = () => {
       fabrictype: quotation.fabricType,
       fabric: quotation.fabric,
       noofcolors: quotation.noOfColors,
-      colors: quotation.colors.join(" "), // Convert array to string for input
+      colors: quotation.colors.join(" "),
       width: quotation.width,
       height: quotation.height,
       stitch_range: quotation.stitchRange,
       format: quotation.formatRequired,
-      timeTo_complete: new Date(quotation.timeToComplete).toISOString().split("T")[0], // Format date
+      timeTo_complete: new Date(quotation.timeToComplete).toISOString().split("T")[0],
       additionalinformation: quotation.additionalInformation,
-      quantity: quotation.quantity, // Add quantity field
+      quantity: quotation.quantity, 
+       price: quotation.price || "",
+      stitching_count: quotation.stitching_count || "",
+      comment: quotation.comment || "",
     },
   });
 
@@ -48,14 +51,19 @@ const EditQuotation = () => {
         fabricType: data.fabrictype,
         fabric: data.fabric,
         noOfColors: Number(data.noofcolors),
-        colors: data.colors.trim().split(" "), // Convert back to array
+        colors: data.colors.trim().split(" "),
         width: Number(data.width),
         height: Number(data.height),
         stitchRange: data.stitch_range,
         formatRequired: data.format,
-        timeToComplete: formatDate(new Date(data.timeTo_complete)), // Send as formatted date
+        timeToComplete: formatDate(new Date(data.timeTo_complete)),
         additionalInformation: data.additionalinformation,
-        quantity: Number(data.quantity), // Add quantity field
+        quantity: Number(data.quantity),
+         ...(user?.role === 'admin' && {
+          price: Number(data.price),
+          stitching_count: Number(data.stitching_count),
+          comment: data.comment,
+        }),
       };
 
       const user = JSON.parse(localStorage.getItem("user"));
@@ -268,19 +276,77 @@ const EditQuotation = () => {
                 />
                 {errors.additionalinformation && <p className="text-red-500 text-xs mt-1">{errors.additionalinformation.message}</p>}
               </div>
-            </div>
 
+
+              {user?.role === 'admin' && (
+                <>
+                  {/* Price */}
+                  <div>
+                    <label className="font-semibold text-sm pb-1 block text-gray-600">
+                      Price ($) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      className={`border ${errors.price ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                      {...register("price", {
+                        required: "Price is required",
+                        min: { value: 0.01, message: "Price must be greater than 0" }
+                      })}
+                      placeholder="Enter price in USD"
+                    />
+                    {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
+                  </div>
+
+                  {/* Stitch Count */}
+                  <div>
+                    <label className="font-semibold text-sm pb-1 block text-gray-600">
+                      Stitch Count <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      className={`border ${errors.stitching_count ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                      {...register("stitching_count", {
+                        required: "Stitch count is required",
+                        min: { value: 1, message: "Stitch count must be at least 1" }
+                      })}
+                      placeholder="Enter total stitch count"
+                    />
+                    {errors.stitching_count && <p className="text-red-500 text-xs mt-1">{errors.stitching_count.message}</p>}
+                  </div>
+
+                  {/* Admin Comment */}
+                  <div className="md:col-span-2">
+                    <label className="font-semibold text-sm pb-1 block text-gray-600">
+                     Comment
+                    </label>
+                    <textarea
+                      className={`border ${errors.comment ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                      {...register("comment", {
+                        maxLength: {
+                          value: 500,
+                          message: "Comment cannot exceed 500 characters"
+                        }
+                      })}
+                      placeholder="Enter any comments for the user"
+                      rows="3"
+                    />
+                    {errors.comment && <p className="text-red-500 text-xs mt-1">{errors.comment.message}</p>}
+                  </div>
+                </>
+              )}
+            </div>
             <button
               type="submit"
               className={`mt-6 w-full py-2 rounded-lg bg-[#93C572] text-white font-semibold ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
-              // disabled={isLoading || !isValid} 
+            // disabled={isLoading || !isValid} 
             >
               {isLoading ? "Updating Quotation..." : "Update Quotation"}
             </button>
           </form>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

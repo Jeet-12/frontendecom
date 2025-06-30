@@ -144,13 +144,14 @@ const ListQuotation = () => {
                                     value={searchType}
                                     onChange={(e) => setSearchType(e.target.value)}
                                     className="border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-100 text-gray-700 px-3"
+                                    style={{ height: "2.7rem" }}
                                 >
                                     <option value="designName">Design Name</option>
                                     <option value="id">ID</option>
-                                    <option value="firstname">First Name</option>
-                                    <option value="lastname">Last Name</option>
+                                    <option value="firstname">Firstname</option>
+                                    <option value="lastname">Surname</option>
                                 </select>
-                                <div className="relative flex-grow">
+                                <div className="relative flex-grow" style={{ display: "flex", height: "2.7rem" }}>
                                     <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                     <input
                                         type="text"
@@ -251,7 +252,7 @@ const ListQuotation = () => {
                                                 <div>
                                                     <p className="text-sm text-gray-500">Customer</p>
                                                     <p className="font-medium">
-                                                        {quotation.user?.firstname + quotation.user?.lastname || "N/A"}
+                                                        {quotation.user?.firstname + " " + quotation.user?.lastname || "N/A"}
                                                     </p>
                                                 </div>
                                                 <div>

@@ -56,7 +56,7 @@ const ListQuotation = () => {
     }, [token]);
 
     const handleView = (quotation) => {
-        navigate(isAdmin ? `/admin/quotation/${quotation._id}` : `/quotation/${quotation._id}`);
+        navigate(isAdmin == "admin" ? `/admin/quotation/${quotation._id}` : `/quotation/${quotation._id}`);
     };
 
     const handleDelete = (quotation) => {

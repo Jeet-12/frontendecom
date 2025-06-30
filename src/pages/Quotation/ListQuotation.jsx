@@ -174,17 +174,14 @@ const ListQuotation = () => {
                         <p className="text-gray-500 mb-6 max-w-md mx-auto">
                             {isAdmin ? "There are no quotations in the system yet." : "You haven't created any quotations yet. Start by creating a new one!"}
                         </p>
-                        {isAdmin == "admin" ? (<Button
+                        <Button
                             label="Create Quotation"
                             icon={<FaPlus className="mr-2" />}
                             className="p-button p-button-success"
                             style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
                             onClick={() => navigate("form")}
                         />
-                        ) : (
-                            <>
-                            </>
-                        )}
+
                     </div>
                 ) : isAdmin == "admin" ? (
 

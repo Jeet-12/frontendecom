@@ -34,10 +34,11 @@ const EditQuotation = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const formatDate = (date) => {
     const d = new Date(date);
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+    const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     const year = d.getFullYear();
     return `${month}/${day}/${year}`;
@@ -45,7 +46,7 @@ const EditQuotation = () => {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-    const user = JSON.parse(localStorage.getItem("user"));
+
     try {
       const updatedQuotation = {
         designName: data.designname,
@@ -60,9 +61,11 @@ const EditQuotation = () => {
         timeToComplete: formatDate(new Date(data.timeTo_complete)),
         additionalInformation: data.additionalinformation,
         quantity: Number(data.quantity),
-        price: Number(data.price),
-        stitching_count: Number(data.stitching_count),
-        comment: data.comment,
+        ...(user?.role === 'admin' && {
+          price: Number(data.price),
+          stitching_count: Number(data.stitching_count),
+          comment: data.comment,
+        }),
       };
 
 

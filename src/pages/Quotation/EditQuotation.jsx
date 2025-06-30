@@ -24,8 +24,8 @@ const EditQuotation = () => {
       format: quotation.formatRequired,
       timeTo_complete: new Date(quotation.timeToComplete).toISOString().split("T")[0],
       additionalinformation: quotation.additionalInformation,
-      quantity: quotation.quantity, 
-       price: quotation.price || "",
+      quantity: quotation.quantity,
+      price: quotation.price || "",
       stitching_count: quotation.stitching_count || "",
       comment: quotation.comment || "",
     },
@@ -45,6 +45,7 @@ const EditQuotation = () => {
 
   const onSubmit = async (data) => {
     setIsLoading(true);
+    const user = JSON.parse(localStorage.getItem("user"));
     try {
       const updatedQuotation = {
         designName: data.designname,
@@ -59,14 +60,12 @@ const EditQuotation = () => {
         timeToComplete: formatDate(new Date(data.timeTo_complete)),
         additionalInformation: data.additionalinformation,
         quantity: Number(data.quantity),
-         ...(user?.role === 'admin' && {
-          price: Number(data.price),
-          stitching_count: Number(data.stitching_count),
-          comment: data.comment,
-        }),
+        price: Number(data.price),
+        stitching_count: Number(data.stitching_count),
+        comment: data.comment,
       };
 
-      const user = JSON.parse(localStorage.getItem("user"));
+
 
       if (user?.role === 'admin') {
         const result = await updateQuotation(quotation._id, updatedQuotation, token);
@@ -318,7 +317,7 @@ const EditQuotation = () => {
                   {/* Admin Comment */}
                   <div className="md:col-span-2">
                     <label className="font-semibold text-sm pb-1 block text-gray-600">
-                     Comment
+                      Comment
                     </label>
                     <textarea
                       className={`border ${errors.comment ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}

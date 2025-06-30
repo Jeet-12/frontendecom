@@ -13,6 +13,7 @@ const ListQuotation = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
+    const [searchType, setSearchType] = useState("designName");
     const toast = useRef(null);
     const token = localStorage.getItem("token");
     const [isAdmin, setISAdmin] = useState('user');
@@ -103,10 +104,21 @@ const ListQuotation = () => {
         }
     };
 
-    const filteredQuotations = quotations.filter(quotation =>
-        quotation.designName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        quotation.fabric.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredQuotations = quotations.filter(quotation => {
+        const query = searchQuery.toLowerCase();
+
+        switch (searchType) {
+            case "id":
+                return quotation._id.toLowerCase().includes(query);
+            case "firstname":
+                return quotation.user?.firstname?.toLowerCase().includes(query);
+            case "lastname":
+                return quotation.user?.lastname?.toLowerCase().includes(query);
+            case "designName":
+            default:
+                return quotation.designName.toLowerCase().includes(query);
+        }
+    });
 
     return (
         <div className={`min-h-screen p-4 md:p-8 ${isAdmin ? "bg-gray-50" : "bg-gradient-to-br from-gray-50 to-gray-100"}`}>
@@ -125,13 +137,45 @@ const ListQuotation = () => {
                         </p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                    {isAdmin == "admin" ? (
+                        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                            <div className="relative flex-grow max-w-md flex">
+                                <select
+                                    value={searchType}
+                                    onChange={(e) => setSearchType(e.target.value)}
+                                    className="border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-gray-100 text-gray-700 px-3"
+                                >
+                                    <option value="designName">Design Name</option>
+                                    <option value="id">ID</option>
+                                    <option value="firstname">First Name</option>
+                                    <option value="lastname">Last Name</option>
+                                </select>
+                                <div className="relative flex-grow">
+                                    <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <input
+                                        type="text"
+                                        placeholder={`Search by ${searchType}...`}
+                                        className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <Button
+                                label="New Quotation"
+                                icon={<FaPlus className="mr-2" />}
+                                className="p-button p-button-success"
+                                style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
+                                onClick={() => navigate("form")}
+                            />
+                        </div>
+                    ) : (<div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                         <div className="relative flex-grow max-w-md">
-                            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                            <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                             <input
                                 type="text"
                                 placeholder="Search quotations..."
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                                className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
@@ -140,9 +184,10 @@ const ListQuotation = () => {
                             label="New Quotation"
                             icon={<FaPlus className="mr-2" />}
                             className="p-button p-button-success"
+                            style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
                             onClick={() => navigate("form")}
                         />
-                    </div>
+                    </div>)};
                 </div>
 
                 {/* Content Section */}
@@ -206,7 +251,7 @@ const ListQuotation = () => {
                                                 <div>
                                                     <p className="text-sm text-gray-500">Customer</p>
                                                     <p className="font-medium">
-                                                        {quotation.createdBy?.name || "N/A"}
+                                                        {quotation.user?.firstname + quotation.user?.lastname || "N/A"}
                                                     </p>
                                                 </div>
                                                 <div>

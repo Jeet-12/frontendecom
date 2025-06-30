@@ -6,6 +6,7 @@ import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { FaSearch, FaEye, FaTrash, FaPlus, FaInfoCircle } from "react-icons/fa";
 import { Badge } from "primereact/badge";
+import { useLocation } from 'react-router-dom';
 
 const ListOrder = () => {
     const navigate = useNavigate();
@@ -341,7 +342,14 @@ const ListOrder = () => {
                                     <p className="text-sm text-gray-600 mb-1">
                                         <strong>Colors:</strong> {order.colors.join(", ")}
                                     </p>
-                                    <p className="text-sm text-gray-600 mb-1">
+                                    <p className="text-sm text-gray-600 mb-1">    at l4 (http://testing-react-appdigi.s3-website.ap-south-1.amazonaws.com/assets/index-26590c09.js:40:44055)
+                                        at a4 (http://testing-react-appdigi.s3-website.ap-south-1.amazonaws.com/assets/index-26590c09.js:40:39787)
+                                        at Gj (http://testing-react-appdigi.s3-website.ap-south-1.amazonaws.com/assets/index-26590c09.js:40:39715)
+                                        at Zc (http://testing-react-appdigi.s3-website.ap-south-1.amazonaws.com/assets/index-26590c09.js:40:39568)
+                                        at bm (http://testing-react-appdigi.s3-website.ap-south-1.amazonaws.com/assets/index-26590c09.js:40:35933)
+                                        at r4 (http://testing-react-appdigi.s3-website.ap-south-1.amazonaws.com/assets/index-26590c09.js:40:34882)
+                                        at E (http://testing-react-appdigi.s3-website.ap-south-1.amazonaws.com/assets/index-26590c09.js:25:1601)
+                                      
                                         <strong>Dimensions:</strong> {order.height} x {order.width} cm
                                     </p>
                                     <p className="text-sm text-gray-600">

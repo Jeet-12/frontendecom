@@ -188,7 +188,7 @@ const ListQuotation = () => {
                             style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
                             onClick={() => navigate("form")}
                         />
-                    </div>)};
+                    </div>)}
                 </div>
 
                 {/* Content Section */}

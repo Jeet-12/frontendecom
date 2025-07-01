@@ -6,7 +6,7 @@ import { updateOrder, updateQuotation } from "../../Services/Api"; // Your API c
 
 
 const EditOrder = () => {
-  const { state: order } = useLocation(); 
+  const { state: order } = useLocation();
   const {
     register,
     handleSubmit,
@@ -18,15 +18,17 @@ const EditOrder = () => {
       fabricType: order.fabricType,
       fabric: order.fabric,
       noOfColors: order.noOfColors,
-      colors: order.colors.join(", "), 
+      colors: order.colors.join(", "),
       width: order.width,
       height: order.height,
-      totalPrice:order.totalPrice,
+      totalPrice: order.totalPrice,
+      quantity: order.quantity,
       stitchRange: order.stitchRange,
       formatRequired: order.formatRequired,
       timeToComplete: new Date(order.timeToComplete).toISOString().split("T")[0], // Format date
       additionalInformation: order.additionalInformation,
-       price: order.price || "",
+
+      price: order.price || "",
       stitching_count: order.stitching_count || "",
       comment: order.comment || "",
     },
@@ -35,7 +37,7 @@ const EditOrder = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const formatDate = (date) => {
     const d = new Date(date);
@@ -43,7 +45,7 @@ const EditOrder = () => {
     const day = String(d.getDate()).padStart(2, '0');
     const year = d.getFullYear();
     return `${month}/${day}/${year}`;
-};
+  };
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
@@ -52,44 +54,45 @@ const EditOrder = () => {
         fabricType: data.fabricType,
         fabric: data.fabric,
         noOfColors: Number(data.noOfColors),
-        totalPrice:Number(data.totalPrice),
+        totalPrice: Number(data.totalPrice),
         colors: data.colors.split(",").map(color => color.trim()),
         width: Number(data.width),
         height: Number(data.height),
         stitchRange: data.stitchRange,
         formatRequired: data.formatRequired,
+        quantity: data.quantity,
         timeToComplete: formatDate(new Date(data.timeToComplete)),
         additionalInformation: data.additionalInformation,
-         ...(user?.role === 'admin' && {
+        ...(user?.role === 'admin' && {
           price: Number(data.price),
           stitching_count: Number(data.stitching_count),
           comment: data.comment,
         }),
       };
 
-    
+
 
       if (user?.role === 'admin') {
-          try {
-              const result = await updateOrder(order._id, updatedData, token);
-              toast.success(result.message || "Order updated successfully!");
-              navigate(`/admin/order`);
-          } catch (error) {
-              toast.error(error.message || "Failed to update Order.");
-          }
+        try {
+          const result = await updateOrder(order._id, updatedData, token);
+          toast.success(result.message || "Order updated successfully!");
+          navigate(`/admin/order`);
+        } catch (error) {
+          toast.error(error.message || "Failed to update Order.");
+        }
       } else if (user?.role === 'user') {
-          try {
-              const result = await updateOrder(order._id, updatedData, token);
-              toast.success(result.message || "Order updated successfully!");
-              navigate(`/order`);
-          } catch (error) {
-              toast.error(error.message || "Failed to update Order.");
-          }
+        try {
+          const result = await updateOrder(order._id, updatedData, token);
+          toast.success(result.message || "Order updated successfully!");
+          navigate(`/order`);
+        } catch (error) {
+          toast.error(error.message || "Failed to update Order.");
+        }
       } else {
-          toast.error("You are not authorized to perform this action.");
-          navigate(`/`);
+        toast.error("You are not authorized to perform this action.");
+        navigate(`/`);
       }
-      
+
 
 
 
@@ -101,7 +104,7 @@ const EditOrder = () => {
     }
   };
 
-  
+
   return (
     <div className="flex flex-col justify-center bg-[#e6f0df] min-h-screen py-8">
       <div className="p-8 xs:p-0 mx-auto md:w-full max-w-4xl">
@@ -222,7 +225,7 @@ const EditOrder = () => {
               </div>
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
-                Total Price <span className="text-red-500">*</span>
+                  Total Price <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -245,6 +248,19 @@ const EditOrder = () => {
                   placeholder="Enter format required"
                 />
                 {errors.formatRequired && <p className="text-red-500 text-xs mt-1">{errors.formatRequired.message}</p>}
+              </div>
+              
+              <div>
+                <label className="font-semibold text-sm pb-1 block text-gray-600">
+                  Quantity <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="number"
+                  className={`border ${errors.quantity ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                  {...register("quantity", { required: "Quantity is required", min: 1 })}
+                  placeholder="Enter quantity"
+                />
+                {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>}
               </div>
 
               {/* Time to Complete */}
@@ -273,7 +289,7 @@ const EditOrder = () => {
                 />
                 {errors.additionalInformation && <p className="text-red-500 text-xs mt-1">{errors.additionalInformation.message}</p>}
               </div>
-               {user?.role === 'admin' && (
+              {user?.role === 'admin' && (
                 <>
                   {/* Price */}
                   <div>

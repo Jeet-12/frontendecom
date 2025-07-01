@@ -1247,5 +1247,8 @@ ps-menu-button:hover {
   border-color: #46b8da !important;
   color: white !important;
 }
+#pr_id_1_content{
+  border: none;
+}
 
 

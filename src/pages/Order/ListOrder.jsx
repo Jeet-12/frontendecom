@@ -63,7 +63,7 @@ const ListOrder = () => {
 
     const handleDelete = (order) => {
         confirmDialog({
-            message: `Are you sure you want to delete "${quotation.designName}"?`,
+            message: `Are you sure you want to delete "${order.designName}"?`,
             header: "Delete Confirmation",
             icon: "pi pi-exclamation-triangle",
             acceptClassName: "p-button-danger custom-accept-btn",

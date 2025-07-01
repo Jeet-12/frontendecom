@@ -60,16 +60,15 @@ const ListQuotation = () => {
         navigate(isAdmin == "admin" ? `/admin/quotation/${quotation._id}` : `/quotation/${quotation._id}`);
     };
 
-    const handleDelete = (quotation) => {
-        confirmDialog({
-            message: `Are you sure you want to delete "${quotation.designName}"?`,
-            header: "Delete Confirmation",
-            icon: "pi pi-exclamation-triangle",
-            acceptClassName: "p-button-danger",
-            rejectClassName: "p-button-text",
-            accept: () => performDelete(quotation),
-        });
-    };
+    confirmDialog({
+        message: `Are you sure you want to delete "${quotation.designName}"?`,
+        header: "Delete Confirmation",
+        icon: "pi pi-exclamation-triangle",
+        acceptClassName: "p-button-danger custom-accept-btn",
+        rejectClassName: "p-button-text custom-reject-btn",
+        accept: () => performDelete(quotation),
+    });
+
 
     const performDelete = async (quotation) => {
         try {
@@ -166,7 +165,7 @@ const ListQuotation = () => {
                                 label="New Quotation"
                                 icon={<FaPlus className="mr-2" />}
                                 className="p-button p-button-success"
-                                style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none",height:"2.7rem" }}
+                                style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none", height: "2.7rem" }}
                                 onClick={() => navigate("form")}
                             />
                         </div>
@@ -185,7 +184,7 @@ const ListQuotation = () => {
                             label="New Quotation"
                             icon={<FaPlus className="mr-2" />}
                             className="p-button p-button-success"
-                            style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none",height:"2.7rem" }}
+                            style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none", height: "2.7rem" }}
                             onClick={() => navigate("form")}
                         />
                     </div>)}

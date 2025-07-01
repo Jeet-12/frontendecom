@@ -63,11 +63,11 @@ const ListOrder = () => {
 
     const handleDelete = (order) => {
         confirmDialog({
-            message: `Are you sure you want to delete "${order.designName}"?`,
+            message: `Are you sure you want to delete "${quotation.designName}"?`,
             header: "Delete Confirmation",
             icon: "pi pi-exclamation-triangle",
-            acceptClassName: "p-button-danger",
-            rejectClassName: "p-button-text",
+            acceptClassName: "p-button-danger custom-accept-btn",
+            rejectClassName: "p-button-text custom-reject-btn",
             accept: () => performDelete(order),
         });
     };
@@ -342,7 +342,7 @@ const ListOrder = () => {
                                     <p className="text-sm text-gray-600 mb-1">
                                         <strong>Colors:</strong> {order.colors.join(", ")}
                                     </p>
-                                    <p className="text-sm text-gray-600 mb-1"> 
+                                    <p className="text-sm text-gray-600 mb-1">
                                         <strong>Dimensions:</strong> {order.height} x {order.width} inches
                                     </p>
                                     <p className="text-sm text-gray-600">

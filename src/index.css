@@ -1237,4 +1237,15 @@ ps-menu-button:hover {
     color: white !important;
     box-shadow: none !important;
 }
+.custom-accept-btn {
+  background-color: #d9534f !important; /* red */
+  border-color: #d43f3a !important;
+}
+
+.custom-reject-btn {
+  background-color: #5bc0de !important; /* light blue */
+  border-color: #46b8da !important;
+  color: white !important;
+}
+
 

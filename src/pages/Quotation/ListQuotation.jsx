@@ -60,15 +60,16 @@ const ListQuotation = () => {
         navigate(isAdmin == "admin" ? `/admin/quotation/${quotation._id}` : `/quotation/${quotation._id}`);
     };
 
-    confirmDialog({
-        message: `Are you sure you want to delete "${quotation.designName}"?`,
-        header: "Delete Confirmation",
-        icon: "pi pi-exclamation-triangle",
-        acceptClassName: "p-button-danger custom-accept-btn",
-        rejectClassName: "p-button-text custom-reject-btn",
-        accept: () => performDelete(quotation),
-    });
-
+    const handleDelete = (quotation) => {
+        confirmDialog({
+            message: `Are you sure you want to delete "${quotation.designName}"?`,
+            header: "Delete Confirmation",
+            icon: "pi pi-exclamation-triangle",
+            acceptClassName: "p-button-danger custom-accept-btn",
+            rejectClassName: "p-button-text custom-reject-btn",
+            accept: () => performDelete(quotation),
+        });
+    };
 
     const performDelete = async (quotation) => {
         try {

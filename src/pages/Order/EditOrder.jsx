@@ -35,6 +35,7 @@ const EditOrder = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
 
   const formatDate = (date) => {
     const d = new Date(date);
@@ -65,7 +66,7 @@ const EditOrder = () => {
         }),
       };
 
-      const user = JSON.parse(localStorage.getItem("user"));
+    
 
       if (user?.role === 'admin') {
           try {

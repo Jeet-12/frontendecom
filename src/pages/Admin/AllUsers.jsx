@@ -18,12 +18,12 @@ const AllUsers = () => {
 
         const fetchUsers = async () => {
             try {
-                const response = await fetchWithAuth(
+                const response = await fetch(
                     `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/auth/users`,
                     { headers: { 'x-auth-token': token } }
                 );
 
-                console.log('API Response:', response.data);  // Log the API response to verify structure
+                console.log('API Response:', response.data);  
 
                 // Validate and extract the users properly
                 const userData = Array.isArray(response.data) 
@@ -153,7 +153,7 @@ const AllUsers = () => {
         fullName: `${user.firstname || ''} ${user.lastname || ''}`,
         email: user.email || 'N/A',
         address: user.address || 'N/A',
-        isActive: user.isActive,  // Assuming the API returns an isActive field
+        isActive: user.isActive,  
         _id: user._id
     })), [filteredUsers]);
 

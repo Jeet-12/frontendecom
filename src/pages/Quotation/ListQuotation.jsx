@@ -332,7 +332,7 @@ const ListQuotation = () => {
                                         <strong>Colors:</strong> {quotation.colors.join(", ")}
                                     </p>
                                     <p className="text-sm text-gray-600 mb-1">
-                                        <strong>Dimensions:</strong> {quotation.height} x {quotation.width} cm
+                                        <strong>Dimensions:</strong> {quotation.height} x {quotation.width} inches
                                     </p>
                                     <p className="text-sm text-gray-600">
                                         <strong>Total Price:</strong>{" "}

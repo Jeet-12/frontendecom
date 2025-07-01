@@ -343,7 +343,7 @@ const ListOrder = () => {
                                         <strong>Colors:</strong> {order.colors.join(", ")}
                                     </p>
                                     <p className="text-sm text-gray-600 mb-1"> 
-                                        <strong>Dimensions:</strong> {order.height} x {order.width} inch
+                                        <strong>Dimensions:</strong> {order.height} x {order.width} inches
                                     </p>
                                     <p className="text-sm text-gray-600">
                                         <strong>Total Price:</strong>{" "}

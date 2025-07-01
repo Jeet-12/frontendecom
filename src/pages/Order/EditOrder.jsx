@@ -26,6 +26,9 @@ const EditOrder = () => {
       formatRequired: order.formatRequired,
       timeToComplete: new Date(order.timeToComplete).toISOString().split("T")[0], // Format date
       additionalInformation: order.additionalInformation,
+       price: order.price || "",
+      stitching_count: order.stitching_count || "",
+      comment: order.comment || "",
     },
   });
 
@@ -43,31 +46,28 @@ const EditOrder = () => {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      // Prepare the updated quotation data
       const updatedData = {
         designName: data.designName,
         fabricType: data.fabricType,
         fabric: data.fabric,
         noOfColors: Number(data.noOfColors),
-        colors: data.colors.split(",").map(color => color.trim()), // Convert back to array
+        colors: data.colors.split(",").map(color => color.trim()),
         width: Number(data.width),
         height: Number(data.height),
         stitchRange: data.stitchRange,
         formatRequired: data.formatRequired,
-        timeToComplete: formatDate(new Date(data.timeToComplete)),// Send as ISO string
+        timeToComplete: formatDate(new Date(data.timeToComplete)),
         additionalInformation: data.additionalInformation,
+         ...(user?.role === 'admin' && {
+          price: Number(data.price),
+          stitching_count: Number(data.stitching_count),
+          comment: data.comment,
+        }),
       };
-
-      // // Call your updateQuotation API
-      // // console.log(order._id, updatedData, token)
-      // const result = await updateOrder(order._id, updatedData, token);
-      // toast.success(result.message || "Quotation updated successfully!");
-      // navigate("/admin/order"); // Redirect after updating
 
       const user = JSON.parse(localStorage.getItem("user"));
 
       if (user?.role === 'admin') {
-        // console.log(user?.role)
           try {
               const result = await updateOrder(order._id, updatedData, token);
               toast.success(result.message || "Order updated successfully!");
@@ -271,6 +271,63 @@ const EditOrder = () => {
                 />
                 {errors.additionalInformation && <p className="text-red-500 text-xs mt-1">{errors.additionalInformation.message}</p>}
               </div>
+               {user?.role === 'admin' && (
+                <>
+                  {/* Price */}
+                  <div>
+                    <label className="font-semibold text-sm pb-1 block text-gray-600">
+                      Price ($) <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      className={`border ${errors.price ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                      {...register("price", {
+                        required: "Price is required",
+                        min: { value: 0.01, message: "Price must be greater than 0" }
+                      })}
+                      placeholder="Enter price in USD"
+                    />
+                    {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
+                  </div>
+
+                  {/* Stitch Count */}
+                  <div>
+                    <label className="font-semibold text-sm pb-1 block text-gray-600">
+                      Stitch Count <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      className={`border ${errors.stitching_count ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                      {...register("stitching_count", {
+                        required: "Stitch count is required",
+                        min: { value: 1, message: "Stitch count must be at least 1" }
+                      })}
+                      placeholder="Enter total stitch count"
+                    />
+                    {errors.stitching_count && <p className="text-red-500 text-xs mt-1">{errors.stitching_count.message}</p>}
+                  </div>
+
+                  {/* Admin Comment */}
+                  <div className="md:col-span-2">
+                    <label className="font-semibold text-sm pb-1 block text-gray-600">
+                      Comment
+                    </label>
+                    <textarea
+                      className={`border ${errors.comment ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                      {...register("comment", {
+                        maxLength: {
+                          value: 500,
+                          message: "Comment cannot exceed 500 characters"
+                        }
+                      })}
+                      placeholder="Enter any comments for the user"
+                      rows="3"
+                    />
+                    {errors.comment && <p className="text-red-500 text-xs mt-1">{errors.comment.message}</p>}
+                  </div>
+                </>
+              )}
             </div>
 
             <button

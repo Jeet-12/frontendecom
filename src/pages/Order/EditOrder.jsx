@@ -18,7 +18,7 @@ const EditOrder = () => {
       fabricType: order.fabricType,
       fabric: order.fabric,
       noOfColors: order.noOfColors,
-      colors: order.colors.join(", "), // Convert array to string for input
+      colors: order.colors.join(", "), 
       width: order.width,
       height: order.height,
       totalPrice:order.totalPrice,
@@ -52,6 +52,7 @@ const EditOrder = () => {
         fabricType: data.fabricType,
         fabric: data.fabric,
         noOfColors: Number(data.noOfColors),
+        totalPrice:Number(data.totalPrice),
         colors: data.colors.split(",").map(color => color.trim()),
         width: Number(data.width),
         height: Number(data.height),

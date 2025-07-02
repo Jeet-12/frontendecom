@@ -27,9 +27,7 @@ const AllUsers = () => {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
-                const data = await response.json(); // parse the JSON response
-
-                console.log('API Response:', data);
+                const data = await response.json();
 
                 const userData = Array.isArray(data)
                     ? data
@@ -37,7 +35,6 @@ const AllUsers = () => {
                         ? data.users
                         : [];
 
-                console.log('response:', userData);
                 setUsers(userData);
                 setLoading(false);
             } catch (err) {

@@ -11,7 +11,8 @@ const ChangePassword = () => {
   const navigate = useNavigate();
 
   // Get userId and token from your auth system
-  const userId = localStorage.getItem('userId');
+  const user = localStorage.getItem('user');
+  const userId = user.id;
   const token = localStorage.getItem('token');
 
   const handleChangePassword = async (e) => {

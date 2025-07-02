@@ -41,13 +41,13 @@ const UserProfile = () => {
         // Fetch customers
         const usersRes = await axios.get(`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/auth/users`, { headers });
 
-      const userData = Array.isArray(usersRes.data)
-        ? usersRes.data
-        : Array.isArray(usersRes.data.users)
-          ? usersRes.data.users
-          : [];
+        const userData = Array.isArray(usersRes.data)
+          ? usersRes.data
+          : Array.isArray(usersRes.data.users)
+            ? usersRes.data.users
+            : [];
 
-      setCustomersCount(userData.length);
+        setCustomersCount(userData.length);
 
         setLoading(false);
       } catch (err) {
@@ -133,12 +133,12 @@ const UserProfile = () => {
         </button>
       </div>
 
-      <ChangePassword
+      {isChangePasswordOpen ? (<ChangePassword
         isOpen={isChangePasswordOpen}
         onClose={() => setIsChangePasswordOpen(false)}
         userId={user._id}
         token={localStorage.getItem('token')}
-      />
+      />) : (<></>)}
     </div>
   );
 };

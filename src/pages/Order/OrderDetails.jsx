@@ -60,6 +60,8 @@ const OrderDetail = () => {
         const fetchOrder = async () => {
             try {
                 const data = await getOrderById(id, token);
+                console.log(data);
+                
                 setOrder(data);
                 setLoading(false);
             } catch (err) {

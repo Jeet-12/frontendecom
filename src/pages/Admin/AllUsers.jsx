@@ -23,25 +23,25 @@ const AllUsers = () => {
                     { headers: { 'x-auth-token': token } }
                 );
 
-                console.log('API Response:', response.data);  
+                console.log('API Response:', response.data);
 
                 // Validate and extract the users properly
-                const userData = Array.isArray(response.data) 
-                    ? response.data 
-                    : Array.isArray(response.data.users) 
-                        ? response.data.users 
+                const userData = Array.isArray(response.data)
+                    ? response.data
+                    : Array.isArray(response.data.users)
+                        ? response.data.users
                         : [];
-
+                console.log('response:', userData);
                 setUsers(userData);
                 setLoading(false);
             } catch (err) {
                 const status = err.response?.status;
 
                 if (status === 401) {
-                  localStorage.clear();
-                  toast.error('Session expired. Please log in again.');
-                  navigate('/login');
-                  return;
+                    localStorage.clear();
+                    toast.error('Session expired. Please log in again.');
+                    navigate('/login');
+                    return;
                 }
                 console.error('Error fetching users:', err);
                 setError('Failed to fetch users.');
@@ -64,7 +64,7 @@ const AllUsers = () => {
                 { headers: { 'x-auth-token': token } }
             );
 
-            
+
             setUsers(users.filter(user => user._id !== userId));
 
             toast.current.show({
@@ -77,10 +77,10 @@ const AllUsers = () => {
             const status = err.response?.status;
 
             if (status === 401) {
-              localStorage.clear();
-              toast.error('Session expired. Please log in again.');
-              navigate('/login');
-              return;
+                localStorage.clear();
+                toast.error('Session expired. Please log in again.');
+                navigate('/login');
+                return;
             }
             console.error('Error deleting user:', err);
             toast.current.show({
@@ -112,7 +112,7 @@ const AllUsers = () => {
         {
             Header: 'Active',
             accessor: 'isActive',
-            Cell:'Yes', 
+            Cell: 'Yes',
         },
         // {
         //     Header: 'Actions',
@@ -153,7 +153,7 @@ const AllUsers = () => {
         fullName: `${user.firstname || ''} ${user.lastname || ''}`,
         email: user.email || 'N/A',
         address: user.address || 'N/A',
-        isActive: user.isActive,  
+        isActive: user.isActive,
         _id: user._id
     })), [filteredUsers]);
 
@@ -182,7 +182,7 @@ const AllUsers = () => {
             <Toast ref={toast} />
             <div className="bg-white shadow-lg rounded-lg p-6">
                 <h2 className="text-3xl font-semibold text-gray-800 mb-4">All Users</h2>
-                
+
                 {/* Search Bar */}
                 <div className="flex items-center justify-between mb-4">
                     <input

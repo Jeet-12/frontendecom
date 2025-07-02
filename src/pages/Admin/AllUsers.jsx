@@ -23,10 +23,9 @@ const AllUsers = () => {
                     { headers: { 'x-auth-token': token } }
                 );
 
-                console.log('API Response:', response.data);
+                console.log('API Response:', response);
 
-                // Validate and extract the users properly
-                const userData = Array.isArray(response.data)
+                const userData = Array.isArray(response)
                     ? response.data
                     : Array.isArray(response.data.users)
                         ? response.data.users

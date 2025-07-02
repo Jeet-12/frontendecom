@@ -23,13 +23,15 @@ const AllUsers = () => {
                     { headers: { 'x-auth-token': token } }
                 );
 
-                console.log('API Response:', response);
+                const data = await response.json();
+                console.log('API Response:', data);
 
-                const userData = Array.isArray(response)
-                    ? response.data
-                    : Array.isArray(response.data.users)
-                        ? response.data.users
+                const userData = Array.isArray(data)
+                    ? data
+                    : Array.isArray(data.users)
+                        ? data.users
                         : [];
+
                 console.log('response:', userData);
                 setUsers(userData);
                 setLoading(false);

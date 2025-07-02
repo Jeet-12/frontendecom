@@ -23,7 +23,12 @@ const AllUsers = () => {
                     { headers: { 'x-auth-token': token } }
                 );
 
-                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json(); // parse the JSON response
+
                 console.log('API Response:', data);
 
                 const userData = Array.isArray(data)
@@ -49,6 +54,7 @@ const AllUsers = () => {
                 setLoading(false);
             }
         };
+
 
         fetchUsers();
     }, []);

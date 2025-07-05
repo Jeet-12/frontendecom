@@ -30,6 +30,7 @@ const ListOrder = () => {
             try {
                 const data = await getOrders(token);
                 setOrders(data);
+                console.log(data);
                 setLoading(false);
             } catch (err) {
                 setError(err.message || "Failed to fetch orders");
@@ -285,7 +286,7 @@ const ListOrder = () => {
                                                 <div>
                                                     <p className="text-sm text-gray-500">Total Price</p>
                                                     <p className="font-medium text-green-600">
-                                                        ${order.totalPrice || "0.00"}
+                                                       ${order.totalPrice ?? "0.00"}
                                                     </p>
                                                 </div>
                                             </div>
@@ -332,7 +333,7 @@ const ListOrder = () => {
                                     <p className="text-sm text-gray-600 mb-1">
                                         <strong>Status:</strong>{" "}
                                         <span className="capitalize">{order.status}</span>
-                                    </p>
+                                    </p>${order.totalPrice ?? "0.00"}
                                     <p className="text-sm text-gray-600 mb-1">
                                         <strong>Fabric:</strong> {order.fabric}
                                     </p>
@@ -348,7 +349,7 @@ const ListOrder = () => {
                                     <p className="text-sm text-gray-600">
                                         <strong>Total Price:</strong>{" "}
                                         <span className="text-green-500 font-semibold">
-                                            ${order.totalPrice || "0.00"}
+                                           
                                         </span>
                                     </p>
                                 </div>

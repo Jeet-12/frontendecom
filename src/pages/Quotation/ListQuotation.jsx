@@ -28,6 +28,7 @@ const ListQuotation = () => {
             try {
                 const data = await getQuotations(token);
                 setQuotations(data);
+                console.log(data);
                 
                 setLoading(false);
             } catch (err) {

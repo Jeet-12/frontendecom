@@ -95,12 +95,10 @@ const ListOrder = () => {
 
     const getStatusBadge = (status) => {
         switch (status) {
-            case 'completed':
+            case "complete":
                 return <Badge value="Completed" severity="success" className="ml-2" style={{ display: "flex", alignItems: "center" }} />;
-            case 'cancelled':
-                return <Badge value="Cancelled" severity="danger" className="ml-2" style={{ display: "flex", alignItems: "center" }} />;
-            case 'shipped':
-                return <Badge value="Shipped" severity="info" className="ml-2" style={{ display: "flex", alignItems: "center" }} />;
+            case "pending":
+                return <Badge value="Pending" severity="danger" className="ml-2" style={{ display: "flex", alignItems: "center" }} />;
             default:
                 return <Badge value="Processing" severity="warning" className="ml-2" style={{ display: "flex", alignItems: "center" }} />;
         }

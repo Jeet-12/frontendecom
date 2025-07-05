@@ -27,9 +27,7 @@ const ListQuotation = () => {
         const fetchQuotations = async () => {
             try {
                 const data = await getQuotations(token);
-                setQuotations(data);
-                console.log(data);
-                
+                setQuotations(data);                
                 setLoading(false);
             } catch (err) {
                 setError(err.message || "Failed to fetch quotations");
@@ -96,7 +94,7 @@ const ListQuotation = () => {
         switch (status) {
             case 'approved':
                 return <Badge value="Approved" severity="success" className="ml-2" style={{ display: "flex", alignItems: "center" }} />;
-            case 'rejected':
+            case "declined":
                 return <Badge value="Rejected" severity="danger" className="ml-2" style={{ display: "flex", alignItems: "center" }}
                 />;
             default:

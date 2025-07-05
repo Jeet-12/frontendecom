@@ -30,7 +30,6 @@ const ListOrder = () => {
             try {
                 const data = await getOrders(token);
                 setOrders(data);
-                console.log(data);
                 setLoading(false);
             } catch (err) {
                 setError(err.message || "Failed to fetch orders");

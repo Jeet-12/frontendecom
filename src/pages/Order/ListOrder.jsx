@@ -285,7 +285,7 @@ const ListOrder = () => {
                                                 <div>
                                                     <p className="text-sm text-gray-500">Total Price</p>
                                                     <p className="font-medium text-green-600">
-                                                        ${order.totalPrice?.toFixed(2) || "0.00"}
+                                                        ${order.totalPrice || "0.00"}
                                                     </p>
                                                 </div>
                                             </div>
@@ -348,7 +348,7 @@ const ListOrder = () => {
                                     <p className="text-sm text-gray-600">
                                         <strong>Total Price:</strong>{" "}
                                         <span className="text-green-500 font-semibold">
-                                            ${order.totalPrice?.toFixed(2) || "0.00"}
+                                            ${order.totalPrice || "0.00"}
                                         </span>
                                     </p>
                                 </div>

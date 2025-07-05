@@ -18,8 +18,6 @@ const QuotationDetail = () => {
         const fetchQuotation = async () => {
             try {
                 const data = await getQuotationById(id, token);
-
-
                 setQuotation(data);
                 setLoading(false);
             } catch (err) {
@@ -78,11 +76,21 @@ const QuotationDetail = () => {
     };
 
     if (loading) {
-        return <div className="text-center mt-10">Loading quotation details...</div>;
+        return (
+            <div className="flex items-center justify-center h-screen bg-white text-gray-600 p-4 min-h-screen"
+                style={{ fontSize: '24px', fontFamily: 'Arial, sans-serif' }}>
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-600 mr-3"></div>
+                <span>Loading quotation details...</span>
+            </div>
+        );
     }
-
     if (error) {
-        return <div className="text-center mt-10 text-red-500">{error}</div>;
+        return (
+            <div className="flex items-center justify-center h-screen bg-white text-red-500 p-4 min-h-screen"
+                style={{ fontSize: '18px', fontFamily: 'Arial, sans-serif' }}>
+                <span>{error}</span>
+            </div>
+        );
     }
 
     return (

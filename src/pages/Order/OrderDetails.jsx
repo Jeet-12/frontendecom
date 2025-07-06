@@ -61,6 +61,8 @@ const OrderDetail = () => {
             try {
                 const data = await getOrderById(id, token);                
                 setOrder(data);
+                console.log(data);
+                
                 setLoading(false);
             } catch (err) {
                 setError("Failed to fetch order details.");
@@ -273,7 +275,7 @@ const OrderDetail = () => {
                         <div className="flex gap-4 mb-4">
                             <div>
                                 <Button
-                                    label="Stitch Out Image’"
+                                    label="Stitch Out Image"
                                     onClick={() => document.getElementById("file-preview").click()}
                                     icon={<FaFileUpload />}
                                     className="p-button-outlined p-button-rounded w-full"

@@ -152,7 +152,7 @@ const OrderDetail = () => {
             formData.append("digitalImage", digitalImage);
 
             try {
-                const response = await fetch(`${process.env.API_URL}api/order/${id}/update-images`, {
+                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}api/order/${id}/update-images`, {
                     method: "PATCH",
                     headers: {
                         "x-auth-token": token,
@@ -273,7 +273,7 @@ const OrderDetail = () => {
                         <div className="flex gap-4 mb-4">
                             <div>
                                 <Button
-                                    label="Upload Preview"
+                                    label="Stitch Out Image’"
                                     onClick={() => document.getElementById("file-preview").click()}
                                     icon={<FaFileUpload />}
                                     className="p-button-outlined p-button-rounded w-full"
@@ -289,7 +289,7 @@ const OrderDetail = () => {
                             </div>
                             <div>
                                 <Button
-                                    label="Upload Digital File"
+                                    label="Upload Digitized File"
                                     onClick={() => document.getElementById("file-digital").click()}
                                     icon={<FaFileUpload />}
                                     className="p-button-outlined p-button-rounded w-full"

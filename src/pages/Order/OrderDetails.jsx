@@ -21,7 +21,7 @@ const OrderDetail = () => {
     const [imageUrl, setImageUrl] = useState("");
 
     const openModal = () => {
-        setImageUrl(`${process.env.API_URL}${order.previewImage}`);
+        setImageUrl(`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${order.previewImage}`);
         setModalOpen(true);
     };
 
@@ -152,7 +152,7 @@ const OrderDetail = () => {
             formData.append("digitalImage", digitalImage);
 
             try {
-                const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}api/order/${id}/update-images`, {
+                const response = await fetch(`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/order/${id}/update-images`, {
                     method: "PATCH",
                     headers: {
                         "x-auth-token": token,

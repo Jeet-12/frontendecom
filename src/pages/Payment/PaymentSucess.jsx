@@ -19,7 +19,7 @@ const SuccessOrder = () => {
                 try {
                     // Send a POST request to capture the payment
                     const response = await axios.post(
-                        `${process.env.API_URL}api/payment/paypal/capture-payment`,
+                        `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/payment/paypal/capture-payment`,
                         { paypalOrderId: token }, // Body contains the PayPal order ID
                         { headers: { 'Content-Type': 'application/json' } }
                     );

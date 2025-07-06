@@ -148,7 +148,7 @@ const OrderCard = ({ order }) => {
       <div className="space-y-4">
         <div key={nanoid()} className="flex items-center space-x-4">
           <img
-            src={`${process.env.API_URL}${order.previewImage}`}
+            src={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${order.previewImage}`}
             alt={order.designName}
             className="w-12 h-12 object-cover rounded"
             onError={(e) => {

@@ -197,7 +197,7 @@ const Testimonial = () => {
           <Slider {...sliderSettings} className="z-10 relative">
             {testimonialsData.map((testimonial) => (
               <div key={testimonial.id} className="px-4 ">
-                <div className="flex flex-col items-center bg-[#AFE1AF] p-6 rounded-lg shadow-lg" style={{height:"25rem",display:"flex",justifyContent:"space-between"}}>
+                <div className="flex flex-col items-center bg-[#AFE1AF] p-6 rounded-lg shadow-lg" style={{height:"16rem",display:"flex",justifyContent:"space-between"}}>
                   {/* Customer Image */}
                  
 

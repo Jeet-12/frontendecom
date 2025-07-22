@@ -199,16 +199,7 @@ const Testimonial = () => {
               <div key={testimonial.id} className="px-4 ">
                 <div className="flex flex-col items-center bg-[#AFE1AF] p-6 rounded-lg shadow-lg" style={{height:"25rem",display:"flex",justifyContent:"space-between"}}>
                   {/* Customer Image */}
-                  <div className="relative w-32 h-32 mb-4">
-                    <img
-                      src={testimonial.image}
-                      alt={`${testimonial.name}`}
-                      className="rounded-full w-full h-full object-cover shadow-md"
-                    />
-                    <div className="absolute inset-0 rounded-full border-2 border-white opacity-0 transform scale-90 transition-all duration-500 ease-out hover:scale-105 hover:opacity-100">
-                      {/* Sonar Effect */}
-                    </div>
-                  </div>
+                 
 
                   {/* Customer Name */}
                   <h3 className="text-2xl font-roboto-slab font-medium text-[#10170c] mb-1">

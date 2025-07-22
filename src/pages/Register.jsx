@@ -219,7 +219,7 @@ const Register = () => {
                   type="text"
                   {...register("zipcode", {
                     required: "ZIP code is required",
-        
+
                   })}
                   className={`
                     w-full px-4 py-3
@@ -280,19 +280,19 @@ const Register = () => {
                     required: "Password is required",
                     pattern: {
                       value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-                      message: "Min 8 chars, 1 uppercase, 1 number, 1 special character"
+                      message: "Must be at least 8 characters with 1 letter, 1 number & 1 special character"
                     }
                   })}
                   className={`
-                    w-full px-4 py-3
-                    bg-white/50
-                    rounded-xl
-                    border-0
-                    text-gray-900
-                    ring-1 ring-inset ${errors.password ? 'ring-red-300' : 'ring-gray-200'}
-                    focus:ring-2 focus:ring-inset focus:ring-blue-500
-                    placeholder:text-gray-400
-                  `}
+      w-full px-4 py-3
+      bg-white/50
+      rounded-xl
+      border-0
+      text-gray-900
+      ring-1 ring-inset ${errors.password ? 'ring-red-300' : 'ring-gray-200'}
+      focus:ring-2 focus:ring-inset focus:ring-blue-500
+      placeholder:text-gray-400
+    `}
                   placeholder="Enter your password"
                 />
                 {errors.password && (
@@ -313,18 +313,18 @@ const Register = () => {
                       value === watch("password") || "Passwords do not match",
                   })}
                   className={`
-                    w-full px-4 py-3
-                    bg-white/50
-                    rounded-xl
-                    border-0
-                    text-gray-900
-                    ring-1 ring-inset ${errors.confirmpassword ? 'ring-red-300' : 'ring-gray-200'}
-                    focus:ring-2 focus:ring-inset focus:ring-blue-500
-                    placeholder:text-gray-400
-                  `}
+      w-full px-4 py-3
+      bg-white/50
+      rounded-xl
+      border-0
+      text-gray-900
+      ring-1 ring-inset ${errors.confirmpassword ? 'ring-red-300' : 'ring-gray-200'}
+      focus:ring-2 focus:ring-inset focus:ring-blue-500
+      placeholder:text-gray-400
+    `}
                   placeholder="Confirm your password"
                 />
-                {errors.confirmPassword && (
+                {errors.confirmpassword && (
                   <p className="mt-1.5 text-sm text-red-500">{errors.confirmpassword.message}</p>
                 )}
               </div>

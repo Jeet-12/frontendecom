@@ -42,14 +42,7 @@ const Stats = () => {
               </p>
               
               {/* Button Section */}
-              <div className="flex justify-center lg:justify-start md:justify-start sm:justify-center w-full">
-                <Link
-                  to="/shop"
-                  className="inline-block bg-[#9FE2BF] hover:bg-[#93C572] text-black text-center font-roboto font-medium text-lg py-3 px-3 rounded border border-[#9FE2BF] transition duration-300 max-w-[150px] mt-4"
-                >
-                  Read More
-                </Link>
-              </div>
+              
             </div>
           </div>
         </div>

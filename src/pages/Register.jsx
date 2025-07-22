@@ -279,8 +279,12 @@ const Register = () => {
                   {...register("password", {
                     required: "Password is required",
                     pattern: {
-                      value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+                      value: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]$/,
                       message: "Must be at least 8 characters with 1 letter, 1 number & 1 special character"
+                    },
+                     minLength: {
+                      value: 8,
+                      message: "Password must be at least 8 characters."
                     }
                   })}
                   className={`

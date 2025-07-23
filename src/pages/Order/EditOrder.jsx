@@ -6,6 +6,7 @@ import { updateOrder } from "../../Services/Api";
 
 const EditOrder = () => {
   const { state: order } = useLocation();
+  console.log(order);
   const {
     register,
     handleSubmit,

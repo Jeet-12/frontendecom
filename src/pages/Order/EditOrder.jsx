@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
-import { updateOrder, updateQuotation } from "../../Services/Api"; // Your API call for updating quotations
-
+import { updateOrder } from "../../Services/Api";
 
 const EditOrder = () => {
   const { state: order } = useLocation();
@@ -25,11 +24,10 @@ const EditOrder = () => {
       quantity: order.quantity,
       stitchRange: order.stitchRange,
       formatRequired: order.formatRequired,
-      timeToComplete: new Date(order.timeToComplete).toISOString().split("T")[0], // Format date
+      timeToComplete: new Date(order.timeToComplete).toISOString().split("T")[0],
       additionalInformation: order.additionalInformation,
-
-      price: order.price || "",
-      stitching_count: order.stitching_count || "",
+      price: order.price !== undefined && order.price !== null ? order.price : "",
+      stitching_count: order.stitching_count !== undefined && order.stitching_count !== null ? order.stitching_count : "",
       comment: order.comment || "",
     },
   });
@@ -41,11 +39,12 @@ const EditOrder = () => {
 
   const formatDate = (date) => {
     const d = new Date(date);
-    const month = String(d.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+    const month = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
     const year = d.getFullYear();
     return `${month}/${day}/${year}`;
   };
+
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
@@ -70,8 +69,6 @@ const EditOrder = () => {
         }),
       };
 
-
-
       if (user?.role === 'admin') {
         try {
           const result = await updateOrder(order._id, updatedData, token);
@@ -92,18 +89,13 @@ const EditOrder = () => {
         toast.error("You are not authorized to perform this action.");
         navigate(`/`);
       }
-
-
-
-
     } catch (err) {
       console.error(err);
-      toast.error(`Failed to update quotation: ${err.message}`);
+      toast.error(`Failed to update order: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
   };
-
 
   return (
     <div className="flex flex-col justify-center bg-[#e6f0df] min-h-screen py-8">
@@ -223,6 +215,8 @@ const EditOrder = () => {
                 />
                 {errors.stitchRange && <p className="text-red-500 text-xs mt-1">{errors.stitchRange.message}</p>}
               </div>
+              
+              {/* Total Price */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Total Price <span className="text-red-500">*</span>
@@ -250,6 +244,7 @@ const EditOrder = () => {
                 {errors.formatRequired && <p className="text-red-500 text-xs mt-1">{errors.formatRequired.message}</p>}
               </div>
               
+              {/* Quantity */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Quantity <span className="text-red-500">*</span>
@@ -289,6 +284,8 @@ const EditOrder = () => {
                 />
                 {errors.additionalInformation && <p className="text-red-500 text-xs mt-1">{errors.additionalInformation.message}</p>}
               </div>
+
+              {/* Admin-only fields */}
               {user?.role === 'admin' && (
                 <>
                   {/* Price */}
@@ -363,4 +360,3 @@ const EditOrder = () => {
 };
 
 export default EditOrder;
-

@@ -18,7 +18,6 @@ const ListQuotation = () => {
     const token = localStorage.getItem("token");
     const [isAdmin, setISAdmin] = useState('user');
 
-
     const emptyStateImage = "https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg";
 
     useEffect(() => {
@@ -27,7 +26,12 @@ const ListQuotation = () => {
         const fetchQuotations = async () => {
             try {
                 const data = await getQuotations(token);
-                setQuotations(data);                
+                // Add sequential IDs to each quotation
+                const quotationsWithSeqIds = data.map((quotation, index) => ({
+                    ...quotation,
+                    displayId: `Q-${String(index + 1).padStart(4, '0')}` // Formats as Q-0001, Q-0002, etc.
+                }));
+                setQuotations(quotationsWithSeqIds);                
                 setLoading(false);
             } catch (err) {
                 setError(err.message || "Failed to fetch quotations");
@@ -95,11 +99,9 @@ const ListQuotation = () => {
             case 'approved':
                 return <Badge value="Approved" severity="success" className="ml-2" style={{ display: "flex", alignItems: "center" }} />;
             case "declined":
-                return <Badge value="Rejected" severity="danger" className="ml-2" style={{ display: "flex", alignItems: "center" }}
-                />;
+                return <Badge value="Rejected" severity="danger" className="ml-2" style={{ display: "flex", alignItems: "center" }} />;
             default:
-                return <Badge value="Pending" severity="warning" className="ml-2" style={{ display: "flex", alignItems: "center" }}
-                />;
+                return <Badge value="Pending" severity="warning" className="ml-2" style={{ display: "flex", alignItems: "center" }} />;
         }
     };
 
@@ -303,7 +305,7 @@ const ListQuotation = () => {
                                 </div>
                                 <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
                                     <p className="text-xs text-gray-500">
-                                        ID: {quotation._id} • Created: {new Date(quotation.createdAt).toLocaleDateString()}
+                                        ID: {quotation.displayId} • Created: {new Date(quotation.createdAt).toLocaleDateString()}
                                     </p>
                                 </div>
                             </div>

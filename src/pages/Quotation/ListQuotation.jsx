@@ -29,7 +29,7 @@ const ListQuotation = () => {
                 // Add sequential IDs to each quotation
                 const quotationsWithSeqIds = data.map((quotation, index) => ({
                     ...quotation,
-                    displayId: `Q-${String(index + 1).padStart(4, '0')}` // Formats as Q-0001, Q-0002, etc.
+                    displayId: `Q-${String(index + 1).padStart(10, '0')}` // Formats as Q-0001, Q-0002, etc.
                 }));
                 setQuotations(quotationsWithSeqIds);                
                 setLoading(false);

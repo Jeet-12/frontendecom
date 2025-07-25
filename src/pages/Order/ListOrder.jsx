@@ -29,7 +29,13 @@ const ListOrder = () => {
         const fetchOrders = async () => {
             try {
                 const data = await getOrders(token);
-                setOrders(data);
+                // Add formatted IDs to each order
+                const ordersWithFormattedIds = data.map((order, index) => ({
+                    ...order,
+                    displayId: `ORD-${String(index + 1).padStart(10, '0')}`, // Formats as ORD-0000000001
+                    searchId: `ORD-${String(index + 1).padStart(10, 'o')}` // Formats as ORD-oooooooo1 for search
+                }));
+                setOrders(ordersWithFormattedIds);
                 setLoading(false);
             } catch (err) {
                 setError(err.message || "Failed to fetch orders");
@@ -105,13 +111,17 @@ const ListOrder = () => {
 
     const filteredOrders = orders.filter(order => {
         const matchesStatus = status ? order.status?.toLowerCase() === status.toLowerCase() : true;
-        const query = searchQuery.toLowerCase();
-
+        const query = searchQuery.toLowerCase().trim();
         if (!matchesStatus) return false;
 
         switch (searchType) {
             case "id":
-                return order._id.toLowerCase().includes(query);
+                // Search both the actual ID, display ID (ORD-0000000001) and search ID (ORD-oooooooo1)
+                return (
+                    order._id.toLowerCase().includes(query) ||
+                    order.displayId.toLowerCase().includes(query) ||
+                    order.searchId.toLowerCase().includes(query)
+                );
             case "firstname":
                 return order.user?.firstname?.toLowerCase().includes(query);
             case "lastname":
@@ -157,7 +167,10 @@ const ListOrder = () => {
                                     <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                     <input
                                         type="text"
-                                        placeholder={`Search by ${searchType}...`}
+                                        placeholder={
+                                            searchType === "id" ? "Search by ID (e.g., ORD-0000000001 or ORD-oooooooo1)" : 
+                                            `Search by ${searchType.replace(/^\w/, c => c.toUpperCase())}...`
+                                        }
                                         className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -310,7 +323,7 @@ const ListOrder = () => {
                                 </div>
                                 <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
                                     <p className="text-xs text-gray-500">
-                                        ID: {order._id} • Created: {new Date(order.createdAt).toLocaleDateString()}
+                                        ID: {order.displayId} (or {order.searchId}) • Created: {new Date(order.createdAt).toLocaleDateString()}
                                     </p>
                                 </div>
                             </div>
@@ -328,9 +341,12 @@ const ListOrder = () => {
                                         {order.designName}
                                     </h3>
                                     <p className="text-sm text-gray-600 mb-1">
+                                        <strong>Order ID:</strong> {order.displayId}
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-1">
                                         <strong>Status:</strong>{" "}
                                         <span className="capitalize">{order.status}</span>
-                                    </p>${order.totalPrice ?? "0.00"}
+                                    </p>
                                     <p className="text-sm text-gray-600 mb-1">
                                         <strong>Fabric:</strong> {order.fabric}
                                     </p>
@@ -346,7 +362,7 @@ const ListOrder = () => {
                                     <p className="text-sm text-gray-600">
                                         <strong>Total Price:</strong>{" "}
                                         <span className="text-green-500 font-semibold">
-                                           
+                                            ${order.totalPrice ?? "0.00"}
                                         </span>
                                     </p>
                                 </div>

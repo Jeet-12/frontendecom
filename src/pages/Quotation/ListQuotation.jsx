@@ -29,7 +29,8 @@ const ListQuotation = () => {
                 // Add sequential IDs to each quotation
                 const quotationsWithSeqIds = data.map((quotation, index) => ({
                     ...quotation,
-                    displayId: `Q-${String(index + 1).padStart(10, '0')}` // Formats as Q-0001, Q-0002, etc.
+                    displayId: `Q-${String(index + 1).padStart(4, '0')}`, // Formats as Q-0001, Q-0002, etc.
+                    searchId: `Q-${String(index + 1).padStart(4, 'o')}` // Formats as Q-oooo1 for search
                 }));
                 setQuotations(quotationsWithSeqIds);                
                 setLoading(false);
@@ -106,11 +107,17 @@ const ListQuotation = () => {
     };
 
     const filteredQuotations = quotations.filter(quotation => {
-        const query = searchQuery.toLowerCase();
+        const query = searchQuery.toLowerCase().trim();
+        if (!query) return true;
 
         switch (searchType) {
             case "id":
-                return quotation._id.toLowerCase().includes(query);
+                // Search both the actual ID and the display ID (Q-0001) and search ID (Q-oooo1)
+                return (
+                    quotation._id.toLowerCase().includes(query) ||
+                    quotation.displayId.toLowerCase().includes(query) ||
+                    quotation.searchId.toLowerCase().includes(query)
+                );
             case "firstname":
                 return quotation.user?.firstname?.toLowerCase().includes(query);
             case "lastname":
@@ -156,7 +163,10 @@ const ListQuotation = () => {
                                     <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                     <input
                                         type="text"
-                                        placeholder={`Search by ${searchType}...`}
+                                        placeholder={
+                                            searchType === "id" ? "Search by ID (e.g., Q-0001 or Q-oooo1)" : 
+                                            `Search by ${searchType.replace(/^\w/, c => c.toUpperCase())}...`
+                                        }
                                         className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -228,10 +238,8 @@ const ListQuotation = () => {
                             style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
                             onClick={() => navigate("form")}
                         />
-
                     </div>
                 ) : isAdmin == "admin" ? (
-
                     <div className="space-y-4">
                         {filteredQuotations.map((quotation) => (
                             <div
@@ -305,14 +313,13 @@ const ListQuotation = () => {
                                 </div>
                                 <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
                                     <p className="text-xs text-gray-500">
-                                        ID: {quotation.displayId} • Created: {new Date(quotation.createdAt).toLocaleDateString()}
+                                        ID: {quotation.displayId} (or {quotation.searchId}) • Created: {new Date(quotation.createdAt).toLocaleDateString()}
                                     </p>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                         {filteredQuotations.map((quotation) => (
                             <div

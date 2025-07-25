@@ -29,8 +29,8 @@ const ListQuotation = () => {
                 // Add sequential IDs to each quotation
                 const quotationsWithSeqIds = data.map((quotation, index) => ({
                     ...quotation,
-                    displayId: `Q-${String(index + 1).padStart(4, '0')}`, // Formats as Q-0001, Q-0002, etc.
-                    searchId: `Q-${String(index + 1).padStart(4, 'o')}` // Formats as Q-oooo1 for search
+                    displayId: `Q-${String(index + 1).padStart(10, '0')}`, // Formats as Q-0001, Q-0002, etc.
+                    searchId: `Q-${String(index + 1).padStart(10, 'o')}` // Formats as Q-oooo1 for search
                 }));
                 setQuotations(quotationsWithSeqIds);                
                 setLoading(false);

@@ -19,6 +19,7 @@ const QuotationDetail = () => {
             try {
                 const data = await getQuotationById(id, token);
                 setQuotation(data);
+                console.log(data);
                 setLoading(false);
             } catch (err) {
                 setError("Failed to fetch quotation details.");
@@ -135,6 +136,11 @@ const QuotationDetail = () => {
                             {quotation.status}
                         </span>
                     </div>
+                      {/* {role === "admin" && (
+                        <>
+                        <input type="file" download />
+                        </>
+                      )} */}
                 </div>
 
                 <div className="flex flex-col sm:flex-row justify-between mt-4 space-y-2 sm:space-y-0 sm:space-x-4">

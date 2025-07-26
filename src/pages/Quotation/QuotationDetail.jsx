@@ -3,6 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getQuotationById, approveQuotation, rejectQuotation } from "../../Services/Api";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 const QuotationDetail = () => {
     const { id } = useParams();

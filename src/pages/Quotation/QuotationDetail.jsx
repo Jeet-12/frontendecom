@@ -19,7 +19,7 @@ const QuotationDetail = () => {
             try {
                 const data = await getQuotationById(id, token);
                 setQuotation(data);
-                console.log(data);
+                console.log(data)
                 setLoading(false);
             } catch (err) {
                 setError("Failed to fetch quotation details.");
@@ -94,6 +94,45 @@ const QuotationDetail = () => {
         );
     }
 
+    const downloadAllFiles = async () => {
+  try {
+    const zip = new JSZip();
+    const promises = quotation.files.map(async (filePath, index) => {
+      const fullUrl = `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${filePath}`;
+      const fileName = filePath.split('/').pop();
+      
+      // Fetch each file
+      const response = await fetch(fullUrl);
+      const blob = await response.blob();
+      
+      // Add to ZIP
+      zip.file(fileName, blob);
+    });
+
+    // Wait for all files to be added
+    await Promise.all(promises);
+    
+    // Generate the ZIP file
+    const content = await zip.generateAsync({ type: 'blob' });
+    saveAs(content, 'quotation_files.zip');
+    
+    toast.current.show({
+      severity: 'success',
+      summary: 'Download Started',
+      detail: 'All files are being downloaded as a ZIP archive',
+      life: 3000,
+    });
+  } catch (error) {
+    console.error('Error creating ZIP file:', error);
+    toast.current.show({
+      severity: 'error',
+      summary: 'Download Failed',
+      detail: 'Could not download files',
+      life: 3000,
+    });
+  }
+};
+
     return (
         <div className="p-4 bg-gray-100 min-h-screen">
             <Toast ref={toast} />
@@ -136,11 +175,21 @@ const QuotationDetail = () => {
                             {quotation.status}
                         </span>
                     </div>
-                      {/* {role === "admin" && (
-                        <>
-                        <input type="file" download />
-                        </>
-                      )} */}
+                    {role === "admin" && quotation.files && quotation.files.length > 0 && (
+                        <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                            <p className="font-semibold mb-2">Files:</p>
+                            <Button
+                                label="Download All Files"
+                                icon="pi pi-download"
+                                className="p-button-sm bg-blue-500 hover:bg-blue-600"
+                                onClick={downloadAllFiles}
+                                style={{ borderStyle: "none" }}
+                            />
+                            <p className="text-sm text-gray-500 mt-1">
+                                {quotation.files.length} file(s) available
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex flex-col sm:flex-row justify-between mt-4 space-y-2 sm:space-y-0 sm:space-x-4">

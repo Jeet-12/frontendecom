@@ -342,12 +342,12 @@ const ListQuotation = () => {
                                     <p className="text-sm text-gray-600 mb-1">
                                         <strong>Dimensions:</strong> {quotation.height} x {quotation.width} inches
                                     </p>
-                                    <p className="text-sm text-gray-600">
+                                    {/* <p className="text-sm text-gray-600">
                                         <strong>Total Price:</strong>{" "}
                                         <span className="text-green-500 font-semibold">
                                             ${quotation.totalPrice}
                                         </span>
-                                    </p>
+                                    </p> */}
                                 </div>
                                 <div className="flex justify-between mt-4">
                                     <Button

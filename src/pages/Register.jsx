@@ -250,25 +250,62 @@ const Register = () => {
                     required: "Country is required",
                   })}
                   className={`
-                    w-full px-4 py-3
-                    bg-white/50
-                    rounded-xl
-                    border-0
-                    text-gray-900
-                    ring-1 ring-inset ${errors.country ? 'ring-red-300' : 'ring-gray-200'}
-                    focus:ring-2 focus:ring-inset focus:ring-blue-500
-                  `}
+      w-full px-4 py-3
+      bg-white/50
+      rounded-xl
+      border-0
+      text-gray-900
+      ring-1 ring-inset ${errors.country ? 'ring-red-300' : 'ring-gray-200'}
+      focus:ring-2 focus:ring-inset focus:ring-blue-500
+    `}
                 >
                   <option value="">Select your country</option>
-                  <option value="US">United States</option>
-                  <option value="UK">United Kingdom</option>
-                  <option value="CA">Canada</option>
-                  {/* Add more countries as needed */}
+                  <option value="United States">United States</option>
+                  <option value="Argentina">Argentina</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Austria">Austria</option>
+                  <option value="Belgium">Belgium</option>
+                  <option value="Brazil">Brazil</option>
+                  <option value="Canada">Canada</option>
+                  <option value="China">China</option>
+                  <option value="Colombia">Colombia</option>
+                  <option value="Czech Republic">Czech Republic</option>
+                  <option value="Denmark">Denmark</option>
+                  <option value="Egypt">Egypt</option>
+                  <option value="Finland">Finland</option>
+                  <option value="France">France</option>
+                  <option value="Germany">Germany</option>
+                  <option value="Hong Kong">Hong Kong</option>
+                  <option value="India">India</option>
+                  <option value="Indonesia">Indonesia</option>
+                  <option value="Ireland">Ireland</option>
+                  <option value="Israel">Israel</option>
+                  <option value="Italy">Italy</option>
+                  <option value="Japan">Japan</option>
+                  <option value="Malaysia">Malaysia</option>
+                  <option value="Mexico">Mexico</option>
+                  <option value="Netherlands">Netherlands</option>
+                  <option value="New Zealand">New Zealand</option>
+                  <option value="Norway">Norway</option>
+                  <option value="Philippines">Philippines</option>
+                  <option value="Poland">Poland</option>
+                  <option value="Portugal">Portugal</option>
+                  <option value="Saudi Arabia">Saudi Arabia</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="South Africa">South Africa</option>
+                  <option value="South Korea">South Korea</option>
+                  <option value="Spain">Spain</option>
+                  <option value="Sweden">Sweden</option>
+                  <option value="Switzerland">Switzerland</option>
+                  <option value="Thailand">Thailand</option>
+                  <option value="Turkey">Turkey</option>
+                  <option value="United Kingdom">United Kingdom</option>
                 </select>
                 {errors.country && (
                   <p className="mt-1.5 text-sm text-red-500">{errors.country.message}</p>
                 )}
               </div>
+
 
               {/* Password */}
               <div>
@@ -280,7 +317,7 @@ const Register = () => {
                   autoComplete="off"
                   {...register("password", {
                     required: "Password is required",
-                     minLength: {
+                    minLength: {
                       value: 8,
                       message: "Password must be at least 8 characters."
                     }
@@ -333,41 +370,41 @@ const Register = () => {
             </div>
 
             {/* Submit Button */}
-             {/* Submit Button */}
-      <div className="pt-6 border-t border-gray-100">
-        <button
-          type="submit"
-          disabled={!isValid || isSubmitting}
-          className={`
+            {/* Submit Button */}
+            <div className="pt-6 border-t border-gray-100">
+              <button
+                type="submit"
+                disabled={!isValid || isSubmitting}
+                className={`
             w-full px-6 py-3
             rounded-xl
             text-sm font-medium
             transition-all duration-200
             flex items-center justify-center
             ${!isValid || isSubmitting
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90'
-            }
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:opacity-90'
+                  }
             shadow-lg shadow-blue-500/20
           `}
-        >
-          {isSubmitting ? (
-            <>
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Creating Account...
-            </>
-          ) : (
-            <>
-              <span>Create Account</span>
-              <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </>
-          )}
-        </button>
+              >
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Creating Account...
+                  </>
+                ) : (
+                  <>
+                    <span>Create Account</span>
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </>
+                )}
+              </button>
 
               {/* Login Link */}
               <p className="text-center mt-6 text-sm text-gray-500">

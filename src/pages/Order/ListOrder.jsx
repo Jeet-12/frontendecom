@@ -211,13 +211,13 @@ const ListOrder = () => {
                     <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
                     </div>
-                ) : error ? (
-                    <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                        <div className="flex items-center">
-                            <FaInfoCircle className="text-red-500 mr-2" />
-                            <p className="text-red-700">{error}</p>
-                        </div>
-                    </div>
+                // ) : error ? (
+                //     <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                //         <div className="flex items-center">
+                //             <FaInfoCircle className="text-red-500 mr-2" />
+                //             <p className="text-red-700">{error}</p>
+                //         </div>
+                //     </div>
                 ) : filteredOrders.length === 0 ? (
                     <div className="bg-white rounded-xl shadow-sm p-8 text-center">
                         <img

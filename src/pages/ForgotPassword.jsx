@@ -36,7 +36,8 @@ const ForgotPassword = () => {
       try {
         const { data } = await fetchWithAuth(
           `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/auth/forgot-password`,
-          { email }
+          { method : 'post',
+            body: JSON.stringify({ email })}
         );
         localStorage.clear();
         toast.success("Password reset link sent to your email.");

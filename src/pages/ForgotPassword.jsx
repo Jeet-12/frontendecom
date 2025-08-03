@@ -40,7 +40,6 @@ const ForgotPassword = () => {
             body: JSON.stringify({"email" : email })}
         );
         localStorage.clear();
-        toast.success("Password reset link sent to your email.");
         navigate("/login");
       } catch (error) {
         const status = err.response?.status;

@@ -9,7 +9,7 @@ import { login } from "../Services/Api";
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Added loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
@@ -71,7 +71,7 @@ const Login = () => {
 
     if (isValidate()) {
       try {
-        setIsLoading(true); // Set loading to true when starting the login process
+        setIsLoading(true);
         const response = await login({ email, password });
 
         if (response.token) {
@@ -94,7 +94,7 @@ const Login = () => {
         setSubmissionError(errorMessage);
         toast.error(errorMessage);
       } finally {
-        setIsLoading(false); // Set loading to false when the process completes (success or error)
+        setIsLoading(false);
       }
     }
   };
@@ -104,36 +104,22 @@ const Login = () => {
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4">
         <div className="w-full max-w-5xl mt-8 mb-8">
           <div className="flex flex-col lg:flex-row bg-white rounded-3xl overflow-hidden shadow-2xl">
-            {/* Left Side */}
-            <div className="lg:w-1/2 relative bg-gradient-to-br from-blue-600 to-blue-400">
-              <div className="relative h-full flex flex-col">
-                <div className="absolute inset-0">
-                  <img
-                    src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2070&auto=format&fit=crop"
-                    alt="Fashion Shopping"
-                    className="w-full h-full object-cover"
-                    style={{ maxHeight: '100vh' }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/50 to-black/70"></div>
-                </div>
-                <div className="relative h-full flex flex-col justify-between p-12">
-                  <div>
-                    <div className="flex items-center space-x-3 mb-4">
-                      <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                          d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                      </svg>
-                      <span className="text-2xl font-bold text-white">Quick Digitizing</span>
-                    </div>
+            {/* Left Side - Plain Background */}
+            <div className="lg:w-1/2 relative" style={{ backgroundColor: 'rgb(147, 197, 114)' }}>
+              <div className="relative h-full flex flex-col justify-center items-center p-12 text-center">
+                <div className="mb-8">
+                  <div className="flex items-center justify-center space-x-3 mb-4">
+                    <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
                   </div>
-                  <div className="my-8">
-                    <h2 className="text-4xl font-bold text-white mb-4">
-                      Welcome to Your<br />
-                      Fashion Journey
-                    </h2>
-                    <p className="text-gray-200 text-lg">
-                      Sign in to access exclusive deals and<br />
-                      personalized recommendations
+                  <h1 className="text-4xl font-bold text-white mb-6">Quick Digitizing</h1>
+                  <div className="bg-white/20 p-6 rounded-xl">
+                    <p className="text-white text-lg font-medium">
+                      Thanks for registering. Please confirm your email to activate your account. 
+                      After verification, you'll be able to access our digitizing services, 
+                      manage orders, and start turning your designs into finished embroidery.
                     </p>
                   </div>
                 </div>
@@ -143,6 +129,9 @@ const Login = () => {
             {/* Right Side - Login Form */}
             <div className="lg:w-1/2 p-12">
               <div className="max-w-md mx-auto">
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">Sign In</h2>
+                <p className="text-gray-600 mb-8">Access your account to manage your digitizing projects</p>
+                
                 <form onSubmit={proceedLogin} noValidate className="space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -189,7 +178,7 @@ const Login = () => {
 
                   <button
                     type="submit"
-                    disabled={isLoading || !email || !password} // Disable button when loading
+                    disabled={isLoading || !email || !password}
                     className={`w-full px-4 py-3 rounded-lg text-sm font-medium
                       transition duration-150 ease-in-out
                       ${isLoading || !email || !password

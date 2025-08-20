@@ -81,10 +81,10 @@ const Login = () => {
           dispatch(loginUserAction(decoded));
 
           if (decoded.user.role?.toLowerCase() === "admin") {
-            navigate('/admin/quotation');
+            navigate('/admin/admin-profile');
             toast.success('Logged in as Admin!');
           } else {
-            navigate('/quotation');
+            navigate('/');
           }
         } else {
           throw new Error(response.message || 'Invalid credentials');

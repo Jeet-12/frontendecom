@@ -108,7 +108,7 @@ const OrderForm = () => {
   };
 
   return (
-    <div className="flex flex-col justify-center bg-[#e6f0df] min-h-screen py-4 px-2 sm:py-8">
+    <div className="flex flex-col justify-center bg-[#e6f0df] min-h-screen py-4 px-4 sm:py-8">
       <div className="mx-auto w-full max-w-4xl">
         <div className="bg-white border border-gray-200 shadow-lg w-full rounded-lg p-3 sm:p-4 md:p-6">
           <SectionTitle title={`Order Form`} path={`Home > Order Form`} />

@@ -29,21 +29,27 @@ const ListOrder = () => {
         const fetchOrders = async () => {
             try {
                 const data = await getOrders(token);
-                // Add formatted IDs to each order
-                const ordersWithFormattedIds = data.map((order, index) => ({
+
+                // Sort orders by createdAt date in descending order (newest first)
+                const sortedData = data.sort((a, b) =>
+                    new Date(b.createdAt) - new Date(a.createdAt)
+                );
+
+                const ordersWithFormattedIds = sortedData.map((order, index) => ({
                     ...order,
-                    displayId: `ORD-${String(index + 1).padStart(10, '0')}`, // Formats as ORD-0000000001
-                    searchId: `ORD-${String(index + 1).padStart(10, 'o')}` // Formats as ORD-oooooooo1 for search
+                    displayId: `ORD-${String(index + 1).padStart(10, '0')}`,
+                    searchId: `ORD-${String(index + 1).padStart(10, 'o')}`
                 }));
+
                 setOrders(ordersWithFormattedIds);
                 setLoading(false);
             } catch (err) {
-                setError(err.message || "Failed to fetch orders");
+                setError(err.message);
                 setLoading(false);
                 toast.current.show({
                     severity: "error",
                     summary: "Error",
-                    detail: err.message || "Failed to fetch orders",
+                    detail: err.message,
                     life: 3000
                 });
             }
@@ -116,7 +122,7 @@ const ListOrder = () => {
 
         switch (searchType) {
             case "id":
-                // Search both the actual ID, display ID (ORD-0000000001) and search ID (ORD-oooooooo1)
+
                 return (
                     order._id.toLowerCase().includes(query) ||
                     order.displayId.toLowerCase().includes(query) ||
@@ -168,8 +174,8 @@ const ListOrder = () => {
                                     <input
                                         type="text"
                                         placeholder={
-                                            searchType === "id" ? "Search by ID (e.g., ORD-0000000001 or ORD-oooooooo1)" : 
-                                            `Search by ${searchType.replace(/^\w/, c => c.toUpperCase())}...`
+                                            searchType === "id" ? "Search by ID (e.g., ORD-0000000001 or ORD-oooooooo1)" :
+                                                `Search by ${searchType.replace(/^\w/, c => c.toUpperCase())}...`
                                         }
                                         className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                                         value={searchQuery}
@@ -211,13 +217,13 @@ const ListOrder = () => {
                     <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
                     </div>
-                // ) : error ? (
-                //     <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                //         <div className="flex items-center">
-                //             <FaInfoCircle className="text-red-500 mr-2" />
-                //             <p className="text-red-700">{error}</p>
-                //         </div>
-                //     </div>
+                    // ) : error ? (
+                    //     <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                    //         <div className="flex items-center">
+                    //             <FaInfoCircle className="text-red-500 mr-2" />
+                    //             <p className="text-red-700">{error}</p>
+                    //         </div>
+                    //     </div>
                 ) : filteredOrders.length === 0 ? (
                     <div className="bg-white rounded-xl shadow-sm p-8 text-center">
                         <img
@@ -296,7 +302,7 @@ const ListOrder = () => {
                                                 <div>
                                                     <p className="text-sm text-gray-500">Total Price</p>
                                                     <p className="font-medium text-green-600">
-                                                       ${order.totalPrice ?? "0.00"}
+                                                        ${order.totalPrice ?? "0.00"}
                                                     </p>
                                                 </div>
                                             </div>

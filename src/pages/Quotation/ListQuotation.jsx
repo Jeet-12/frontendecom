@@ -35,12 +35,12 @@ const ListQuotation = () => {
                 setQuotations(quotationsWithSeqIds);                
                 setLoading(false);
             } catch (err) {
-                setError(err.message || "Failed to fetch quotations");
+                setError(err.message);
                 setLoading(false);
                 toast.current.show({
                     severity: "error",
                     summary: "Error",
-                    detail: err.message || "Failed to fetch quotations",
+                    detail: err.message,
                     life: 3000
                 });
             }

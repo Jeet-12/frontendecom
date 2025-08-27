@@ -26,13 +26,16 @@ const ListQuotation = () => {
         const fetchQuotations = async () => {
             try {
                 const data = await getQuotations(token);
-                // Add sequential IDs to each quotation
-                const quotationsWithSeqIds = data.map((quotation, index) => ({
+
+                const sortedData = data.sort((a, b) =>
+                    new Date(b.createdAt) - new Date(a.createdAt)
+                );
+                const quotationsWithSeqIds = sortedData.map((quotation, index) => ({
                     ...quotation,
-                    displayId: `Q-${String(index + 1).padStart(10, '0')}`, 
-                    searchId: `Q-${String(index + 1).padStart(10, 'o')}` 
+                    displayId: `Q-${String(index + 1).padStart(10, '0')}`,
+                    searchId: `Q-${String(index + 1).padStart(10, 'o')}`
                 }));
-                setQuotations(quotationsWithSeqIds);                
+                setQuotations(quotationsWithSeqIds);
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
@@ -164,8 +167,8 @@ const ListQuotation = () => {
                                     <input
                                         type="text"
                                         placeholder={
-                                            searchType === "id" ? "Search by ID (e.g., Q-0001 or Q-oooo1)" : 
-                                            `Search by ${searchType.replace(/^\w/, c => c.toUpperCase())}...`
+                                            searchType === "id" ? "Search by ID (e.g., Q-0001 or Q-oooo1)" :
+                                                `Search by ${searchType.replace(/^\w/, c => c.toUpperCase())}...`
                                         }
                                         className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                                         value={searchQuery}
@@ -207,13 +210,13 @@ const ListQuotation = () => {
                     <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
                     </div>
-                // ) : error ? (
-                //     <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                //         <div className="flex items-center">
-                //             <FaInfoCircle className="text-red-500 mr-2" />
-                //             <p className="text-red-700">{error}</p>
-                //         </div>
-                //     </div>
+                    // ) : error ? (
+                    //     <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                    //         <div className="flex items-center">
+                    //             <FaInfoCircle className="text-red-500 mr-2" />
+                    //             <p className="text-red-700">{error}</p>
+                    //         </div>
+                    //     </div>
                 ) : filteredQuotations.length === 0 ? (
                     <div className="bg-white rounded-xl shadow-sm p-8 text-center">
                         <img
@@ -312,8 +315,11 @@ const ListQuotation = () => {
                                     </div>
                                 </div>
                                 <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
-                                    <p className="text-xs text-gray-500">
-                                        ID: {quotation.displayId} (or {quotation.searchId}) • Created: {new Date(quotation.createdAt).toLocaleDateString()}
+                                    <p className="text-xs text-gray-500 mb-1">
+                                        ID: {quotation.displayId} (or {quotation.searchId})
+                                    </p>
+                                    <p className="text-base font-semibold text-gray-800">
+                                        Created: {new Date(quotation.createdAt).toLocaleDateString()}
                                     </p>
                                 </div>
                             </div>

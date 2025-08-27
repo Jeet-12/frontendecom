@@ -11,6 +11,7 @@ const OrderForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
+  const user = localStorage.getItem("user")
 
   const { register, handleSubmit, formState: { errors, isValid }, watch, setValue } = useForm({
     mode: "onChange",
@@ -65,14 +66,14 @@ const OrderForm = () => {
         navigate("/login");
         return;
       }
-  
+
       const formatDateToMMDDYYYY = (dateString) => {
         const [year, month, day] = dateString.split('-');
         return `${month}/${day}/${year}`;
       };
-  
+
       const colorsArray = data.colors.split(' ').map(color => color.trim()).filter(Boolean);
-  
+
       const orderData = {
         user: userData.id,
         designName: data.designName.trim(),
@@ -91,7 +92,7 @@ const OrderForm = () => {
         status: "inprogress",
         files: []
       };
-            
+
       const result = await createOrder(orderData, token);
       toast.success(result.message || "Order created successfully!");
       navigate("/order");
@@ -121,7 +122,7 @@ const OrderForm = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("designName", { 
+                  {...register("designName", {
                     required: "Design name is required",
                     minLength: {
                       value: 3,
@@ -130,9 +131,8 @@ const OrderForm = () => {
                   })}
                   value={formValues.designName}
                   onChange={(e) => handleTextInput(e, 'designName')}
-                  className={`border ${
-                    errors.designName ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors`}
+                  className={`border ${errors.designName ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors`}
                   placeholder="Enter design name"
                 />
                 {errors.designName && (
@@ -149,9 +149,8 @@ const OrderForm = () => {
                   {...register("fabricType", { required: "Fabric type is required" })}
                   value={formValues.fabricType}
                   onChange={(e) => setValue("fabricType", e.target.value, { shouldValidate: true })}
-                  className={`border ${
-                    errors.fabricType ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
+                  className={`border ${errors.fabricType ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
                 >
                   <option value="">Select Fabric Type</option>
                   <option value="Soft">Soft</option>
@@ -170,7 +169,7 @@ const OrderForm = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("fabric", { 
+                  {...register("fabric", {
                     required: "Fabric is required",
                     minLength: {
                       value: 2,
@@ -179,9 +178,8 @@ const OrderForm = () => {
                   })}
                   value={formValues.fabric}
                   onChange={(e) => handleTextInput(e, 'fabric')}
-                  className={`border ${
-                    errors.fabric ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                  className={`border ${errors.fabric ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
                   placeholder="Enter fabric type"
                 />
                 {errors.fabric && (
@@ -203,9 +201,8 @@ const OrderForm = () => {
                   })}
                   value={formValues.noOfColors}
                   onChange={(e) => handleNumberInput(e, 'noOfColors', 2)}
-                  className={`border ${
-                    errors.noOfColors ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                  className={`border ${errors.noOfColors ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
                   placeholder="Enter number of colors"
                 />
                 {errors.noOfColors && (
@@ -220,7 +217,7 @@ const OrderForm = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("colors", { 
+                  {...register("colors", {
                     required: "Colors are required",
                     validate: value => {
                       const colors = value.trim().split(" ").filter(c => c !== "");
@@ -229,9 +226,8 @@ const OrderForm = () => {
                   })}
                   value={formValues.colors}
                   onChange={(e) => handleTextInput(e, 'colors')}
-                  className={`border ${
-                    errors.colors ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                  className={`border ${errors.colors ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
                   placeholder="Enter colors separated by spaces"
                 />
                 {errors.colors && (
@@ -246,16 +242,15 @@ const OrderForm = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("width", { 
+                  {...register("width", {
                     required: "Width is required",
                     min: { value: 1, message: "Width must be at least 1 inch" },
                     max: { value: 100, message: "Maximum width is 100 inches" }
                   })}
                   value={formValues.width}
                   onChange={(e) => handleNumberInput(e, 'width')}
-                  className={`border ${
-                    errors.width ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                  className={`border ${errors.width ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
                   placeholder="Enter width"
                 />
                 {errors.width && (
@@ -270,16 +265,15 @@ const OrderForm = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("height", { 
+                  {...register("height", {
                     required: "Height is required",
                     min: { value: 1, message: "Height must be at least 1 inch" },
                     max: { value: 100, message: "Maximum height is 100 inches" }
                   })}
                   value={formValues.height}
                   onChange={(e) => handleNumberInput(e, 'height')}
-                  className={`border ${
-                    errors.height ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                  className={`border ${errors.height ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
                   placeholder="Enter height"
                 />
                 {errors.height && (
@@ -296,9 +290,8 @@ const OrderForm = () => {
                   {...register("stitchRange", { required: "Stitch range is required" })}
                   value={formValues.stitchRange}
                   onChange={(e) => setValue("stitchRange", e.target.value, { shouldValidate: true })}
-                  className={`border ${
-                    errors.stitchRange ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
+                  className={`border ${errors.stitchRange ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
                 >
                   <option value="">Choose Stitch Range</option>
                   <option value="1000-5000">1000-5000</option>
@@ -321,9 +314,8 @@ const OrderForm = () => {
                   {...register("formatRequired", { required: "Format is required" })}
                   value={formValues.formatRequired}
                   onChange={(e) => setValue("formatRequired", e.target.value, { shouldValidate: true })}
-                  className={`border ${
-                    errors.formatRequired ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
+                  className={`border ${errors.formatRequired ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
                 >
                   <option value="">Choose Format</option>
                   <option value="Tajima *.DST">Tajima *.DST</option>
@@ -346,7 +338,7 @@ const OrderForm = () => {
                 </label>
                 <input
                   type="date"
-                  {...register("timeToComplete", { 
+                  {...register("timeToComplete", {
                     required: "Completion date is required",
                     validate: value => {
                       const selectedDate = new Date(value);
@@ -358,9 +350,8 @@ const OrderForm = () => {
                   value={formValues.timeToComplete}
                   onChange={(e) => setValue("timeToComplete", e.target.value, { shouldValidate: true })}
                   min={new Date().toISOString().split("T")[0]}
-                  className={`border ${
-                    errors.timeToComplete ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                  className={`border ${errors.timeToComplete ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
                 />
                 {errors.timeToComplete && (
                   <p className="text-red-500 text-xs mt-1">{errors.timeToComplete.message}</p>
@@ -368,7 +359,7 @@ const OrderForm = () => {
               </div>
 
               {/* Quantity */}
-              <div>
+              {/* <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Quantity <span className="text-red-500">*</span>
                 </label>
@@ -389,33 +380,34 @@ const OrderForm = () => {
                 {errors.quantity && (
                   <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>
                 )}
-              </div>
+              </div> */}
 
               {/* Total Price */}
-              <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Total Price <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("totalPrice", {
-                    required: "Total price is required",
-                    validate: value => {
-                      const num = parseFloat(value);
-                      return num > 0 || "Price must be greater than 0";
-                    }
-                  })}
-                  value={formValues.totalPrice}
-                  onChange={handlePriceInput}
-                  className={`border ${
-                    errors.totalPrice ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="Enter total price"
-                />
-                {errors.totalPrice && (
-                  <p className="text-red-500 text-xs mt-1">{errors.totalPrice.message}</p>
-                )}
-              </div>
+              {user.role == "admin" && (
+                <div>
+                  <label className="font-semibold text-sm pb-1 block text-gray-600">
+                    Total Price <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    {...register("totalPrice", {
+                      required: "Total price is required",
+                      validate: value => {
+                        const num = parseFloat(value);
+                        return num > 0 || "Price must be greater than 0";
+                      }
+                    })}
+                    value={formValues.totalPrice}
+                    onChange={handlePriceInput}
+                    className={`border ${errors.totalPrice ? "border-red-500" : "border-gray-300"
+                      } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                    placeholder="Enter total price"
+                  />
+                  {errors.totalPrice && (
+                    <p className="text-red-500 text-xs mt-1">{errors.totalPrice.message}</p>
+                  )}
+                </div>
+              )}
 
               {/* Additional Information */}
               <div className="md:col-span-2">
@@ -431,9 +423,8 @@ const OrderForm = () => {
                   })}
                   value={formValues.additionalInformation}
                   onChange={(e) => setValue("additionalInformation", e.target.value, { shouldValidate: true })}
-                  className={`border ${
-                    errors.additionalInformation ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full h-24 focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                  className={`border ${errors.additionalInformation ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full h-24 focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
                   placeholder="Enter any additional information"
                 />
                 {errors.additionalInformation && (
@@ -445,9 +436,8 @@ const OrderForm = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className={`bg-[#93C572] hover:bg-[#79a759] text-white font-semibold w-full py-2 rounded-lg shadow-md transition-colors flex justify-center items-center mt-6 ${
-                !isValid || isLoading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
+              className={`bg-[#93C572] hover:bg-[#79a759] text-white font-semibold w-full py-2 rounded-lg shadow-md transition-colors flex justify-center items-center mt-6 ${!isValid || isLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               disabled={!isValid || isLoading}
             >
               {isLoading ? (

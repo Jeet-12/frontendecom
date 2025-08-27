@@ -30,7 +30,6 @@ const ListOrder = () => {
             try {
                 const data = await getOrders(token);
 
-                // Sort orders by createdAt date in descending order (newest first)
                 const sortedData = data.sort((a, b) =>
                     new Date(b.createdAt) - new Date(a.createdAt)
                 );
@@ -328,8 +327,11 @@ const ListOrder = () => {
                                     </div>
                                 </div>
                                 <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
-                                    <p className="text-xs text-gray-500">
-                                        ID: {order.displayId} (or {order.searchId}) • Created: {new Date(order.createdAt).toLocaleDateString()}
+                                    <p className="text-xs text-gray-500 mb-1">
+                                        ID: {order.displayId} (or {order.searchId})
+                                    </p>
+                                    <p className="text-base font-semibold text-gray-800">
+                                        Created: {new Date(order.createdAt).toLocaleDateString()}
                                     </p>
                                 </div>
                             </div>

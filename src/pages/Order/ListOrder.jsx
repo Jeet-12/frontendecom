@@ -45,12 +45,7 @@ const ListOrder = () => {
             } catch (err) {
                 setError(err.message);
                 setLoading(false);
-                toast.current.show({
-                    severity: "error",
-                    summary: "Error",
-                    detail: err.message,
-                    life: 3000
-                });
+                
             }
         };
 
@@ -365,7 +360,7 @@ const ListOrder = () => {
                                         <strong>Colors:</strong> {order.colors.join(", ")}
                                     </p>
                                     <p className="text-sm text-gray-600 mb-1">
-                                        <strong>Dimensions:</strong> {order.height} x {order.width} inches
+                                        <strong>Dimensions:</strong> {order.height} x {order.width}  
                                     </p>
                                     <p className="text-sm text-gray-600">
                                         <strong>Total Price:</strong>{" "}

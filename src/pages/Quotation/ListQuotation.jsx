@@ -40,12 +40,7 @@ const ListQuotation = () => {
             } catch (err) {
                 setError(err.message);
                 setLoading(false);
-                toast.current.show({
-                    severity: "error",
-                    summary: "Error",
-                    detail: err.message,
-                    life: 3000
-                });
+                
             }
         };
 
@@ -346,7 +341,7 @@ const ListQuotation = () => {
                                         <strong>Colors:</strong> {quotation.colors.join(", ")}
                                     </p>
                                     <p className="text-sm text-gray-600 mb-1">
-                                        <strong>Dimensions:</strong> {quotation.height} x {quotation.width} inches
+                                        <strong>Dimensions:</strong> {quotation.height} x {quotation.width} 
                                     </p>
                                     {/* <p className="text-sm text-gray-600">
                                         <strong>Total Price:</strong>{" "}

@@ -21,6 +21,7 @@ const OrderForm = () => {
       fabric: quotation.fabric || "",
       noOfColors: quotation.noOfColors || "",
       colors: quotation.colors?.join(" ") || "",
+      measurement: quotation.measurement || " ", 
       width: quotation.width || "",
       height: quotation.height || "",
       stitchRange: quotation.stitchRange || "",
@@ -81,6 +82,7 @@ const OrderForm = () => {
         fabric: data.fabric.trim(),
         noOfColors: Number(data.noOfColors),
         colors: colorsArray,
+        measurement: data.measurement, // Added measurement to order data
         width: Number(data.width),
         height: Number(data.height),
         stitchRange: data.stitchRange.toString(),
@@ -235,17 +237,38 @@ const OrderForm = () => {
                 )}
               </div>
 
+              {/* Measurement */}
+              <div>
+                <label className="font-semibold text-sm pb-1 block text-gray-600">
+                  Measurement <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register("measurement", {
+                    required: "Measurement unit is required",
+                  })}
+                  value={formValues.measurement}
+                  onChange={(e) => handleTextInput(e, 'measurement')}
+                  className={`border ${errors.measurement ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                  placeholder="ex: inches or cm"
+                />
+                {errors.measurement && (
+                  <p className="text-red-500 text-xs mt-1">{errors.measurement.message}</p>
+                )}
+              </div>
+
               {/* Width */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Width (in inches) <span className="text-red-500">*</span>
+                  Width <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   {...register("width", {
                     required: "Width is required",
-                    min: { value: 1, message: "Width must be at least 1 inch" },
-                    max: { value: 100, message: "Maximum width is 100 inches" }
+                    min: { value: 1, message: "Width must be at least 1" },
+                    max: { value: 100, message: "Maximum width is 100" }
                   })}
                   value={formValues.width}
                   onChange={(e) => handleNumberInput(e, 'width')}
@@ -261,14 +284,14 @@ const OrderForm = () => {
               {/* Height */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Height (in inches) <span className="text-red-500">*</span>
+                  Height <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   {...register("height", {
                     required: "Height is required",
-                    min: { value: 1, message: "Height must be at least 1 inch" },
-                    max: { value: 100, message: "Maximum height is 100 inches" }
+                    min: { value: 1, message: "Height must be at least 1" },
+                    max: { value: 100, message: "Maximum height is 100" }
                   })}
                   value={formValues.height}
                   onChange={(e) => handleNumberInput(e, 'height')}
@@ -357,30 +380,6 @@ const OrderForm = () => {
                   <p className="text-red-500 text-xs mt-1">{errors.timeToComplete.message}</p>
                 )}
               </div>
-
-              {/* Quantity */}
-              {/* <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Quantity <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("quantity", {
-                    required: "Quantity is required",
-                    min: { value: 1, message: "Quantity must be at least 1" },
-                    max: { value: 99999, message: "Maximum quantity is 99999" }
-                  })}
-                  value={formValues.quantity}
-                  onChange={(e) => handleNumberInput(e, 'quantity', 5)}
-                  className={`border ${
-                    errors.quantity ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="Enter quantity"
-                />
-                {errors.quantity && (
-                  <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>
-                )}
-              </div> */}
 
               {/* Total Price */}
               {user.role == "admin" && (

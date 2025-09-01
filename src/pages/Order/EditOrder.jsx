@@ -19,6 +19,7 @@ const EditOrder = () => {
       fabric: order.fabric,
       noOfColors: order.noOfColors,
       colors: order.colors.join(", "),
+      measurement: order.measurement || "inches", // Added measurement field
       width: order.width,
       height: order.height,
       totalPrice: order.totalPrice,
@@ -56,6 +57,7 @@ const EditOrder = () => {
         noOfColors: Number(data.noOfColors),
         totalPrice: Number(data.totalPrice),
         colors: data.colors.split(",").map(color => color.trim()),
+        measurement: data.measurement, // Added measurement to update data
         width: Number(data.width),
         height: Number(data.height),
         stitchRange: data.stitchRange,
@@ -175,10 +177,24 @@ const EditOrder = () => {
                 {errors.colors && <p className="text-red-500 text-xs mt-1">{errors.colors.message}</p>}
               </div>
 
+              {/* Measurement */}
+              <div>
+                <label className="font-semibold text-sm pb-1 block text-gray-600">
+                  Measurement <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  className={`border ${errors.measurement ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                  {...register("measurement", { required: "Measurement unit is required" })}
+                  placeholder="ex: inches or cm"
+                />
+                {errors.measurement && <p className="text-red-500 text-xs mt-1">{errors.measurement.message}</p>}
+              </div>
+
               {/* Width */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Width (in inches) <span className="text-red-500">*</span>
+                  Width <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -192,7 +208,7 @@ const EditOrder = () => {
               {/* Height */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Height (in inches) <span className="text-red-500">*</span>
+                  Height <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"

@@ -21,7 +21,7 @@ const OrderForm = () => {
       fabric: quotation.fabric || "",
       noOfColors: quotation.noOfColors || "",
       colors: quotation.colors?.join(" ") || "",
-      measurement: quotation.measurement || " ", 
+      measurement: quotation.measurement || "inches", 
       width: quotation.width || "",
       height: quotation.height || "",
       stitchRange: quotation.stitchRange || "",

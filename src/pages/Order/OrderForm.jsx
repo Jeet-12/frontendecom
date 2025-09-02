@@ -12,7 +12,7 @@ const OrderForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
   const user = localStorage.getItem("user");
-  console.log(user.role);
+  console.log(user);
   
 
   const { register, handleSubmit, formState: { errors, isValid }, watch, setValue } = useForm({

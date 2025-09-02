@@ -12,7 +12,7 @@ const OrderForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
   const user = localStorage.getItem("user");
-  console.log(user);
+  const parsed = JSON.parse(user);
   
 
   const { register, handleSubmit, formState: { errors, isValid }, watch, setValue } = useForm({
@@ -384,7 +384,7 @@ const OrderForm = () => {
               </div>
 
               {/* Total Price */}
-              {user.role == "admin" && (
+              {parsed.role == "admin" && (
                 <div>
                   <label className="font-semibold text-sm pb-1 block text-gray-600">
                     Total Price <span className="text-red-500">*</span>

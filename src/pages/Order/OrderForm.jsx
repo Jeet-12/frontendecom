@@ -12,7 +12,8 @@ const OrderForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
   const user = localStorage.getItem("user");
-  console.log(user);
+  console.log(user.role);
+  
 
   const { register, handleSubmit, formState: { errors, isValid }, watch, setValue } = useForm({
     mode: "onChange",
@@ -83,7 +84,7 @@ const OrderForm = () => {
         fabric: data.fabric.trim(),
         noOfColors: Number(data.noOfColors),
         colors: colorsArray,
-        measurement: data.measurement, // Added measurement to order data
+        measurement: data.measurement, 
         width: Number(data.width),
         height: Number(data.height),
         stitchRange: data.stitchRange.toString(),

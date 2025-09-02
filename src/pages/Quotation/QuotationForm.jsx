@@ -80,7 +80,7 @@ const QuotationForm = () => {
         response: err.response?.data,
         stack: err.stack
       });
-      toast.error(`Failed to create quotation: ${err.response?.data?.message || err.message}`);
+      toast.error(`Failed to create quotation: Please try again`);
     } finally {
       setIsLoading(false);
     }

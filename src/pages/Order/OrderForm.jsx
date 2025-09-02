@@ -11,7 +11,8 @@ const OrderForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user")
+  const user = localStorage.getItem("user");
+  console.log(user);
 
   const { register, handleSubmit, formState: { errors, isValid }, watch, setValue } = useForm({
     mode: "onChange",
@@ -104,7 +105,7 @@ const OrderForm = () => {
         response: err.response?.data,
         stack: err.stack
       });
-      toast.error(`Failed to create order: ${err.response?.data?.message || err.message}`);
+      toast.error(`Failed to create order: Please try again`);
     } finally {
       setIsLoading(false);
     }

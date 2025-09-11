@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getOrderById, updateOrderStatus } from "../../Services/Api";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import { FaEdit, FaCheckCircle, FaFileUpload } from "react-icons/fa";
+import { FaEdit, FaCheckCircle, FaFileUpload, FaTimes } from "react-icons/fa";
 import axios from "axios";
 
 const OrderDetail = () => {
@@ -12,7 +12,7 @@ const OrderDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [role, setRole] = useState(null);
-    const [previewImage, setPreviewImage] = useState(null);
+    const [previewImages, setPreviewImages] = useState([]);
     const [digitalImage, setDigitalImage] = useState(null);
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
@@ -105,29 +105,47 @@ const OrderDetail = () => {
     };
 
     const handleImageUpload = (e, type) => {
-        const file = e.target.files[0];
+        const files = Array.from(e.target.files);
 
         if (type === "preview") {
             const validImageTypes = ["image/png", "image/jpeg", "application/pdf"];
-            if (file && validImageTypes.includes(file.type)) {
-                setPreviewImage(file);
+            
+            // Filter valid files
+            const validFiles = files.filter(file => validImageTypes.includes(file.type));
+            
+            if (validFiles.length > 0) {
+                // Check if adding these files would exceed the limit of 4
+                if (previewImages.length + validFiles.length > 4) {
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Limit Exceeded",
+                        detail: "You can only upload up to 4 preview images.",
+                        life: 3000,
+                    });
+                    return;
+                }
+                
+                setPreviewImages(prev => [...prev, ...validFiles]);
                 toast.current.show({
                     severity: "success",
-                    summary: "File Uploaded",
-                    detail: "Preview image uploaded successfully.",
+                    summary: "Files Uploaded",
+                    detail: `${validFiles.length} preview image(s) uploaded successfully.`,
                     life: 3000,
                 });
             } else {
                 toast.current.show({
                     severity: "error",
-                    summary: "Invalid File",
-                    detail: "Please upload a valid image (PNG, JPEG) or PDF.",
+                    summary: "Invalid Files",
+                    detail: "Please upload valid images (PNG, JPEG) or PDFs.",
                     life: 3000,
                 });
             }
         } else if (type === "digital") {
+            // For digital files, we still only allow one file
+            const file = files[0];
             const validDigitalTypes = ["application/zip", "application/x-zip-compressed", "multipart/x-zip"];
             const isZipFile = file?.name.toLowerCase().endsWith(".zip");
+            
             if (file && (validDigitalTypes.includes(file.type) || isZipFile)) {
                 setDigitalImage(file);
                 toast.current.show({
@@ -147,10 +165,19 @@ const OrderDetail = () => {
         }
     };
 
+    const removePreviewImage = (index) => {
+        setPreviewImages(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async () => {
-        if (previewImage && digitalImage) {
+        if (previewImages.length > 0 && digitalImage) {
             const formData = new FormData();
-            formData.append("previewImage", previewImage);
+            
+            // Append all preview images
+            previewImages.forEach((image, index) => {
+                formData.append("previewImages", image);
+            });
+            
             formData.append("digitalImage", digitalImage);
 
             try {
@@ -166,15 +193,18 @@ const OrderDetail = () => {
                     const result = await response.json();
                     toast.current.show({
                         severity: "success",
-                        summary: "Images Uploaded",
+                        summary: "Files Uploaded",
                         detail: result.message,
                         life: 3000,
                     });
                     // Refresh order data to show the new images
                     const updatedOrder = await getOrderById(id, token);
                     setOrder(updatedOrder);
+                    // Clear the uploaded files
+                    setPreviewImages([]);
+                    setDigitalImage(null);
                 } else {
-                    throw new Error("Failed to upload images.");
+                    throw new Error("Failed to upload files.");
                 }
             } catch (error) {
                 toast.current.show({
@@ -187,8 +217,8 @@ const OrderDetail = () => {
         } else {
             toast.current.show({
                 severity: "error",
-                summary: "Missing Images",
-                detail: "Please upload both images before submitting.",
+                summary: "Missing Files",
+                detail: "Please upload at least one preview image and a digital file before submitting.",
                 life: 3000,
             });
         }
@@ -271,48 +301,108 @@ const OrderDetail = () => {
 
                 {role === "admin" && order.status === "complete" && (
                     <div className="mb-8">
-                        <h4 className="font-semibold text-2xl">Upload Files</h4>
-                        <div className="flex gap-4 mb-4">
-                            <div>
-                                <Button
-                                    label="Stitch Out Image"
-                                    onClick={() => document.getElementById("file-preview").click()}
-                                    icon={<FaFileUpload />}
-                                    className="p-button-outlined p-button-rounded w-full"
-                                    style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                />
-                                <input
-                                    type="file"
-                                    id="file-preview"
-                                    accept="image/*,application/pdf"
-                                    onChange={(e) => handleImageUpload(e, "preview")}
-                                    className="hidden"
-                                />
+                        <h4 className="font-semibold text-2xl mb-4">Upload Files</h4>
+                        
+                        {/* Preview Images Upload */}
+                        <div className="mb-6">
+                            <h5 className="font-semibold text-lg mb-2">Preview Images (Up to 4)</h5>
+                            <div className="flex gap-4 mb-4">
+                                <div>
+                                    <Button
+                                        label="Upload Preview Images"
+                                        onClick={() => document.getElementById("file-preview").click()}
+                                        icon={<FaFileUpload />}
+                                        className="p-button-outlined p-button-rounded w-full"
+                                        style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
+                                        disabled={previewImages.length >= 4}
+                                    />
+                                    <input
+                                        type="file"
+                                        id="file-preview"
+                                        accept="image/*,application/pdf"
+                                        onChange={(e) => handleImageUpload(e, "preview")}
+                                        className="hidden"
+                                        multiple
+                                    />
+                                </div>
                             </div>
-                            <div>
-                                <Button
-                                    label="Upload Digitized File"
-                                    onClick={() => document.getElementById("file-digital").click()}
-                                    icon={<FaFileUpload />}
-                                    className="p-button-outlined p-button-rounded w-full"
-                                    style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                />
-                                <input
-                                    type="file"
-                                    id="file-digital"
-                                    accept=".zip"
-                                    onChange={(e) => handleImageUpload(e, "digital")}
-                                    className="hidden"
-                                />
-                            </div>
+                            
+                            {/* Display selected preview images */}
+                            {previewImages.length > 0 && (
+                                <div className="mb-4">
+                                    <p className="text-sm text-gray-600 mb-2">Selected preview images:</p>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                        {previewImages.map((file, index) => (
+                                            <div key={index} className="relative border rounded p-2">
+                                                <p className="text-xs truncate">{file.name}</p>
+                                                <button
+                                                    onClick={() => removePreviewImage(index)}
+                                                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                                                >
+                                                    <FaTimes />
+                                                </button>
+                                                <p className="text-xs text-gray-500">
+                                                    {(file.size / 1024).toFixed(1)} KB
+                                                </p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
+
+                        {/* Digital File Upload */}
+                        <div className="mb-6">
+                            <h5 className="font-semibold text-lg mb-2">Digitized File</h5>
+                            <div className="flex gap-4 mb-4">
+                                <div>
+                                    <Button
+                                        label="Upload Digitized File"
+                                        onClick={() => document.getElementById("file-digital").click()}
+                                        icon={<FaFileUpload />}
+                                        className="p-button-outlined p-button-rounded w-full"
+                                        style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
+                                        disabled={digitalImage !== null}
+                                    />
+                                    <input
+                                        type="file"
+                                        id="file-digital"
+                                        accept=".zip"
+                                        onChange={(e) => handleImageUpload(e, "digital")}
+                                        className="hidden"
+                                    />
+                                </div>
+                            </div>
+                            
+                            {/* Display selected digital file */}
+                            {digitalImage && (
+                                <div className="mb-4">
+                                    <p className="text-sm text-gray-600 mb-2">Selected digital file:</p>
+                                    <div className="flex items-center gap-2 border rounded p-2 max-w-md">
+                                        <p className="text-sm truncate flex-grow">{digitalImage.name}</p>
+                                        <button
+                                            onClick={() => setDigitalImage(null)}
+                                            className="bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                                        >
+                                            <FaTimes />
+                                        </button>
+                                        <p className="text-xs text-gray-500">
+                                            {(digitalImage.size / 1024).toFixed(1)} KB
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Submit Button */}
                         <div className="flex gap-4">
                             <Button
-                                label="Submit"
+                                label="Submit Files"
                                 icon={<FaCheckCircle />}
                                 onClick={handleSubmit}
                                 className="p-button-success p-button-rounded w-full"
                                 style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
+                                disabled={previewImages.length === 0 || !digitalImage}
                             />
                         </div>
                     </div>

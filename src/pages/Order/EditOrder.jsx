@@ -262,7 +262,7 @@ const EditOrder = () => {
               </div>
               
               {/* Quantity */}
-              <div>
+              {/* <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Quantity <span className="text-red-500">*</span>
                 </label>
@@ -273,7 +273,7 @@ const EditOrder = () => {
                   placeholder="Enter quantity"
                 />
                 {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>}
-              </div>
+              </div> */}
 
               {/* Time to Complete */}
               <div>

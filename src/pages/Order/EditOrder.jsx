@@ -312,12 +312,11 @@ const EditOrder = () => {
                       Price ($) <span className="text-red-500">*</span>
                     </label>
                     <input
-                      type="number"
-                      step="0.01"
+                      type="text"
                       className={`border ${errors.price ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
                       {...register("price", {
                         required: "Price is required",
-                        min: { value: 0.01, message: "Price must be greater than 0" }
+                        
                       })}
                       placeholder="Enter price in USD"
                     />

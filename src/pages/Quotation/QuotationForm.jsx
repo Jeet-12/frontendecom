@@ -218,23 +218,22 @@ const QuotationForm = () => {
                 )}
               </div>
 
-              {/* Measurement */}
+              {/* Measurement - Changed to dropdown */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Measurement <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  {...register("measurement", { 
-                    required: "Measurement unit is required",
-                  })}
+                <select
+                  {...register("measurement", { required: "Measurement unit is required" })}
                   value={formValues.measurement}
-                  onChange={(e) => handleTextInput(e, 'measurement')}
+                  onChange={(e) => setValue("measurement", e.target.value, { shouldValidate: true })}
                   className={`border ${
                     errors.measurement ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="ex: inches or cm"
-                />
+                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]  bg-white`}
+                >
+                  <option value="inches">Inches</option>
+                  <option value="cm">Centimeters (cm)</option>
+                </select>
                 {errors.measurement && (
                   <p className="text-red-500 text-xs mt-1">{errors.measurement.message}</p>
                 )}
@@ -422,9 +421,9 @@ const QuotationForm = () => {
               {isLoading ? (
                 <svg
                   className="animate-spin h-5 w-5 mr-3 text-white"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
                 >
                   <circle 
                     className="opacity-25"

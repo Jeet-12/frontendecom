@@ -13,7 +13,7 @@ const OrderDetail = () => {
     const [error, setError] = useState(null);
     const [role, setRole] = useState(null);
     const [previewImages, setPreviewImages] = useState([]);
-    const [digitalImage, setDigitalImage] = useState(null);
+    const [digitalFiles, setDigitalFiles] = useState([]); // Changed from digitalImage to digitalFiles (array)
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
     const toast = useRef(null);
@@ -141,24 +141,39 @@ const OrderDetail = () => {
                 });
             }
         } else if (type === "digital") {
-            // For digital files, we still only allow one file
-            const file = files[0];
+            // For digital files, allow up to 4 files
             const validDigitalTypes = ["application/zip", "application/x-zip-compressed", "multipart/x-zip"];
-            const isZipFile = file?.name.toLowerCase().endsWith(".zip");
             
-            if (file && (validDigitalTypes.includes(file.type) || isZipFile)) {
-                setDigitalImage(file);
+            // Filter valid zip files
+            const validFiles = files.filter(file => {
+                const isZipFile = file?.name.toLowerCase().endsWith(".zip");
+                return validDigitalTypes.includes(file.type) || isZipFile;
+            });
+            
+            if (validFiles.length > 0) {
+                // Check if adding these files would exceed the limit of 4
+                if (digitalFiles.length + validFiles.length > 4) {
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Limit Exceeded",
+                        detail: "You can only upload up to 4 digitized files.",
+                        life: 3000,
+                    });
+                    return;
+                }
+                
+                setDigitalFiles(prev => [...prev, ...validFiles]);
                 toast.current.show({
                     severity: "success",
-                    summary: "File Uploaded",
-                    detail: "Digital file uploaded successfully.",
+                    summary: "Files Uploaded",
+                    detail: `${validFiles.length} digitized file(s) uploaded successfully.`,
                     life: 3000,
                 });
             } else {
                 toast.current.show({
                     severity: "error",
-                    summary: "Invalid File",
-                    detail: "Please upload a valid .zip file.",
+                    summary: "Invalid Files",
+                    detail: "Please upload valid .zip files.",
                     life: 3000,
                 });
             }
@@ -169,8 +184,12 @@ const OrderDetail = () => {
         setPreviewImages(prev => prev.filter((_, i) => i !== index));
     };
 
+    const removeDigitalFile = (index) => {
+        setDigitalFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async () => {
-        if (previewImages.length > 0 && digitalImage) {
+        if (previewImages.length > 0 && digitalFiles.length > 0) {
             const formData = new FormData();
             
             // Append all preview images
@@ -178,7 +197,10 @@ const OrderDetail = () => {
                 formData.append("previewImages", image);
             });
             
-            formData.append("digitalImage", digitalImage);
+            // Append all digital files
+            digitalFiles.forEach((file, index) => {
+                formData.append("digitalFiles", file);
+            });
 
             try {
                 const response = await fetch(`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/order/${id}/update-images`, {
@@ -202,7 +224,7 @@ const OrderDetail = () => {
                     setOrder(updatedOrder);
                     // Clear the uploaded files
                     setPreviewImages([]);
-                    setDigitalImage(null);
+                    setDigitalFiles([]);
                 } else {
                     throw new Error("Failed to upload files.");
                 }
@@ -218,7 +240,7 @@ const OrderDetail = () => {
             toast.current.show({
                 severity: "error",
                 summary: "Missing Files",
-                detail: "Please upload at least one preview image and a digital file before submitting.",
+                detail: "Please upload at least one preview image and one digitized file before submitting.",
                 life: 3000,
             });
         }
@@ -351,18 +373,18 @@ const OrderDetail = () => {
                             )}
                         </div>
 
-                        {/* Digital File Upload */}
+                        {/* Digital Files Upload */}
                         <div className="mb-6">
-                            <h5 className="font-semibold text-lg mb-2">Digitized File</h5>
+                            <h5 className="font-semibold text-lg mb-2">Digitized Files (Up to 4)</h5>
                             <div className="flex gap-4 mb-4">
                                 <div>
                                     <Button
-                                        label="Upload Digitized File"
+                                        label="Upload Digitized Files"
                                         onClick={() => document.getElementById("file-digital").click()}
                                         icon={<FaFileUpload />}
                                         className="p-button-outlined p-button-rounded w-full"
                                         style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                        disabled={digitalImage !== null}
+                                        disabled={digitalFiles.length >= 4}
                                     />
                                     <input
                                         type="file"
@@ -370,25 +392,30 @@ const OrderDetail = () => {
                                         accept=".zip"
                                         onChange={(e) => handleImageUpload(e, "digital")}
                                         className="hidden"
+                                        multiple
                                     />
                                 </div>
                             </div>
                             
-                            {/* Display selected digital file */}
-                            {digitalImage && (
+                            {/* Display selected digital files */}
+                            {digitalFiles.length > 0 && (
                                 <div className="mb-4">
-                                    <p className="text-sm text-gray-600 mb-2">Selected digital file:</p>
-                                    <div className="flex items-center gap-2 border rounded p-2 max-w-md">
-                                        <p className="text-sm truncate flex-grow">{digitalImage.name}</p>
-                                        <button
-                                            onClick={() => setDigitalImage(null)}
-                                            className="bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                                        >
-                                            <FaTimes />
-                                        </button>
-                                        <p className="text-xs text-gray-500">
-                                            {(digitalImage.size / 1024).toFixed(1)} KB
-                                        </p>
+                                    <p className="text-sm text-gray-600 mb-2">Selected digital files:</p>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                        {digitalFiles.map((file, index) => (
+                                            <div key={index} className="relative border rounded p-2">
+                                                <p className="text-xs truncate">{file.name}</p>
+                                                <button
+                                                    onClick={() => removeDigitalFile(index)}
+                                                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                                                >
+                                                    <FaTimes />
+                                                </button>
+                                                <p className="text-xs text-gray-500">
+                                                    {(file.size / 1024).toFixed(1)} KB
+                                                </p>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             )}
@@ -402,7 +429,7 @@ const OrderDetail = () => {
                                 onClick={handleSubmit}
                                 className="p-button-success p-button-rounded w-full"
                                 style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                disabled={previewImages.length === 0 || !digitalImage}
+                                disabled={previewImages.length === 0 || digitalFiles.length === 0}
                             />
                         </div>
                     </div>

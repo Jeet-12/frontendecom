@@ -23,7 +23,6 @@ const EditOrder = () => {
       width: order.width,
       height: order.height,
       totalPrice: order.totalPrice,
-      quantity: order.quantity,
       stitchRange: order.stitchRange,
       formatRequired: order.formatRequired,
       timeToComplete: new Date(order.timeToComplete).toISOString().split("T")[0],
@@ -62,7 +61,6 @@ const EditOrder = () => {
         height: Number(data.height),
         stitchRange: data.stitchRange,
         formatRequired: data.formatRequired,
-        quantity: data.quantity,
         timeToComplete: formatDate(new Date(data.timeToComplete)),
         additionalInformation: data.additionalInformation,
         ...(user?.role === 'admin' && {

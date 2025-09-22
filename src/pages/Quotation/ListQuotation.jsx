@@ -20,6 +20,16 @@ const ListQuotation = () => {
 
     const emptyStateImage = "https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg";
 
+    // Function to format date as dd/mm/yy
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const year = String(date.getFullYear()).slice(-2); // Get last 2 digits of year
+        
+        return `${day}/${month}/${year}`;
+    };
+
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("user"));
         setISAdmin(user.role);
@@ -205,13 +215,6 @@ const ListQuotation = () => {
                     <div className="flex justify-center items-center h-64">
                         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
                     </div>
-                    // ) : error ? (
-                    //     <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                    //         <div className="flex items-center">
-                    //             <FaInfoCircle className="text-red-500 mr-2" />
-                    //             <p className="text-red-700">{error}</p>
-                    //         </div>
-                    //     </div>
                 ) : filteredQuotations.length === 0 ? (
                     <div className="bg-white rounded-xl shadow-sm p-8 text-center">
                         <img
@@ -314,7 +317,7 @@ const ListQuotation = () => {
                                         ID: {quotation.displayId} (or {quotation.searchId})
                                     </p>
                                     <p className="text-base font-semibold text-gray-800">
-                                        Created: {new Date(quotation.createdAt).toLocaleDateString()}
+                                        Created: {formatDate(quotation.createdAt)}
                                     </p>
                                 </div>
                             </div>
@@ -343,12 +346,9 @@ const ListQuotation = () => {
                                     <p className="text-sm text-gray-600 mb-1">
                                         <strong>Dimensions:</strong> {quotation.height} x {quotation.width} 
                                     </p>
-                                    {/* <p className="text-sm text-gray-600">
-                                        <strong>Total Price:</strong>{" "}
-                                        <span className="text-green-500 font-semibold">
-                                            ${quotation.totalPrice}
-                                        </span>
-                                    </p> */}
+                                    <p className="text-sm text-gray-600">
+                                        <strong>Created:</strong> {formatDate(quotation.createdAt)}
+                                    </p>
                                 </div>
                                 <div className="flex justify-between mt-4">
                                     <Button

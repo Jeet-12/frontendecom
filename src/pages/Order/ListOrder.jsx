@@ -23,6 +23,16 @@ const ListOrder = () => {
 
     const emptyStateImage = "https://img.freepik.com/free-vector/no-data-concept-illustration_114360-616.jpg";
 
+    // Function to format date as dd/mm/yy
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+        const year = String(date.getFullYear()).slice(-2); // Get last 2 digits of year
+        
+        return `${day}/${month}/${year}`;
+    };
+
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("user"));
         setIsAdmin(user.role);
@@ -326,7 +336,7 @@ const ListOrder = () => {
                                         ID: {order.displayId} (or {order.searchId})
                                     </p>
                                     <p className="text-base font-semibold text-gray-800">
-                                        Created: {new Date(order.createdAt).toLocaleDateString()}
+                                        Created: {formatDate(order.createdAt)}
                                     </p>
                                 </div>
                             </div>
@@ -361,6 +371,9 @@ const ListOrder = () => {
                                     </p>
                                     <p className="text-sm text-gray-600 mb-1">
                                         <strong>Dimensions:</strong> {order.height} x {order.width}  
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-1">
+                                        <strong>Created:</strong> {formatDate(order.createdAt)}
                                     </p>
                                     <p className="text-sm text-gray-600">
                                         <strong>Total Price:</strong>{" "}

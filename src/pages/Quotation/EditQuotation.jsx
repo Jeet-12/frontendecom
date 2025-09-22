@@ -65,7 +65,7 @@ const EditQuotation = () => {
         additionalInformation: data.additionalinformation,
         // quantity: Number(data.quantity),
         ...(user?.role === 'admin' && {
-          price: Number(data.price),
+          price: data.price,
           stitching_count: Number(data.stitching_count),
           comment: data.comment,
         }),

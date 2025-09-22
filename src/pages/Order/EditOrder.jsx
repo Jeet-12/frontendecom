@@ -66,11 +66,12 @@ const EditOrder = () => {
         timeToComplete: formatDate(new Date(data.timeToComplete)),
         additionalInformation: data.additionalInformation,
         ...(user?.role === 'admin' && {
-          price: Number(data.price),
+          price: data.price,
           stitching_count: Number(data.stitching_count),
           comment: data.comment,
         }),
       };
+      console.log("Updated Data:", updatedData);
 
       if (user?.role === 'admin') {
         try {

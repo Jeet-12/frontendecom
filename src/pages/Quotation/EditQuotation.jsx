@@ -26,7 +26,7 @@ const EditQuotation = () => {
       format: quotation.formatRequired,
       timeTo_complete: new Date(quotation.timeToComplete).toISOString().split("T")[0],
       additionalinformation: quotation.additionalInformation,
-      quantity: quotation.quantity,
+      // quantity: quotation.quantity,
       price: quotation.price || "",
       stitching_count: quotation.stitching_count || "",
       comment: quotation.comment || "",
@@ -63,7 +63,7 @@ const EditQuotation = () => {
         formatRequired: data.format,
         timeToComplete: formatDate(new Date(data.timeTo_complete)),
         additionalInformation: data.additionalinformation,
-        quantity: Number(data.quantity),
+        // quantity: Number(data.quantity),
         ...(user?.role === 'admin' && {
           price: Number(data.price),
           stitching_count: Number(data.stitching_count),
@@ -270,7 +270,7 @@ const EditQuotation = () => {
               </div>
 
               {/* Quantity */}
-              <div>
+              {/* <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Quantity <span className="text-red-500">*</span>
                 </label>
@@ -281,7 +281,7 @@ const EditQuotation = () => {
                   placeholder="Enter quantity"
                 />
                 {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>}
-              </div>
+              </div> */}
 
               {/* Additional Information */}
               <div className="md:col-span-2">

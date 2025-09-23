@@ -284,12 +284,12 @@ const ListQuotation = () => {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <div>
+                                                {/* <div>
                                                     <p className="text-sm text-gray-500">Quantity</p>
                                                     <p className="font-medium">
                                                         {quotation.quantity || "Not specified"}
                                                     </p>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
 

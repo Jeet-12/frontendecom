@@ -295,10 +295,10 @@ const OrderDetail = () => {
                         <p className="font-semibold text-lg">Colors:</p>
                         <p>{order.colors.join(", ")}</p>
                     </div>
-                    <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                    {/* <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Quantity:</p>
                         <p>{order.quantity ?? 0}</p>
-                    </div>
+                    </div> */}
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Total Price:</p>
                         <p>$ {order.totalPrice ?? 0}</p>

@@ -38,34 +38,34 @@ const QuotationDetail = () => {
         fetchQuotation();
     }, [id, token]);
 
-    const handleApproval = async (status) => {
-        try {
-            if (status === "approve") {
-                await approveQuotation(id, token);
-            } else {
-                await rejectQuotation(id, token);
-            }
+    // const handleApproval = async (status) => {
+    //     try {
+    //         if (status === "approve") {
+    //             await approveQuotation(id, token);
+    //         } else {
+    //             await rejectQuotation(id, token);
+    //         }
 
-            setQuotation((prev) => ({
-                ...prev,
-                status: status === "approve" ? "Approved" : "Rejected",
-            }));
-            toast.current.show({
-                severity: "success",
-                summary: "Status Updated",
-                detail: `Quotation marked as ${status}`,
-                life: 3000,
-            });
-        } catch (err) {
-            console.error("Error updating quotation status:", err);
-            toast.current.show({
-                severity: "error",
-                summary: "Error",
-                detail: "Failed to update quotation status",
-                life: 3000,
-            });
-        }
-    };
+    //         setQuotation((prev) => ({
+    //             ...prev,
+    //             status: status === "approve" ? "Approved" : "Rejected",
+    //         }));
+    //         toast.current.show({
+    //             severity: "success",
+    //             summary: "Status Updated",
+    //             detail: `Quotation marked as ${status}`,
+    //             life: 3000,
+    //         });
+    //     } catch (err) {
+    //         console.error("Error updating quotation status:", err);
+    //         toast.current.show({
+    //             severity: "error",
+    //             summary: "Error",
+    //             detail: "Failed to update quotation status",
+    //             life: 3000,
+    //         });
+    //     }
+    // };
 
     const handleEdit = (quotation) => {
         const user = JSON.parse(localStorage.getItem("user"));
@@ -154,15 +154,19 @@ const QuotationDetail = () => {
                         <p className="font-semibold">Colors:</p>
                         <p>{quotation.colors.join(", ")}</p>
                     </div>
-                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                    {/* <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
                         <p className="font-semibold">Quantity:</p>
                         <p>{quotation.quantity ?? 0}</p>
+                    </div> */}
+                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                        <p className="font-semibold">Price:</p>
+                        <p>{quotation.price ?? 0}</p>
                     </div>
                     {/* <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
                         <p className="font-semibold">Total Price:</p>
                         <p>${quotation.totalPrice}</p>
                     </div> */}
-                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                    {/* <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
                         <p className="font-semibold">Status:</p>
                         <span
                             className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${quotation.status === 'approved'
@@ -176,7 +180,7 @@ const QuotationDetail = () => {
                         >
                             {quotation.status}
                         </span>
-                    </div>
+                    </div> */}
                     {role === "admin" && quotation.files && quotation.files.length > 0 && (
                         <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
                             <p className="font-semibold mb-2">Files:</p>
@@ -196,7 +200,7 @@ const QuotationDetail = () => {
 
                 <div className="flex flex-col sm:flex-row justify-between mt-4 space-y-2 sm:space-y-0 sm:space-x-4">
                     {/* Admin-specific actions */}
-                    {role === "admin" && (
+                    {/* {role === "admin" && (
                         <div className="flex space-x-2">
                             <Button
                                 label="Approve"
@@ -215,10 +219,18 @@ const QuotationDetail = () => {
                                 style={{ borderStyle: "none" }}
                             />
                         </div>
-                    )}
+                    )} */}
 
                     {/* Common Edit button for both Admin and User */}
-                    {(role === "admin" || role === "user") && (
+                    {role === "admin" ? (
+                        <Button
+                            label="Edit"
+                            icon="pi pi-pencil"
+                            className="bg-yellow-500 hover:bg-yellow-600"
+                            onClick={() => handleEdit(quotation)}
+                            style={{ borderStyle: "none" }}
+                        />
+                    ):(
                         <Button
                             label="Edit"
                             icon="pi pi-pencil"

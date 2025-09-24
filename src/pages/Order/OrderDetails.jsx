@@ -99,7 +99,7 @@ const OrderDetail = () => {
                 navigate('/login');
                 return;
             }
-            console.log(error);
+            // console.log(error);
             setLoading(false);
         }
     };

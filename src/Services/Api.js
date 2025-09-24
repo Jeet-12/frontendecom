@@ -116,8 +116,8 @@ export const deleteQuotation = async (id, token) => {
  * Create a new quotation
  */
 export const createQuotation = async(quotationData, token) => {
-    console.log(quotationData,token)
-    console.log(token)
+    // console.log(quotationData,token)
+    // console.log(token)
    if(quotationData && token){
     const payloadData = createObjectToFormData(quotationData)
     
@@ -142,7 +142,7 @@ export const createQuotation = async(quotationData, token) => {
  * Update an existing quotation by ID
  */
 export const updateQuotation = async (id, quotationData, token) => {
-  console.log(id, quotationData, token)
+//   console.log(id, quotationData, token)
   const formData = new FormData()
 //   console.log(Object.keys(quotationData))
   Object.keys(quotationData).forEach(key=>{

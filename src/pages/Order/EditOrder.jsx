@@ -6,7 +6,6 @@ import { updateOrder } from "../../Services/Api";
 
 const EditOrder = () => {
   const { state: order } = useLocation();
-  console.log(order);
   const {
     register,
     handleSubmit,
@@ -71,7 +70,7 @@ const EditOrder = () => {
           comment: data.comment,
         }),
       };
-      console.log("Updated Data:", updatedData);
+      // console.log("Updated Data:", updatedData);
 
       if (user?.role === 'admin') {
         try {

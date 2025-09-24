@@ -18,7 +18,7 @@ const AllUsers = () => {
 
         const fetchUsers = async () => {
             try {
-                const response = await fetch(
+                const response = await axios.get(
                     `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/auth/users`,
                     { headers: { 'x-auth-token': token } }
                 );

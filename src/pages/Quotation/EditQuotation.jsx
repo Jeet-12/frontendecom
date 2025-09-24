@@ -6,7 +6,7 @@ import { updateQuotation } from "../../Services/Api"; // Your API call for updat
 
 const EditQuotation = () => {
   const { state: quotation } = useLocation();
-  console.log(quotation);
+  // console.log(quotation);
   const {
     register,
     handleSubmit,

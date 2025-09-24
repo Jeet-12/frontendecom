@@ -46,7 +46,7 @@ const AddGallery = () => {
           },
         }
       );
-      console.log(response);
+      // console.log(response);
      if (response.status === 200 || response.status === 201) {
       toast.success('Image uploaded successfully!');
       setFile(null);

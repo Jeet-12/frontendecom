@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getQuotationById, approveQuotation, rejectQuotation } from "../../Services/Api";
-import { createOrder } from "../../Services/OrderApi"; // Import your order creation API
+import { createOrder } from "../../Services/Api";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import JSZip from 'jszip';

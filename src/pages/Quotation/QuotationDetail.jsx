@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getQuotationById, approveQuotation, rejectQuotation } from "../../Services/Api";
+import { createOrder } from "../../Services/OrderApi"; // Import your order creation API
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import JSZip from 'jszip';
@@ -12,6 +13,7 @@ const QuotationDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [role, setRole] = useState(null);
+    const [converting, setConverting] = useState(false);
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
     const toast = useRef(null);
@@ -38,35 +40,6 @@ const QuotationDetail = () => {
         fetchQuotation();
     }, [id, token]);
 
-    // const handleApproval = async (status) => {
-    //     try {
-    //         if (status === "approve") {
-    //             await approveQuotation(id, token);
-    //         } else {
-    //             await rejectQuotation(id, token);
-    //         }
-
-    //         setQuotation((prev) => ({
-    //             ...prev,
-    //             status: status === "approve" ? "Approved" : "Rejected",
-    //         }));
-    //         toast.current.show({
-    //             severity: "success",
-    //             summary: "Status Updated",
-    //             detail: `Quotation marked as ${status}`,
-    //             life: 3000,
-    //         });
-    //     } catch (err) {
-    //         console.error("Error updating quotation status:", err);
-    //         toast.current.show({
-    //             severity: "error",
-    //             summary: "Error",
-    //             detail: "Failed to update quotation status",
-    //             life: 3000,
-    //         });
-    //     }
-    // };
-
     const handleEdit = (quotation) => {
         const user = JSON.parse(localStorage.getItem("user"));
         if (user?.role === 'admin') {
@@ -75,6 +48,110 @@ const QuotationDetail = () => {
             navigate(`/quotation/edit/${quotation._id}`, { state: quotation });
         } else {
             navigate(`/`);
+        }
+    };
+
+    // Function to convert quotation to order
+    const convertToOrder = async () => {
+        if (!quotation) return;
+
+        setConverting(true);
+        try {
+            const userData = JSON.parse(localStorage.getItem("user"));
+            
+            // Format the date to MM/DD/YYYY
+            const formatDateToMMDDYYYY = (dateString) => {
+                const date = new Date(dateString);
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${month}/${day}/${year}`;
+            };
+
+            // Prepare order data from quotation
+            const orderData = {
+                user: userData.id,
+                designName: quotation.designName?.trim() || "",
+                fabricType: quotation.fabricType || "",
+                fabric: quotation.fabric?.trim() || "",
+                noOfColors: Number(quotation.noOfColors) || 0,
+                colors: quotation.colors || [],
+                measurement: quotation.measurement || "", 
+                width: Number(quotation.width) || 0,
+                height: Number(quotation.height) || 0,
+                stitchRange: quotation.stitchRange?.toString() || "",
+                formatRequired: quotation.formatRequired || "",
+                timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete),
+                additionalInformation: quotation.additionalInformation?.trim() || "",
+                totalPrice: parseFloat(quotation.price?.replace('US$', '').split('–')[0]?.trim()) || 0, // Extract first price value
+                quantity: parseInt(quotation.quantity, 10) || 1, // Default to 1 if not available
+                status: "inprogress",
+                files: quotation.files || [],
+                // Note: customImage might need to be handled separately as it's not in quotation data
+                customImage: null
+            };
+
+            const result = await createOrder(orderData, token);
+            
+            toast.current.show({
+                severity: "success",
+                summary: "Order Created",
+                detail: result.message || "Order created successfully!",
+                life: 3000,
+            });
+            
+            // Navigate to orders page after successful creation
+            navigate("/order");
+            
+        } catch (err) {
+            console.error("Error converting quotation to order:", err);
+            toast.current.show({
+                severity: "error",
+                summary: "Conversion Failed",
+                detail: err.response?.data?.message || "Failed to convert quotation to order",
+                life: 3000,
+            });
+        } finally {
+            setConverting(false);
+        }
+    };
+
+    const downloadAllFiles = async () => {
+        try {
+            const zip = new JSZip();
+            const promises = quotation.files.map(async (filePath, index) => {
+                const fullUrl = `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${filePath}`;
+                const fileName = filePath.split('/').pop();
+                
+                // Fetch each file
+                const response = await fetch(fullUrl);
+                const blob = await response.blob();
+                
+                // Add to ZIP
+                zip.file(fileName, blob);
+            });
+
+            // Wait for all files to be added
+            await Promise.all(promises);
+            
+            // Generate the ZIP file
+            const content = await zip.generateAsync({ type: 'blob' });
+            saveAs(content, 'quotation_files.zip');
+            
+            toast.current.show({
+                severity: 'success',
+                summary: 'Download Started',
+                detail: 'All files are being downloaded as a ZIP archive',
+                life: 3000,
+            });
+        } catch (error) {
+            console.error('Error creating ZIP file:', error);
+            toast.current.show({
+                severity: 'error',
+                summary: 'Download Failed',
+                detail: 'Could not download files',
+                life: 3000,
+            });
         }
     };
 
@@ -87,6 +164,7 @@ const QuotationDetail = () => {
             </div>
         );
     }
+    
     if (error) {
         return (
             <div className="flex items-center justify-center h-screen bg-white text-red-500 p-4 min-h-screen"
@@ -95,45 +173,6 @@ const QuotationDetail = () => {
             </div>
         );
     }
-
-    const downloadAllFiles = async () => {
-  try {
-    const zip = new JSZip();
-    const promises = quotation.files.map(async (filePath, index) => {
-      const fullUrl = `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${filePath}`;
-      const fileName = filePath.split('/').pop();
-      
-      // Fetch each file
-      const response = await fetch(fullUrl);
-      const blob = await response.blob();
-      
-      // Add to ZIP
-      zip.file(fileName, blob);
-    });
-
-    // Wait for all files to be added
-    await Promise.all(promises);
-    
-    // Generate the ZIP file
-    const content = await zip.generateAsync({ type: 'blob' });
-    saveAs(content, 'quotation_files.zip');
-    
-    toast.current.show({
-      severity: 'success',
-      summary: 'Download Started',
-      detail: 'All files are being downloaded as a ZIP archive',
-      life: 3000,
-    });
-  } catch (error) {
-    console.error('Error creating ZIP file:', error);
-    toast.current.show({
-      severity: 'error',
-      summary: 'Download Failed',
-      detail: 'Could not download files',
-      life: 3000,
-    });
-  }
-};
 
     return (
         <div className="p-4 bg-gray-100 min-h-screen">
@@ -154,33 +193,10 @@ const QuotationDetail = () => {
                         <p className="font-semibold">Colors:</p>
                         <p>{quotation.colors.join(", ")}</p>
                     </div>
-                    {/* <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
-                        <p className="font-semibold">Quantity:</p>
-                        <p>{quotation.quantity ?? 0}</p>
-                    </div> */}
                     <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
                         <p className="font-semibold">Price:</p>
                         <p>{quotation.price ?? 0}</p>
                     </div>
-                    {/* <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
-                        <p className="font-semibold">Total Price:</p>
-                        <p>${quotation.totalPrice}</p>
-                    </div> */}
-                    {/* <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
-                        <p className="font-semibold">Status:</p>
-                        <span
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${quotation.status === 'approved'
-                                ? 'bg-[#d1fae5] text-[#065f46]' // bg-green-100 text-green-800
-                                : quotation.status === 'inprogress'
-                                    ? 'bg-[#fef3c7] text-[#92400e]' // bg-yellow-100 text-yellow-800
-                                    : quotation.status === 'declined'
-                                        ? 'bg-[#fee2e2] text-[#991b1b]' // bg-red-100 text-red-800
-                                        : 'bg-[#f3f4f6] text-[#1f2937]' // bg-gray-100 text-gray-800
-                                }`}
-                        >
-                            {quotation.status}
-                        </span>
-                    </div> */}
                     {role === "admin" && quotation.files && quotation.files.length > 0 && (
                         <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
                             <p className="font-semibold mb-2">Files:</p>
@@ -199,28 +215,28 @@ const QuotationDetail = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row justify-between mt-4 space-y-2 sm:space-y-0 sm:space-x-4">
-    {/* Common Edit button for both Admin and User */}
-    <div className="ml-auto">
-        {role === "admin" ? (
-            <Button
-                label="Edit"
-                icon="pi pi-pencil"
-                className="bg-yellow-500 hover:bg-yellow-600"
-                onClick={() => handleEdit(quotation)}
-                style={{ borderStyle: "none" }}
-            />
-        ) : (
-            <Button
-                label="Edit"
-                icon="pi pi-pencil"
-                className="bg-yellow-500 hover:bg-yellow-600"
-                onClick={() => handleEdit(quotation)}
-                style={{ borderStyle: "none" }}
-            />
-        )}
-    </div>
-</div>
-
+                    {/* Common Edit button for both Admin and User */}
+                    <div className="ml-auto">
+                        {role === "admin" ? (
+                            <Button
+                                label="Edit"
+                                icon="pi pi-pencil"
+                                className="bg-yellow-500 hover:bg-yellow-600"
+                                onClick={() => handleEdit(quotation)}
+                                style={{ borderStyle: "none" }}
+                            />
+                        ) : (
+                            <Button
+                                label={converting ? "Converting..." : "Convert to Order"}
+                                icon={converting ? "pi pi-spin pi-spinner" : "pi pi-shopping-cart"}
+                                className="bg-yellow-500 hover:bg-yellow-600"
+                                onClick={convertToOrder}
+                                disabled={converting}
+                                style={{ borderStyle: "none" }}
+                            />
+                        )}
+                    </div>
+                </div>
             </div>
         </div>
     );

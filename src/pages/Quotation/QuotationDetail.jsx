@@ -199,47 +199,28 @@ const QuotationDetail = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row justify-between mt-4 space-y-2 sm:space-y-0 sm:space-x-4">
-                    {/* Admin-specific actions */}
-                    {/* {role === "admin" && (
-                        <div className="flex space-x-2">
-                            <Button
-                                label="Approve"
-                                icon="pi pi-check"
-                                className="bg-[#22c55e] hover:bg-[#16a34a]"
-                                onClick={() => handleApproval("approve")}
-                                disabled={quotation.status === "Approved"}
-                                style={{ borderStyle: "none" }}
-                            />
-                            <Button
-                                label="Reject"
-                                icon="pi pi-times"
-                                className="bg-red-500 hover:bg-red-600"
-                                onClick={() => handleApproval("reject")}
-                                disabled={quotation.status === "Rejected"}
-                                style={{ borderStyle: "none" }}
-                            />
-                        </div>
-                    )} */}
+    {/* Common Edit button for both Admin and User */}
+    <div className="ml-auto">
+        {role === "admin" ? (
+            <Button
+                label="Edit"
+                icon="pi pi-pencil"
+                className="bg-yellow-500 hover:bg-yellow-600"
+                onClick={() => handleEdit(quotation)}
+                style={{ borderStyle: "none" }}
+            />
+        ) : (
+            <Button
+                label="Edit"
+                icon="pi pi-pencil"
+                className="bg-yellow-500 hover:bg-yellow-600"
+                onClick={() => handleEdit(quotation)}
+                style={{ borderStyle: "none" }}
+            />
+        )}
+    </div>
+</div>
 
-                    {/* Common Edit button for both Admin and User */}
-                    {role === "admin" ? (
-                        <Button
-                            label="Edit"
-                            icon="pi pi-pencil"
-                            className="bg-yellow-500 hover:bg-yellow-600"
-                            onClick={() => handleEdit(quotation)}
-                            style={{ borderStyle: "none" }}
-                        />
-                    ):(
-                        <Button
-                            label="Edit"
-                            icon="pi pi-pencil"
-                            className="bg-yellow-500 hover:bg-yellow-600"
-                            onClick={() => handleEdit(quotation)}
-                            style={{ borderStyle: "none" }}
-                        />
-                    )}
-                </div>
             </div>
         </div>
     );

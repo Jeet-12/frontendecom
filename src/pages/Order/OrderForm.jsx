@@ -80,7 +80,7 @@ const OrderForm = () => {
       totalPrice: quotation.totalPrice || "",
       quantity: quotation.quantity || "",
       customImage: quotation.customImage || "",
-      customUserId: quotation.customUserId || "", // New field for customer selection
+      customUserId: quotation.customUserId || "",
     }
   });
 
@@ -217,7 +217,6 @@ const OrderForm = () => {
         totalPrice: parseFloat(data.totalPrice),
         quantity: parseInt(data.quantity, 10),
         status: "inprogress",
-        files: filesData,
         customImage: customImage ? {
           name: customImage.name,
           type: customImage.type,
@@ -583,7 +582,7 @@ const OrderForm = () => {
               )}
 
               {/* File Upload - Maximum 4 files */}
-              <div className="md:col-span-2">
+              {/* <div className="md:col-span-2">
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Upload Files (Max 4 files) <span className="text-red-500">*</span>
                 </label>
@@ -600,7 +599,6 @@ const OrderForm = () => {
                     Supported formats: JPEG, PNG, PDF, DOC (Max 5MB per file)
                   </p>
                   
-                  {/* Uploaded files list */}
                   {uploadedFiles.length > 0 && (
                     <div className="mt-3">
                       <p className="text-sm font-medium text-gray-700 mb-2">Uploaded files ({uploadedFiles.length}/4):</p>
@@ -624,7 +622,7 @@ const OrderForm = () => {
                 {uploadedFiles.length === 0 && (
                   <p className="text-red-500 text-xs mt-1">At least one file is required</p>
                 )}
-              </div>
+              </div> */}
 
               {/* Custom Image Upload */}
               <div className="md:col-span-2">

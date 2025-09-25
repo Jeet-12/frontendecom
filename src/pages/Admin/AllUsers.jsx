@@ -14,88 +14,91 @@ const AllUsers = () => {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        console.log(token);
+    const token = localStorage.getItem("token");
+    console.log("Token:", token);
 
-        const fetchUsers = async () => {
-            try {
-                const response = await axios.get(
-                    `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/auth/users`,
-                    { headers: { 'x-auth-token': token } }
-                );
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                const userData = Array.isArray(data)
-                    ? data
-                    : Array.isArray(data.users)
-                        ? data.users
-                        : [];
-
-                setUsers(userData);
-                setLoading(false);
-            } catch (err) {
-                const status = err.response?.status;
-
-                if (status === 401) {
-                    localStorage.clear();
-                    toast.error('Session expired. Please log in again.');
-                    navigate('/login');
-                    return;
-                }
-                console.error('Error fetching users:', err);
-                setError('Failed to fetch users.');
-                setLoading(false);
-            }
-        };
-
-
-        fetchUsers();
-    }, []);
-
-    const handleEdit = (userId) => {
-        navigate(`/admin/edit-user/${userId}`);  // Navigate to the edit page
-    };
-
-    const handleDelete = async (userId) => {
-        const token = localStorage.getItem("token");
+    const fetchUsers = async () => {
         try {
-            await axios.delete(
-                `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/auth/users/${userId}`,
+            const response = await axios.get(
+                `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/auth/users`,
                 { headers: { 'x-auth-token': token } }
             );
 
+            // axios gives data directly
+            const data = response.data;
 
-            setUsers(users.filter(user => user._id !== userId));
+            const userData = Array.isArray(data)
+                ? data
+                : Array.isArray(data.users)
+                    ? data.users
+                    : [];
 
-            toast.current.show({
-                severity: 'success',
-                summary: 'User Deleted',
-                detail: 'User has been deleted successfully.',
-                life: 3000
-            });
+            setUsers(userData);
+            setLoading(false);
         } catch (err) {
             const status = err.response?.status;
 
             if (status === 401) {
                 localStorage.clear();
-                toast.error('Session expired. Please log in again.');
+                toast.current?.show({
+                    severity: 'error',
+                    summary: 'Session Expired',
+                    detail: 'Please log in again.',
+                    life: 3000
+                });
                 navigate('/login');
                 return;
             }
-            console.error('Error deleting user:', err);
-            toast.current.show({
-                severity: 'error',
-                summary: 'Error',
-                detail: 'Failed to delete user.',
-                life: 3000
-            });
+
+            console.error('Error fetching users:', err);
+            setError('Failed to fetch users.');
+            setLoading(false);
         }
     };
+
+    fetchUsers();
+}, [navigate]);
+
+
+    // const handleEdit = (userId) => {
+    //     navigate(`/admin/edit-user/${userId}`);  // Navigate to the edit page
+    // };
+
+    // const handleDelete = async (userId) => {
+    //     const token = localStorage.getItem("token");
+    //     try {
+    //         await axios.delete(
+    //             `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/auth/users/${userId}`,
+    //             { headers: { 'x-auth-token': token } }
+    //         );
+
+
+    //         setUsers(users.filter(user => user._id !== userId));
+
+    //         toast.current.show({
+    //             severity: 'success',
+    //             summary: 'User Deleted',
+    //             detail: 'User has been deleted successfully.',
+    //             life: 3000
+    //         });
+    //     } catch (err) {
+    //         const status = err.response?.status;
+
+    //         if (status === 401) {
+    //             localStorage.clear();
+    //             toast.error('Session expired. Please log in again.');
+    //             navigate('/login');
+    //             return;
+    //         }
+    //         console.error('Error deleting user:', err);
+    //         toast.current.show({
+    //             severity: 'error',
+    //             summary: 'Error',
+    //             detail: 'Failed to delete user.',
+    //             life: 3000
+    //         });
+    //     }
+    // };
 
     const columns = useMemo(() => [
         {

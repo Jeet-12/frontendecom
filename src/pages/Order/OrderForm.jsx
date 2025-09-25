@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useNavigate, useLocation } from "react-router-dom";
 import { createOrder } from "../../Services/Api";
 import { SectionTitle } from "../../components";
+import axios from "axios";
 
 const OrderForm = () => {
   const location = useLocation();
@@ -12,9 +13,54 @@ const OrderForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [customImage, setCustomImage] = useState(null);
-  const token = localStorage.getItem("token");
+  const [users, setUsers] = useState([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const user = localStorage.getItem("user");
   const parsed = JSON.parse(user);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    const fetchUsers = async () => {
+      setIsLoadingUsers(true);
+      try {
+        const response = await axios.get(
+          `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/auth/users`,
+          { headers: { 'x-auth-token': token } }
+        );
+
+        // axios gives data directly
+        const data = response.data;
+
+        const userData = Array.isArray(data)
+          ? data
+          : Array.isArray(data.users)
+            ? data.users
+            : [];
+
+        setUsers(userData);
+      } catch (err) {
+        const status = err.response?.status;
+
+        if (status === 401) {
+          localStorage.clear();
+          toast.error('Session Expired. Please log in again.');
+          navigate('/login');
+          return;
+        }
+
+        console.error('Error fetching users:', err);
+        toast.error('Failed to fetch users.');
+      } finally {
+        setIsLoadingUsers(false);
+      }
+    };
+
+    // Only fetch users if user is admin
+    if (parsed?.role === "admin") {
+      fetchUsers();
+    }
+  }, [navigate, parsed?.role]);
 
   const { register, handleSubmit, formState: { errors, isValid }, watch, setValue } = useForm({
     mode: "onChange",
@@ -34,6 +80,7 @@ const OrderForm = () => {
       totalPrice: quotation.totalPrice || "",
       quantity: quotation.quantity || "",
       customImage: quotation.customImage || "",
+      customUserId: quotation.customUserId || "", // New field for customer selection
     }
   });
 
@@ -136,6 +183,8 @@ const OrderForm = () => {
         return;
       }
 
+      const token = localStorage.getItem("token"); // Get token for API call
+
       const formatDateToMMDDYYYY = (dateString) => {
         const [year, month, day] = dateString.split('-');
         return `${month}/${day}/${year}`;
@@ -176,6 +225,11 @@ const OrderForm = () => {
         } : null
       };
 
+      // Add customUserId only if admin has selected a customer
+      if (parsed.role === "admin" && data.customUserId) {
+        orderData.customUserId = data.customUserId;
+      }
+
       const result = await createOrder(orderData, token);
       toast.success(result.message || "Order created successfully!");
       navigate("/order");
@@ -198,6 +252,43 @@ const OrderForm = () => {
           <SectionTitle title={`Order Form`} path={`Home > Order Form`} />
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              
+              {/* Customer Name Dropdown (Admin Only) */}
+              {parsed?.role === "admin" && (
+                <div className="md:col-span-2">
+                  <label className="font-semibold text-sm pb-1 block text-gray-600">
+                    Customer Name <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    {...register("customUserId", { 
+                      required: "Customer selection is required" 
+                    })}
+                    value={formValues.customUserId}
+                    onChange={(e) => setValue("customUserId", e.target.value, { shouldValidate: true })}
+                    className={`border ${errors.customUserId ? "border-red-500" : "border-gray-300"
+                      } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
+                    disabled={isLoadingUsers}
+                  >
+                    <option value="">Select Customer</option>
+                    {isLoadingUsers ? (
+                      <option value="" disabled>Loading customers...</option>
+                    ) : (
+                      users.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name || user.email} {user.email ? `(${user.email})` : ''}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                  {errors.customUserId && (
+                    <p className="text-red-500 text-xs mt-1">{errors.customUserId.message}</p>
+                  )}
+                  {users.length === 0 && !isLoadingUsers && (
+                    <p className="text-yellow-600 text-xs mt-1">No customers found</p>
+                  )}
+                </div>
+              )}
+
               {/* Design Name */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
@@ -245,6 +336,7 @@ const OrderForm = () => {
                 )}
               </div>
 
+              {/* Rest of your existing form fields remain the same */}
               {/* Fabric */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
@@ -464,7 +556,7 @@ const OrderForm = () => {
               </div>
 
               {/* Total Price */}
-              {parsed.role == "admin" && (
+              {parsed?.role === "admin" && (
                 <div>
                   <label className="font-semibold text-sm pb-1 block text-gray-600">
                     Total Price <span className="text-red-500">*</span>

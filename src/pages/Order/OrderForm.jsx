@@ -275,7 +275,7 @@ const OrderForm = () => {
                     ) : (
                       users.map((user) => (
                         <option key={user.id} value={user.id}>
-                          {user.name || user.email} {user.email ? `(${user.email})` : ''}
+                          {user.companyname || user.firstname} {user.email ? `(${user.email})` : ''}
                         </option>
                       ))
                     )}

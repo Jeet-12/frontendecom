@@ -638,7 +638,7 @@ const OrderForm = () => {
                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#93C572] file:text-white hover:file:bg-[#79a759]"
                   />
                   <p className="text-xs text-gray-500 mt-2">
-                    Supported formats: JPEG, PNG (Max 5MB)
+                    Supported formats: JPEG, PNG, PDF, DOC (Max 4MB per file)
                   </p>
                   
                   {/* Custom image preview */}

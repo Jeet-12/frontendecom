@@ -177,6 +177,7 @@ export const createOrder = async(orderData, token) => {
         method: 'POST',
         headers: {
             'x-auth-token': token,
+            'Content-Type': 'multipart/form-data'
         },
         body:payloadData ,
     });

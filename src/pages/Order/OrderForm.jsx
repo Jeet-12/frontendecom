@@ -12,7 +12,7 @@ const OrderForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [customImage, setCustomImage] = useState(null);
+  const [customImage, setCustomImage] = useState([]);
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const user = localStorage.getItem("user");
@@ -149,8 +149,8 @@ const OrderForm = () => {
   const handleCustomImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-      const maxSize = 5 * 1024 * 1024; // 5MB
+      
+      const maxSize = 4 * 1024 * 1024; 
 
       if (!validTypes.includes(file.type)) {
         toast.error("Invalid file type. Only JPEG and PNG images are allowed.");
@@ -169,8 +169,7 @@ const OrderForm = () => {
 
   // Remove custom image
   const handleRemoveCustomImage = () => {
-    setCustomImage(null);
-    setValue("customImage", "", { shouldValidate: true });
+    setCustomImage(prev => prev.filter((_, i) => i !== index));
   };
 
   const onSubmit = async (data) => {
@@ -192,14 +191,6 @@ const OrderForm = () => {
 
       const colorsArray = data.colors.split(' ').map(color => color.trim()).filter(Boolean);
 
-      // Prepare files data (in a real app, you would upload these files to a server)
-      const filesData = uploadedFiles.map(file => ({
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        lastModified: file.lastModified
-      }));
-
       const orderData = {
         user: userData.id,
         designName: data.designName.trim(),
@@ -217,11 +208,7 @@ const OrderForm = () => {
         totalPrice: parseFloat(data.totalPrice),
         quantity: parseInt(data.quantity, 10),
         status: "inprogress",
-        customImage: customImage ? {
-          name: customImage.name,
-          type: customImage.type,
-          size: customImage.size
-        } : null
+        customImage: customImage ? customImage: null
       };
 
       // Add customUserId only if admin has selected a customer
@@ -642,7 +629,7 @@ const OrderForm = () => {
                   </p>
                   
                   {/* Custom image preview */}
-                  {customImage && (
+                  {customImage > 0 && (
                     <div className="mt-3">
                       <p className="text-sm font-medium text-gray-700 mb-2">Custom Image:</p>
                       <div className="flex items-center justify-between bg-gray-50 rounded px-3 py-2">
@@ -664,6 +651,25 @@ const OrderForm = () => {
                           />
                         </div>
                       )}
+                    </div>
+                  )}
+                  {customImage.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-sm font-medium text-gray-700 mb-2">Uploaded files ({uploadedFiles.length}/4):</p>
+                      <div className="space-y-2">
+                        {customImage.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between bg-gray-50 rounded px-3 py-2">
+                            <span className="text-sm text-gray-600 truncate">{file.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveCustomImage(index)}
+                              className="text-red-500 hover:text-red-700 text-sm font-medium"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

@@ -12,7 +12,6 @@ const OrderForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [customImage, setCustomImage] = useState(null);
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const user = localStorage.getItem("user");
@@ -79,7 +78,6 @@ const OrderForm = () => {
       additionalInformation: quotation.additionalInformation || "",
       totalPrice: quotation.totalPrice || "",
       quantity: quotation.quantity || "",
-      customImage: quotation.customImage || "",
       customUserId: quotation.customUserId || "",
     }
   });
@@ -145,34 +143,6 @@ const OrderForm = () => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  // Handle custom image upload
-  const handleCustomImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-      const maxSize = 5 * 1024 * 1024; // 5MB
-
-      if (!validTypes.includes(file.type)) {
-        toast.error("Invalid file type. Only JPEG and PNG images are allowed.");
-        return;
-      }
-
-      if (file.size > maxSize) {
-        toast.error("Image too large. Maximum size is 5MB.");
-        return;
-      }
-
-      setCustomImage(file);
-      setValue("customImage", file.name, { shouldValidate: true });
-    }
-  };
-
-  // Remove custom image
-  const handleRemoveCustomImage = () => {
-    setCustomImage(null);
-    setValue("customImage", "", { shouldValidate: true });
-  };
-
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
@@ -217,11 +187,7 @@ const OrderForm = () => {
         totalPrice: parseFloat(data.totalPrice),
         quantity: parseInt(data.quantity, 10),
         status: "inprogress",
-        customImage: customImage ? {
-          name: customImage.name,
-          type: customImage.type,
-          size: customImage.size
-        } : null
+        files: filesData
       };
 
       // Add customUserId only if admin has selected a customer
@@ -335,7 +301,6 @@ const OrderForm = () => {
                 )}
               </div>
 
-              {/* Rest of your existing form fields remain the same */}
               {/* Fabric */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
@@ -582,7 +547,7 @@ const OrderForm = () => {
               )}
 
               {/* File Upload - Maximum 4 files */}
-              {/* <div className="md:col-span-2">
+              <div className="md:col-span-2">
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Upload Files (Max 4 files) <span className="text-red-500">*</span>
                 </label>
@@ -622,50 +587,6 @@ const OrderForm = () => {
                 {uploadedFiles.length === 0 && (
                   <p className="text-red-500 text-xs mt-1">At least one file is required</p>
                 )}
-              </div> */}
-
-              {/* Custom Image Upload */}
-              <div className="md:col-span-2">
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Custom Image
-                </label>
-                <div className="border border-dashed border-gray-300 rounded-lg p-4">
-                  <input
-                    type="file"
-                    accept=".jpg,.jpeg,.png"
-                    onChange={handleCustomImageUpload}
-                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#93C572] file:text-white hover:file:bg-[#79a759]"
-                  />
-                  <p className="text-xs text-gray-500 mt-2">
-                    Supported formats: JPEG, PNG (Max 5MB)
-                  </p>
-                  
-                  {/* Custom image preview */}
-                  {customImage && (
-                    <div className="mt-3">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Custom Image:</p>
-                      <div className="flex items-center justify-between bg-gray-50 rounded px-3 py-2">
-                        <span className="text-sm text-gray-600">{customImage.name}</span>
-                        <button
-                          type="button"
-                          onClick={handleRemoveCustomImage}
-                          className="text-red-500 hover:text-red-700 text-sm font-medium"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      {customImage.type.startsWith('image/') && (
-                        <div className="mt-2">
-                          <img 
-                            src={URL.createObjectURL(customImage)} 
-                            alt="Custom preview" 
-                            className="max-w-xs max-h-32 object-contain border rounded"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
               </div>
 
               {/* Additional Information */}

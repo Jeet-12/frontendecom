@@ -29,7 +29,9 @@ const OrderForm = () => {
           { headers: { 'x-auth-token': token } }
         );
 
+        // axios gives data directly
         const data = response.data;
+
         const userData = Array.isArray(data)
           ? data
           : Array.isArray(data.users)
@@ -54,6 +56,7 @@ const OrderForm = () => {
       }
     };
 
+    // Only fetch users if user is admin
     if (parsed?.role === "admin") {
       fetchUsers();
     }
@@ -76,6 +79,7 @@ const OrderForm = () => {
       additionalInformation: quotation.additionalInformation || "",
       totalPrice: quotation.totalPrice || "",
       quantity: quotation.quantity || "",
+      customImage: quotation.customImage || "",
       customUserId: quotation.customUserId || "",
     }
   });
@@ -105,18 +109,20 @@ const OrderForm = () => {
     }
   };
 
-  // Handle file uploads (optional)
+  // Handle file uploads
   const handleFileUpload = (e) => {
     const files = Array.from(e.target.files);
     
+    // Check total files (existing + new)
     if (uploadedFiles.length + files.length > 4) {
       toast.error("Maximum 4 files allowed");
       return;
     }
 
+    // Validate file types and sizes
     const validFiles = files.filter(file => {
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-      const maxSize = 5 * 1024 * 1024;
+      const maxSize = 5 * 1024 * 1024; // 5MB
 
       if (!validTypes.includes(file.type)) {
         toast.error(`Invalid file type: ${file.name}. Only JPEG, PNG, PDF, and DOC files are allowed.`);
@@ -134,6 +140,7 @@ const OrderForm = () => {
     setUploadedFiles(prev => [...prev, ...validFiles]);
   };
 
+  // Remove uploaded file
   const handleRemoveFile = (index) => {
     setUploadedFiles(prev => prev.filter((_, i) => i !== index));
   };
@@ -143,7 +150,7 @@ const OrderForm = () => {
     const file = e.target.files[0];
     if (file) {
       const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-      const maxSize = 5 * 1024 * 1024;
+      const maxSize = 5 * 1024 * 1024; // 5MB
 
       if (!validTypes.includes(file.type)) {
         toast.error("Invalid file type. Only JPEG and PNG images are allowed.");
@@ -156,11 +163,14 @@ const OrderForm = () => {
       }
 
       setCustomImage(file);
+      setValue("customImage", file.name, { shouldValidate: true });
     }
   };
 
+  // Remove custom image
   const handleRemoveCustomImage = () => {
     setCustomImage(null);
+    setValue("customImage", "", { shouldValidate: true });
   };
 
   const onSubmit = async (data) => {
@@ -173,7 +183,7 @@ const OrderForm = () => {
         return;
       }
 
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token"); // Get token for API call
 
       const formatDateToMMDDYYYY = (dateString) => {
         const [year, month, day] = dateString.split('-');
@@ -182,44 +192,44 @@ const OrderForm = () => {
 
       const colorsArray = data.colors.split(' ').map(color => color.trim()).filter(Boolean);
 
-      // Prepare FormData for file upload
-      const formData = new FormData();
-      
-      // Add all form fields to FormData
-      formData.append('user', userData.id);
-      formData.append('designName', data.designName.trim());
-      formData.append('fabricType', data.fabricType);
-      formData.append('fabric', data.fabric.trim());
-      formData.append('noOfColors', Number(data.noOfColors));
-      formData.append('colors', JSON.stringify(colorsArray));
-      formData.append('measurement', data.measurement);
-      formData.append('width', Number(data.width));
-      formData.append('height', Number(data.height));
-      formData.append('stitchRange', data.stitchRange.toString());
-      formData.append('formatRequired', data.formatRequired);
-      formData.append('timeToComplete', formatDateToMMDDYYYY(data.timeToComplete));
-      formData.append('additionalInformation', data.additionalInformation.trim());
-      formData.append('totalPrice', parseFloat(data.totalPrice));
-      formData.append('quantity', parseInt(data.quantity, 10));
-      formData.append('status', "inprogress");
+      // Prepare files data (in a real app, you would upload these files to a server)
+      const filesData = uploadedFiles.map(file => ({
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        lastModified: file.lastModified
+      }));
 
-      // Add custom image if exists
-      if (customImage) {
-        formData.append('customImage', customImage);
-      }
-
-      // Add other uploaded files
-      uploadedFiles.forEach((file, index) => {
-        formData.append(`files`, file);
-      });
+      const orderData = {
+        user: userData.id,
+        designName: data.designName.trim(),
+        fabricType: data.fabricType,
+        fabric: data.fabric.trim(),
+        noOfColors: Number(data.noOfColors),
+        colors: colorsArray,
+        measurement: data.measurement, 
+        width: Number(data.width),
+        height: Number(data.height),
+        stitchRange: data.stitchRange.toString(),
+        formatRequired: data.formatRequired,
+        timeToComplete: formatDateToMMDDYYYY(data.timeToComplete),
+        additionalInformation: data.additionalInformation.trim(),
+        totalPrice: parseFloat(data.totalPrice),
+        quantity: parseInt(data.quantity, 10),
+        status: "inprogress",
+        customImage: customImage ? {
+          name: customImage.name,
+          type: customImage.type,
+          size: customImage.size
+        } : null
+      };
 
       // Add customUserId only if admin has selected a customer
       if (parsed.role === "admin" && data.customUserId) {
-        formData.append('customUserId', data.customUserId);
+        orderData.customUserId = data.customUserId;
       }
 
-      // Use FormData for the API call
-      const result = await createOrder(formData, token);
+      const result = await createOrder(orderData, token);
       toast.success(result.message || "Order created successfully!");
       navigate("/order");
     } catch (err) {
@@ -228,7 +238,7 @@ const OrderForm = () => {
         response: err.response?.data,
         stack: err.stack
       });
-      toast.error(`Failed to create order: ${err.response?.data?.message || err.message}`);
+      toast.error(`Failed to create order: Please try again`);
     } finally {
       setIsLoading(false);
     }
@@ -239,7 +249,7 @@ const OrderForm = () => {
       <div className="mx-auto w-full max-w-4xl">
         <div className="bg-white border border-gray-200 shadow-lg w-full rounded-lg p-3 sm:p-4 md:p-6">
           <SectionTitle title={`Order Form`} path={`Home > Order Form`} />
-          <form onSubmit={handleSubmit(onSubmit)} noValidate encType="multipart/form-data">
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               
               {/* Customer Name Dropdown (Admin Only) */}
@@ -252,6 +262,8 @@ const OrderForm = () => {
                     {...register("customUserId", { 
                       required: "Customer selection is required" 
                     })}
+                    value={formValues.customUserId}
+                    onChange={(e) => setValue("customUserId", e.target.value, { shouldValidate: true })}
                     className={`border ${errors.customUserId ? "border-red-500" : "border-gray-300"
                       } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
                     disabled={isLoadingUsers}
@@ -290,6 +302,8 @@ const OrderForm = () => {
                       message: "Design name must be at least 3 characters"
                     }
                   })}
+                  value={formValues.designName}
+                  onChange={(e) => handleTextInput(e, 'designName')}
                   className={`border ${errors.designName ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors`}
                   placeholder="Enter design name"
@@ -306,6 +320,8 @@ const OrderForm = () => {
                 </label>
                 <select
                   {...register("fabricType", { required: "Fabric type is required" })}
+                  value={formValues.fabricType}
+                  onChange={(e) => setValue("fabricType", e.target.value, { shouldValidate: true })}
                   className={`border ${errors.fabricType ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
                 >
@@ -319,6 +335,7 @@ const OrderForm = () => {
                 )}
               </div>
 
+              {/* Rest of your existing form fields remain the same */}
               {/* Fabric */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
@@ -333,6 +350,8 @@ const OrderForm = () => {
                       message: "Fabric must be at least 2 characters"
                     }
                   })}
+                  value={formValues.fabric}
+                  onChange={(e) => handleTextInput(e, 'fabric')}
                   className={`border ${errors.fabric ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
                   placeholder="Enter fabric type"
@@ -354,6 +373,7 @@ const OrderForm = () => {
                     min: { value: 1, message: "At least one color is required" },
                     max: { value: 20, message: "Maximum 20 colors allowed" }
                   })}
+                  value={formValues.noOfColors}
                   onChange={(e) => handleNumberInput(e, 'noOfColors', 2)}
                   className={`border ${errors.noOfColors ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
@@ -378,6 +398,8 @@ const OrderForm = () => {
                       return colors.length >= 1 || "At least one color is required";
                     }
                   })}
+                  value={formValues.colors}
+                  onChange={(e) => handleTextInput(e, 'colors')}
                   className={`border ${errors.colors ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
                   placeholder="Enter colors separated by spaces"
@@ -396,6 +418,8 @@ const OrderForm = () => {
                   {...register("measurement", {
                     required: "Measurement unit is required",
                   })}
+                  value={formValues.measurement}
+                  onChange={(e) => setValue("measurement", e.target.value, { shouldValidate: true })}
                   className={`border ${errors.measurement ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
                 >
@@ -419,6 +443,7 @@ const OrderForm = () => {
                     min: { value: 1, message: "Width must be at least 1" },
                     max: { value: 100, message: "Maximum width is 100" }
                   })}
+                  value={formValues.width}
                   onChange={(e) => handleNumberInput(e, 'width')}
                   className={`border ${errors.width ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
@@ -441,6 +466,7 @@ const OrderForm = () => {
                     min: { value: 1, message: "Height must be at least 1" },
                     max: { value: 100, message: "Maximum height is 100" }
                   })}
+                  value={formValues.height}
                   onChange={(e) => handleNumberInput(e, 'height')}
                   className={`border ${errors.height ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
@@ -458,6 +484,8 @@ const OrderForm = () => {
                 </label>
                 <select
                   {...register("stitchRange", { required: "Stitch range is required" })}
+                  value={formValues.stitchRange}
+                  onChange={(e) => setValue("stitchRange", e.target.value, { shouldValidate: true })}
                   className={`border ${errors.stitchRange ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
                 >
@@ -480,6 +508,8 @@ const OrderForm = () => {
                 </label>
                 <select
                   {...register("formatRequired", { required: "Format is required" })}
+                  value={formValues.formatRequired}
+                  onChange={(e) => setValue("formatRequired", e.target.value, { shouldValidate: true })}
                   className={`border ${errors.formatRequired ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
                 >
@@ -513,6 +543,8 @@ const OrderForm = () => {
                       return selectedDate >= today || "Date cannot be in the past";
                     }
                   })}
+                  value={formValues.timeToComplete}
+                  onChange={(e) => setValue("timeToComplete", e.target.value, { shouldValidate: true })}
                   min={new Date().toISOString().split("T")[0]}
                   className={`border ${errors.timeToComplete ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
@@ -537,6 +569,7 @@ const OrderForm = () => {
                         return num > 0 || "Price must be greater than 0";
                       }
                     })}
+                    value={formValues.totalPrice}
                     onChange={handlePriceInput}
                     className={`border ${errors.totalPrice ? "border-red-500" : "border-gray-300"
                       } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
@@ -548,31 +581,10 @@ const OrderForm = () => {
                 </div>
               )}
 
-              {/* Quantity */}
-              <div>
+              {/* File Upload - Maximum 4 files */}
+              {/* <div className="md:col-span-2">
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Quantity <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("quantity", {
-                    required: "Quantity is required",
-                    min: { value: 1, message: "Quantity must be at least 1" }
-                  })}
-                  onChange={(e) => handleNumberInput(e, 'quantity')}
-                  className={`border ${errors.quantity ? "border-red-500" : "border-gray-300"
-                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="Enter quantity"
-                />
-                {errors.quantity && (
-                  <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>
-                )}
-              </div>
-
-              {/* File Upload - Optional */}
-              <div className="md:col-span-2">
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Upload Files (Max 4 files)
+                  Upload Files (Max 4 files) <span className="text-red-500">*</span>
                 </label>
                 <div className="border border-dashed border-gray-300 rounded-lg p-4">
                   <input
@@ -607,7 +619,10 @@ const OrderForm = () => {
                     </div>
                   )}
                 </div>
-              </div>
+                {uploadedFiles.length === 0 && (
+                  <p className="text-red-500 text-xs mt-1">At least one file is required</p>
+                )}
+              </div> */}
 
               {/* Custom Image Upload */}
               <div className="md:col-span-2">
@@ -617,14 +632,16 @@ const OrderForm = () => {
                 <div className="border border-dashed border-gray-300 rounded-lg p-4">
                   <input
                     type="file"
-                    accept=".jpg,.jpeg,.png"
+                    multiple
+                    accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
                     onChange={handleCustomImageUpload}
                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#93C572] file:text-white hover:file:bg-[#79a759]"
                   />
                   <p className="text-xs text-gray-500 mt-2">
-                    Supported formats: JPEG, PNG (Max 5MB)
+                    Supported formats: JPEG, PNG, PDF, DOC (Max 4MB per file)
                   </p>
                   
+                  {/* Custom image preview */}
                   {customImage && (
                     <div className="mt-3">
                       <p className="text-sm font-medium text-gray-700 mb-2">Custom Image:</p>
@@ -664,6 +681,8 @@ const OrderForm = () => {
                       message: "Additional information cannot exceed 500 characters"
                     }
                   })}
+                  value={formValues.additionalInformation}
+                  onChange={(e) => setValue("additionalInformation", e.target.value, { shouldValidate: true })}
                   className={`border ${errors.additionalInformation ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full h-24 focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
                   placeholder="Enter any additional information"
@@ -674,12 +693,12 @@ const OrderForm = () => {
               </div>
             </div>
 
-            {/* Submit Button - REMOVED FILE UPLOAD REQUIREMENT */}
+            {/* Submit Button */}
             <button
               type="submit"
               className={`bg-[#93C572] hover:bg-[#79a759] text-white font-semibold w-full py-2 rounded-lg shadow-md transition-colors flex justify-center items-center mt-6 ${!isValid || isLoading ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-              disabled={!isValid || isLoading}
+              disabled={!isValid || isLoading }
             >
               {isLoading ? (
                 <svg

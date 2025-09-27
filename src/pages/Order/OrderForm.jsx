@@ -11,11 +11,15 @@ const OrderForm = () => {
   const quotation = location.state ?? {};
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [files, setfiles] = useState([]);
+  const [files, setFiles] = useState([]);
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const user = localStorage.getItem("user");
   const parsed = JSON.parse(user);
+
+  // Valid file types
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf', 
+                     'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -28,9 +32,7 @@ const OrderForm = () => {
           { headers: { 'x-auth-token': token } }
         );
 
-        // axios gives data directly
         const data = response.data;
-
         const userData = Array.isArray(data)
           ? data
           : Array.isArray(data.users)
@@ -55,7 +57,6 @@ const OrderForm = () => {
       }
     };
 
-    // Only fetch users if user is admin
     if (parsed?.role === "admin") {
       fetchUsers();
     }
@@ -77,8 +78,7 @@ const OrderForm = () => {
       timeToComplete: quotation.timeToComplete || new Date().toISOString().split("T")[0],
       additionalInformation: quotation.additionalInformation || "",
       totalPrice: quotation.totalPrice || "",
-      quantity: quotation.quantity || "",
-      files: quotation.files || "",
+      quantity: quotation.quantity || "1",
       customUserId: quotation.customUserId || "",
     }
   });
@@ -108,32 +108,39 @@ const OrderForm = () => {
     }
   };
 
-
-  // Handle custom image upload
-  const handlefilesUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      
-      const maxSize = 4 * 1024 * 1024; 
-
+  // Handle file upload
+  const handleFilesUpload = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    
+    // Filter valid files
+    const validFiles = selectedFiles.filter(file => {
       if (!validTypes.includes(file.type)) {
-        toast.error("Invalid file type. Only JPEG and PNG images are allowed.");
-        return;
+        toast.error(`Invalid file type: ${file.name}. Only JPEG, PNG, PDF, DOC are allowed.`);
+        return false;
       }
 
+      const maxSize = 4 * 1024 * 1024; // 4MB
       if (file.size > maxSize) {
-        toast.error("Image too large. Maximum size is 5MB.");
-        return;
+        toast.error(`File too large: ${file.name}. Maximum size is 4MB.`);
+        return false;
       }
 
-      setfiles(file);
-      setValue("files", file.name, { shouldValidate: true });
-    }
+      return true;
+    });
+
+    // Add to existing files (limit to 4 files total)
+    setFiles(prev => {
+      const newFiles = [...prev, ...validFiles].slice(0, 4);
+      if (newFiles.length > 4) {
+        toast.warning("Maximum 4 files allowed. Only first 4 files will be uploaded.");
+      }
+      return newFiles;
+    });
   };
 
-  // Remove custom image
-  const handleRemovefiles = () => {
-    setfiles(prev => prev.filter((_, i) => i !== index));
+  // Remove file
+  const handleRemoveFile = (index) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const onSubmit = async (data) => {
@@ -146,42 +153,63 @@ const OrderForm = () => {
         return;
       }
 
-      const token = localStorage.getItem("token"); // Get token for API call
+      const token = localStorage.getItem("token");
 
+      // Format date to MM/DD/YYYY
       const formatDateToMMDDYYYY = (dateString) => {
         const [year, month, day] = dateString.split('-');
         return `${month}/${day}/${year}`;
       };
 
-      const colorsArray = data.colors.split(' ').map(color => color.trim()).filter(Boolean);
+      // Create FormData object
+      const formData = new FormData();
 
-      const orderData = {
-        user: userData.id,
-        designName: data.designName.trim(),
-        fabricType: data.fabricType,
-        fabric: data.fabric.trim(),
-        noOfColors: Number(data.noOfColors),
-        colors: colorsArray,
-        measurement: data.measurement, 
-        width: Number(data.width),
-        height: Number(data.height),
-        stitchRange: data.stitchRange.toString(),
-        formatRequired: data.formatRequired,
-        timeToComplete: formatDateToMMDDYYYY(data.timeToComplete),
-        additionalInformation: data.additionalInformation.trim(),
-        totalPrice: parseFloat(data.totalPrice),
-        quantity: parseInt(data.quantity, 10),
-        status: "inprogress",
-        files: files ? files: null
-      };
+      // Add all form fields to FormData
+      formData.append('user', userData.id);
+      formData.append('designName', data.designName.trim());
+      formData.append('fabricType', data.fabricType);
+      formData.append('fabric', data.fabric.trim());
+      formData.append('noOfColors', data.noOfColors);
+      formData.append('colors', data.colors.split(' ').map(color => color.trim()).filter(Boolean).join(','));
+      formData.append('measurement', data.measurement);
+      formData.append('width', data.width);
+      formData.append('height', data.height);
+      formData.append('stitchRange', data.stitchRange);
+      formData.append('formatRequired', data.formatRequired);
+      formData.append('timeToComplete', formatDateToMMDDYYYY(data.timeToComplete));
+      formData.append('additionalInformation', data.additionalInformation.trim());
+      formData.append('totalPrice', data.totalPrice);
+      formData.append('quantity', data.quantity || "1");
+      formData.append('status', "inprogress");
 
       // Add customUserId only if admin has selected a customer
       if (parsed.role === "admin" && data.customUserId) {
-        orderData.customUserId = data.customUserId;
+        formData.append('customUserId', data.customUserId);
       }
 
-      const result = await createOrder(orderData, token);
-      toast.success(result.message || "Order created successfully!");
+      // Add files
+      files.forEach((file, index) => {
+        formData.append('files', file);
+      });
+
+      // Log FormData for debugging
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}:`, value);
+      }
+
+      // Use axios to send multipart/form-data
+      const response = await axios.post(
+        'http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/order/create',
+        formData,
+        {
+          headers: {
+            'x-auth-token': token,
+            'Content-Type': 'multipart/form-data'
+          }
+        }
+      );
+
+      toast.success(response.data.message || "Order created successfully!");
       navigate("/order");
     } catch (err) {
       console.error("Detailed error:", {
@@ -189,7 +217,7 @@ const OrderForm = () => {
         response: err.response?.data,
         stack: err.stack
       });
-      toast.error(`Failed to create order: Please try again`);
+      toast.error(`Failed to create order: ${err.response?.data?.message || "Please try again"}`);
     } finally {
       setIsLoading(false);
     }
@@ -200,7 +228,7 @@ const OrderForm = () => {
       <div className="mx-auto w-full max-w-4xl">
         <div className="bg-white border border-gray-200 shadow-lg w-full rounded-lg p-3 sm:p-4 md:p-6">
           <SectionTitle title={`Order Form`} path={`Home > Order Form`} />
-          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          <form onSubmit={handleSubmit(onSubmit)} noValidate encType="multipart/form-data">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               
               {/* Customer Name Dropdown (Admin Only) */}
@@ -286,7 +314,6 @@ const OrderForm = () => {
                 )}
               </div>
 
-              {/* Rest of your existing form fields remain the same */}
               {/* Fabric */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
@@ -532,58 +559,58 @@ const OrderForm = () => {
                 </div>
               )}
 
-              {/* Custom Image Upload */}
+              {/* Quantity */}
+              <div>
+                <label className="font-semibold text-sm pb-1 block text-gray-600">
+                  Quantity <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register("quantity", {
+                    required: "Quantity is required",
+                    min: { value: 1, message: "Quantity must be at least 1" }
+                  })}
+                  value={formValues.quantity}
+                  onChange={(e) => handleNumberInput(e, 'quantity', 5)}
+                  className={`border ${errors.quantity ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                  placeholder="Enter quantity"
+                />
+                {errors.quantity && (
+                  <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>
+                )}
+              </div>
+
+              {/* File Upload */}
               <div className="md:col-span-2">
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Custom Image
+                  Upload Files
                 </label>
                 <div className="border border-dashed border-gray-300 rounded-lg p-4">
                   <input
                     type="file"
                     multiple
                     accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-                    onChange={handlefilesUpload}
+                    onChange={handleFilesUpload}
                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#93C572] file:text-white hover:file:bg-[#79a759]"
                   />
                   <p className="text-xs text-gray-500 mt-2">
-                    Supported formats: JPEG, PNG, PDF, DOC (Max 4MB per file)
+                    Supported formats: JPEG, PNG, PDF, DOC, DOCX (Max 4MB per file, max 4 files)
                   </p>
                   
-                  {/* Custom image preview */}
-                  {files > 0 && (
-                    <div className="mt-3">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Custom Image:</p>
-                      <div className="flex items-center justify-between bg-gray-50 rounded px-3 py-2">
-                        <span className="text-sm text-gray-600">{files.name}</span>
-                        <button
-                          type="button"
-                          onClick={handleRemovefiles}
-                          className="text-red-500 hover:text-red-700 text-sm font-medium"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                      {files.type.startsWith('image/') && (
-                        <div className="mt-2">
-                          <img 
-                            src={URL.createObjectURL(files)} 
-                            alt="Custom preview" 
-                            className="max-w-xs max-h-32 object-contain border rounded"
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )}
+                  {/* File preview */}
                   {files.length > 0 && (
                     <div className="mt-3">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Uploaded files ({files.length}/4):</p>
+                      <p className="text-sm font-medium text-gray-700 mb-2">
+                        Uploaded files ({files.length}/4):
+                      </p>
                       <div className="space-y-2">
                         {files.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded px-3 py-2">
                             <span className="text-sm text-gray-600 truncate">{file.name}</span>
                             <button
                               type="button"
-                              onClick={() => handleRemovefiles(index)}
+                              onClick={() => handleRemoveFile(index)}
                               className="text-red-500 hover:text-red-700 text-sm font-medium"
                             >
                               Remove
@@ -625,7 +652,7 @@ const OrderForm = () => {
               type="submit"
               className={`bg-[#93C572] hover:bg-[#79a759] text-white font-semibold w-full py-2 rounded-lg shadow-md transition-colors flex justify-center items-center mt-6 ${!isValid || isLoading ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-              disabled={!isValid || isLoading }
+              disabled={!isValid || isLoading}
             >
               {isLoading ? (
                 <svg

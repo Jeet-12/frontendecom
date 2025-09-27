@@ -11,7 +11,7 @@ const OrderForm = () => {
   const quotation = location.state ?? {};
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
-  const [customImage, setCustomImage] = useState([]);
+  const [files, setfiles] = useState([]);
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const user = localStorage.getItem("user");
@@ -78,7 +78,7 @@ const OrderForm = () => {
       additionalInformation: quotation.additionalInformation || "",
       totalPrice: quotation.totalPrice || "",
       quantity: quotation.quantity || "",
-      customImage: quotation.customImage || "",
+      files: quotation.files || "",
       customUserId: quotation.customUserId || "",
     }
   });
@@ -110,7 +110,7 @@ const OrderForm = () => {
 
 
   // Handle custom image upload
-  const handleCustomImageUpload = (e) => {
+  const handlefilesUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       
@@ -126,14 +126,14 @@ const OrderForm = () => {
         return;
       }
 
-      setCustomImage(file);
-      setValue("customImage", file.name, { shouldValidate: true });
+      setfiles(file);
+      setValue("files", file.name, { shouldValidate: true });
     }
   };
 
   // Remove custom image
-  const handleRemoveCustomImage = () => {
-    setCustomImage(prev => prev.filter((_, i) => i !== index));
+  const handleRemovefiles = () => {
+    setfiles(prev => prev.filter((_, i) => i !== index));
   };
 
   const onSubmit = async (data) => {
@@ -172,7 +172,7 @@ const OrderForm = () => {
         totalPrice: parseFloat(data.totalPrice),
         quantity: parseInt(data.quantity, 10),
         status: "inprogress",
-        customImage: customImage ? customImage: null
+        files: files ? files: null
       };
 
       // Add customUserId only if admin has selected a customer
@@ -542,7 +542,7 @@ const OrderForm = () => {
                     type="file"
                     multiple
                     accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
-                    onChange={handleCustomImageUpload}
+                    onChange={handlefilesUpload}
                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#93C572] file:text-white hover:file:bg-[#79a759]"
                   />
                   <p className="text-xs text-gray-500 mt-2">
@@ -550,23 +550,23 @@ const OrderForm = () => {
                   </p>
                   
                   {/* Custom image preview */}
-                  {customImage > 0 && (
+                  {files > 0 && (
                     <div className="mt-3">
                       <p className="text-sm font-medium text-gray-700 mb-2">Custom Image:</p>
                       <div className="flex items-center justify-between bg-gray-50 rounded px-3 py-2">
-                        <span className="text-sm text-gray-600">{customImage.name}</span>
+                        <span className="text-sm text-gray-600">{files.name}</span>
                         <button
                           type="button"
-                          onClick={handleRemoveCustomImage}
+                          onClick={handleRemovefiles}
                           className="text-red-500 hover:text-red-700 text-sm font-medium"
                         >
                           Remove
                         </button>
                       </div>
-                      {customImage.type.startsWith('image/') && (
+                      {files.type.startsWith('image/') && (
                         <div className="mt-2">
                           <img 
-                            src={URL.createObjectURL(customImage)} 
+                            src={URL.createObjectURL(files)} 
                             alt="Custom preview" 
                             className="max-w-xs max-h-32 object-contain border rounded"
                           />
@@ -574,16 +574,16 @@ const OrderForm = () => {
                       )}
                     </div>
                   )}
-                  {customImage.length > 0 && (
+                  {files.length > 0 && (
                     <div className="mt-3">
-                      <p className="text-sm font-medium text-gray-700 mb-2">Uploaded files ({customImage.length}/4):</p>
+                      <p className="text-sm font-medium text-gray-700 mb-2">Uploaded files ({files.length}/4):</p>
                       <div className="space-y-2">
-                        {customImage.map((file, index) => (
+                        {files.map((file, index) => (
                           <div key={index} className="flex items-center justify-between bg-gray-50 rounded px-3 py-2">
                             <span className="text-sm text-gray-600 truncate">{file.name}</span>
                             <button
                               type="button"
-                              onClick={() => handleRemoveCustomImage(index)}
+                              onClick={() => handleRemovefiles(index)}
                               className="text-red-500 hover:text-red-700 text-sm font-medium"
                             >
                               Remove

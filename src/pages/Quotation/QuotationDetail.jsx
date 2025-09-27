@@ -87,8 +87,6 @@ const QuotationDetail = () => {
                 quantity: parseInt(quotation.quantity, 10) || 1, // Default to 1 if not available
                 status: "inprogress",
                 files: quotation.files || [],
-                // Note: customImage might need to be handled separately as it's not in quotation data
-                customImage: null
             };
 
             const result = await createOrder(orderData, token);

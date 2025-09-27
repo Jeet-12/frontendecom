@@ -191,10 +191,7 @@ const OrderForm = () => {
         formData.append('files', file);
       });
 
-      // Log FormData for debugging
-      for (let [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
+     
 
      
       const response = await axios.post(

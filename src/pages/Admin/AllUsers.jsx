@@ -15,7 +15,7 @@ const AllUsers = () => {
 
     useEffect(() => {
     const token = localStorage.getItem("token");
-    console.log("Token:", token);
+    // console.log("Token:", token);
 
     const fetchUsers = async () => {
         try {

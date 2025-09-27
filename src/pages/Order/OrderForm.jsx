@@ -178,8 +178,7 @@ const OrderForm = () => {
       formData.append('formatRequired', data.formatRequired);
       formData.append('timeToComplete', formatDateToMMDDYYYY(data.timeToComplete));
       formData.append('additionalInformation', data.additionalInformation.trim());
-      formData.append('totalPrice', data.totalPrice);
-      formData.append('quantity', data.quantity || "1");
+      formData.append('totalPrice', data.totalPrice || "0");
       formData.append('status', "inprogress");
 
       // Add customUserId only if admin has selected a customer
@@ -197,7 +196,7 @@ const OrderForm = () => {
         console.log(`${key}:`, value);
       }
 
-      // Use axios to send multipart/form-data
+     
       const response = await axios.post(
         'http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/order/create',
         formData,
@@ -560,7 +559,7 @@ const OrderForm = () => {
               )}
 
               {/* Quantity */}
-              <div>
+              {/* <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Quantity <span className="text-red-500">*</span>
                 </label>
@@ -579,7 +578,7 @@ const OrderForm = () => {
                 {errors.quantity && (
                   <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>
                 )}
-              </div>
+              </div> */}
 
               {/* File Upload */}
               <div className="md:col-span-2">

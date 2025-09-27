@@ -209,7 +209,13 @@ const OrderForm = () => {
       );
 
       toast.success(response.data.message || "Order created successfully!");
-      navigate("/admin/order");
+       setTimeout(() => {
+      if (parsed?.role === "admin") {
+        navigate("/admin/order");
+      } else {
+        navigate("/order");
+      }
+    }, 1000);
     } catch (err) {
       console.error("Detailed error:", {
         message: err.message,

@@ -119,7 +119,7 @@ const OrderForm = () => {
         return false;
       }
 
-      const maxSize = 4 * 1024 * 1024; // 4MB
+      const maxSize = 4 * 1024 * 1024; 
       if (file.size > maxSize) {
         toast.error(`File too large: ${file.name}. Maximum size is 4MB.`);
         return false;
@@ -209,7 +209,7 @@ const OrderForm = () => {
       );
 
       toast.success(response.data.message || "Order created successfully!");
-      navigate("/order");
+      navigate("/admin/order");
     } catch (err) {
       console.error("Detailed error:", {
         message: err.message,

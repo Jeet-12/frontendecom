@@ -83,7 +83,7 @@ const QuotationDetail = () => {
                 formatRequired: quotation.formatRequired || "",
                 timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete),
                 additionalInformation: quotation.additionalInformation?.trim() || "",
-                totalPrice: parseFloat(quotation.price?.replace('US$', '').split('–')[0]?.trim()) || 0, 
+                totalPrice: (quotation.price) || 0, 
                 quantity: parseInt(quotation.quantity, 10) || 1, 
                 status: "inprogress",
                 files: quotation.files || [],

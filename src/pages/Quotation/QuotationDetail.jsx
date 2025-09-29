@@ -83,13 +83,14 @@ const QuotationDetail = () => {
                 formatRequired: quotation.formatRequired || "",
                 timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete),
                 additionalInformation: quotation.additionalInformation?.trim() || "",
-                totalPrice: parseFloat(quotation.price?.replace('US$', '').split('–')[0]?.trim()) || 0, // Extract first price value
-                quantity: parseInt(quotation.quantity, 10) || 1, // Default to 1 if not available
+                totalPrice: parseFloat(quotation.price?.replace('US$', '').split('–')[0]?.trim()) || 0, 
+                quantity: parseInt(quotation.quantity, 10) || 1, 
                 status: "inprogress",
                 files: quotation.files || [],
             };
 
             const result = await createOrder(orderData, token);
+            console.log(result);
             
             toast.current.show({
                 severity: "success",

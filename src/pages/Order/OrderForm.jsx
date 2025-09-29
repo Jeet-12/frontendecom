@@ -418,11 +418,7 @@ const OrderForm = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("width", {
-                    required: "Width is required",
-                    min: { value: 1, message: "Width must be at least 1" },
-                    max: { value: 100, message: "Maximum width is 100" }
-                  })}
+                  {...register("width")}
                   value={formValues.width}
                   onChange={(e) => handleNumberInput(e, 'width')}
                   className={`border ${errors.width ? "border-red-500" : "border-gray-300"
@@ -441,11 +437,7 @@ const OrderForm = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("height", {
-                    required: "Height is required",
-                    min: { value: 1, message: "Height must be at least 1" },
-                    max: { value: 100, message: "Maximum height is 100" }
-                  })}
+                  {...register("height")}
                   value={formValues.height}
                   onChange={(e) => handleNumberInput(e, 'height')}
                   className={`border ${errors.height ? "border-red-500" : "border-gray-300"

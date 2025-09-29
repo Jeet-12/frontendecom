@@ -196,7 +196,7 @@ const EditQuotation = () => {
                 <input
                   type="number"
                   className={`border ${errors.width ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                  {...register("width", { required: "Width is required" })}
+                  {...register("width")}
                   placeholder="Enter width"
                 />
                 {errors.width && <p className="text-red-500 text-xs mt-1">{errors.width.message}</p>}
@@ -210,7 +210,7 @@ const EditQuotation = () => {
                 <input
                   type="number"
                   className={`border ${errors.height ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                  {...register("height", { required: "Height is required" })}
+                  {...register("height")}
                   placeholder="Enter height"
                 />
                 {errors.height && <p className="text-red-500 text-xs mt-1">{errors.height.message}</p>}

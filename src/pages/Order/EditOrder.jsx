@@ -249,16 +249,25 @@ const EditOrder = () => {
               </div>
 
               {/* Format Required */}
-              <div>
+
+               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Format Required <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
+                <select
                   className={`border ${errors.formatRequired ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
                   {...register("formatRequired", { required: "Format required is required" })}
-                  placeholder="Enter format required"
-                />
+                >
+                  <option value="">Choose Format</option>
+                  <option value="Tajima *.DST">Tajima *.DST</option>
+                  <option value="Wilcom *.EMB">Wilcom *.EMB</option>
+                  <option value="Barudan *.DSB">Barudan *.DSB</option>
+                  <option value="Brother *.PES">Brother *.PES</option>
+                  <option value="Pfaff *.KSM">Pfaff *.KSM</option>
+                  <option value="ZSK *.DSZ">ZSK *.DSZ</option>
+                  <option value="Melco *.EXP">Melco *.EXP</option>
+                  <option value="Toyota *.10o">Toyota *.10o</option>
+                </select>
                 {errors.formatRequired && <p className="text-red-500 text-xs mt-1">{errors.formatRequired.message}</p>}
               </div>
               

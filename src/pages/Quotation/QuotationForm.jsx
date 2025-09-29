@@ -327,6 +327,7 @@ const QuotationForm = () => {
                 >
                   <option value="">Choose Format</option>
                   <option value="Tajima *.DST">Tajima *.DST</option>
+                  <option value="Wilcom *.EMB">Wilcom *.EMB</option>
                   <option value="Barudan *.DSB">Barudan *.DSB</option>
                   <option value="Brother *.PES">Brother *.PES</option>
                   <option value="Pfaff *.KSM">Pfaff *.KSM</option>

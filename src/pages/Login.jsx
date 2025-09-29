@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { loginUser as loginUserAction } from "../features/auth/authSlice";
 import { decodeToken } from "../features/utils/auth";
 import { login } from "../Services/Api";
+import loginImage from '../assets/Login_image.jpg';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -119,11 +120,7 @@ const Login = () => {
                   
                   <h1 className="text-4xl font-bold text-white mb-6">Quick Digitizing</h1>
                   <div className="bg-white/20 p-6 rounded-xl">
-                    <p className="text-white text-lg font-medium">
-                      Thanks for registering. Please confirm your email to activate your account. 
-                      After verification, you'll be able to access our digitizing services, 
-                      manage orders, and start turning your designs into finished embroidery.
-                    </p>
+                   <img src={loginImage} alt="" />
                   </div>
                 </div>
               </div>

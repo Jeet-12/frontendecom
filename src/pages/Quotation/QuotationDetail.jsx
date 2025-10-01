@@ -84,7 +84,6 @@ const QuotationDetail = () => {
                 timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete),
                 additionalInformation: quotation.additionalInformation?.trim() || "",
                 totalPrice: (quotation.price) || 0, 
-                quantity: parseInt(quotation.quantity, 10) || 1, 
                 status: "inprogress",
                 files: quotation.files || [],
             };

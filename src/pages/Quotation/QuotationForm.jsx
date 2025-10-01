@@ -58,14 +58,13 @@ const QuotationForm = () => {
         fabric: data.fabric.trim(),
         noOfColors: Number(data.noofcolors),
         colors: colorsArray,
-        measurement: data.measurement, // Added measurement to quotation data
+        measurement: data.measurement,
         width: Number(data.width),
         height: Number(data.height),
         stitchRange: data.stitch_range.toString(),
         formatRequired: data.format,
         timeToComplete: formatDate(new Date(data.timeTo_complete)),
         additionalInformation: data.additionalinformation?.trim() || "",
-        quantity: Number(data.quantity),
         files: data?.files ? data.files[0] : null,
         status: "inProgress",
       };

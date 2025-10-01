@@ -414,7 +414,7 @@ const OrderForm = () => {
               {/* Width */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Width <span className="text-red-500">*</span>
+                  Width 
                 </label>
                 <input
                   type="text"
@@ -433,7 +433,7 @@ const OrderForm = () => {
               {/* Height */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Height <span className="text-red-500">*</span>
+                  Height 
                 </label>
                 <input
                   type="text"
@@ -487,13 +487,13 @@ const OrderForm = () => {
                 >
                   <option value="">Choose Format</option>
                   <option value="Tajima *.DST">Tajima *.DST</option>
-                  <option value="Wilcom *.EMB">Wilcom *.EMB</option>
                   <option value="Barudan *.DSB">Barudan *.DSB</option>
                   <option value="Brother *.PES">Brother *.PES</option>
                   <option value="Pfaff *.KSM">Pfaff *.KSM</option>
                   <option value="ZSK *.DSZ">ZSK *.DSZ</option>
                   <option value="Melco *.EXP">Melco *.EXP</option>
                   <option value="Toyota *.10o">Toyota *.10o</option>
+                  <option value="Wilcom *.EMB">Wilcom *.EMB</option>
                 </select>
                 {errors.formatRequired && (
                   <p className="text-red-500 text-xs mt-1">{errors.formatRequired.message}</p>

@@ -191,10 +191,11 @@ const QuotationDetail = () => {
                         <p className="font-semibold">Colors:</p>
                         <p>{quotation.colors.join(", ")}</p>
                     </div>
-                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
-                        <p className="font-semibold">Price:</p>
-                        <p>{quotation.price ?? 0}</p>
-                    </div>
+                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md text-black">
+  <p className="font-semibold">Price:</p>
+  <p>{quotation.price ?? 0}</p>
+</div>
+
                     {role === "admin" && quotation.files && quotation.files.length > 0 && (
                         <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
                             <p className="font-semibold mb-2">Files:</p>

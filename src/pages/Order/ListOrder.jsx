@@ -120,7 +120,7 @@ const ListOrder = () => {
 
         switch (searchType) {
             case "id":
-                return order._id.toLowerCase().includes(query);
+                return order.uniqueId.toLowerCase().includes(query);
             case "firstname":
                 return order.user?.firstname?.toLowerCase().includes(query);
             case "lastname":
@@ -322,7 +322,7 @@ const ListOrder = () => {
                                 </div>
                                 <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
                                     <p className="text-xs text-gray-500 mb-1">
-                                        ID: {order._id}
+                                        ID: {order.uniqueId ?? order._id}
                                     </p>
                                     <p className="text-base font-semibold text-gray-800">
                                         Created: {formatDate(order.createdAt)}

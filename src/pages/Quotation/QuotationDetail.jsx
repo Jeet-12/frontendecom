@@ -23,7 +23,7 @@ const QuotationDetail = () => {
             try {
                 const data = await getQuotationById(id, token);
                 setQuotation(data);
-                // console.log(data)
+                console.log("Quotation data:", data);
                 setLoading(false);
             } catch (err) {
                 setError("Failed to fetch quotation details.");
@@ -59,38 +59,45 @@ const QuotationDetail = () => {
         try {
             const userData = JSON.parse(localStorage.getItem("user"));
             
-            // Format the date to MM/DD/YYYY
-            const formatDateToMMDDYYYY = (dateString) => {
+            // Format the date to ISO string (YYYY-MM-DDTHH:mm:ss.sssZ)
+            const formatDateToISO = (dateString) => {
+                if (!dateString) return new Date().toISOString();
+                
                 const date = new Date(dateString);
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                const year = date.getFullYear();
-                return `${month}/${day}/${year}`;
+                // If it's already a valid date, return as ISO string
+                if (!isNaN(date.getTime())) {
+                    return date.toISOString();
+                }
+                
+                // If parsing fails, use current date
+                console.warn("Invalid date provided, using current date");
+                return new Date().toISOString();
             };
 
-            // Prepare order data from quotation
+            // Prepare order data from quotation - match the exact order format
             const orderData = {
-                user: userData.id,
-                designName: quotation.designName?.trim() || "",
+                user: userData.id || quotation.user,
+                designName: quotation.designName?.trim() || "Untitled Design",
                 fabricType: quotation.fabricType || "",
                 fabric: quotation.fabric?.trim() || "",
                 noOfColors: Number(quotation.noOfColors) || 0,
                 colors: quotation.colors || [],
-                measurement: quotation.measurement || "", 
                 width: Number(quotation.width) || 0,
                 height: Number(quotation.height) || 0,
                 stitchRange: quotation.stitchRange?.toString() || "",
                 formatRequired: quotation.formatRequired || "",
-                timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete),
+                timeToComplete: formatDateToISO(quotation.timeToComplete),
                 additionalInformation: quotation.additionalInformation?.trim() || "",
-                totalPrice: (quotation.price) || 0, 
-                status: "inprogress",
-                files: quotation.files || [],
-                
+                totalPrice: Number(quotation.price) || 0,
+                status: "pending", // Using "pending" instead of "inprogress" to match your order format
+                paymentStatus: "Pending", // Added paymentStatus field
+                files: quotation.files || []
             };
 
+            console.log("Creating order with data:", orderData);
+
             const result = await createOrder(orderData, token);
-            console.log(result);
+            console.log("Order creation result:", result);
             
             toast.current.show({
                 severity: "success",
@@ -100,15 +107,21 @@ const QuotationDetail = () => {
             });
             
             // Navigate to orders page after successful creation
-            navigate("/order");
+            setTimeout(() => {
+                navigate(role === "admin" ? "/admin/order" : "/order");
+            }, 1500);
             
         } catch (err) {
             console.error("Error converting quotation to order:", err);
+            const errorMessage = err.response?.data?.message || 
+                               err.message || 
+                               "Failed to convert quotation to order";
+            
             toast.current.show({
                 severity: "error",
                 summary: "Conversion Failed",
-                detail: err.response?.data?.message || "Failed to convert quotation to order",
-                life: 3000,
+                detail: errorMessage,
+                life: 5000,
             });
         } finally {
             setConverting(false);
@@ -116,26 +129,38 @@ const QuotationDetail = () => {
     };
 
     const downloadAllFiles = async () => {
+        if (!quotation?.files || quotation.files.length === 0) {
+            toast.current.show({
+                severity: 'warn',
+                summary: 'No Files',
+                detail: 'No files available for download',
+                life: 3000,
+            });
+            return;
+        }
+
         try {
             const zip = new JSZip();
             const promises = quotation.files.map(async (filePath, index) => {
                 const fullUrl = `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${filePath}`;
-                const fileName = filePath.split('/').pop();
+                const fileName = filePath.split('/').pop() || `file-${index + 1}`;
                 
-                // Fetch each file
-                const response = await fetch(fullUrl);
-                const blob = await response.blob();
-                
-                // Add to ZIP
-                zip.file(fileName, blob);
+                try {
+                    const response = await fetch(fullUrl);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const blob = await response.blob();
+                    zip.file(fileName, blob);
+                } catch (fileError) {
+                    console.error(`Failed to download file: ${fileName}`, fileError);
+                    // Create an empty file with error message
+                    zip.file(`error-${fileName}.txt`, `Failed to download: ${fileName}`);
+                }
             });
 
-            // Wait for all files to be added
             await Promise.all(promises);
             
-            // Generate the ZIP file
             const content = await zip.generateAsync({ type: 'blob' });
-            saveAs(content, 'quotation_files.zip');
+            saveAs(content, `${quotation.designName || 'quotation'}_files.zip`);
             
             toast.current.show({
                 severity: 'success',
@@ -148,7 +173,7 @@ const QuotationDetail = () => {
             toast.current.show({
                 severity: 'error',
                 summary: 'Download Failed',
-                detail: 'Could not download files',
+                detail: 'Could not download files. Please try again.',
                 life: 3000,
             });
         }
@@ -164,11 +189,11 @@ const QuotationDetail = () => {
         );
     }
     
-    if (error) {
+    if (error || !quotation) {
         return (
             <div className="flex items-center justify-center h-screen bg-white text-red-500 p-4 min-h-screen"
                 style={{ fontSize: '18px', fontFamily: 'Arial, sans-serif' }}>
-                <span>{error}</span>
+                <span>{error || "Quotation not found"}</span>
             </div>
         );
     }
@@ -179,6 +204,7 @@ const QuotationDetail = () => {
             <div className="bg-white shadow-lg rounded-lg p-6 mx-auto max-w-4xl mt-8">
                 <h2 className="text-3xl font-semibold text-gray-800 mb-4">Quotation Details</h2>
                 <h3 className="text-2xl font-bold text-gray-800 mb-4">{quotation.designName}</h3>
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                     <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
                         <p className="font-semibold">Fabric:</p>
@@ -190,33 +216,60 @@ const QuotationDetail = () => {
                     </div>
                     <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
                         <p className="font-semibold">Colors:</p>
-                        <p>{quotation.colors.join(", ")}</p>
+                        <p>{quotation.colors?.join(", ") || "No colors specified"}</p>
                     </div>
-                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md text-black">
-  <p className="font-semibold">Price:</p>
-  <p>{quotation.price ?? 0}</p>
-</div>
-
-                    {role === "admin" && quotation.files && quotation.files.length > 0 && (
+                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                        <p className="font-semibold">Price:</p>
+                        <p>${quotation.price ?? 0}</p>
+                    </div>
+                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                        <p className="font-semibold">Dimensions:</p>
+                        <p>{quotation.width} x {quotation.height}</p>
+                    </div>
+                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                        <p className="font-semibold">Status:</p>
+                        <p className="capitalize">{quotation.status}</p>
+                    </div>
+                    {quotation.formatRequired && (
                         <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
-                            <p className="font-semibold mb-2">Files:</p>
-                            <Button
-                                label="Download All Files"
-                                icon="pi pi-download"
-                                className="p-button-sm bg-blue-500 hover:bg-blue-600"
-                                onClick={downloadAllFiles}
-                                style={{ borderStyle: "none" }}
-                            />
-                            <p className="text-sm text-gray-500 mt-1">
-                                {quotation.files.length} file(s) available
-                            </p>
+                            <p className="font-semibold">Format Required:</p>
+                            <p>{quotation.formatRequired}</p>
+                        </div>
+                    )}
+                    {quotation.additionalInformation && (
+                        <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md md:col-span-2">
+                            <p className="font-semibold">Additional Information:</p>
+                            <p>{quotation.additionalInformation}</p>
                         </div>
                     )}
                 </div>
 
-                <div className="flex flex-col sm:flex-row justify-between mt-4 space-y-2 sm:space-y-0 sm:space-x-4">
-                    {/* Common Edit button for both Admin and User */}
-                    <div className="ml-auto">
+                {role === "admin" && quotation.files && quotation.files.length > 0 && (
+                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md mb-4">
+                        <p className="font-semibold mb-2">Files:</p>
+                        <Button
+                            label="Download All Files"
+                            icon="pi pi-download"
+                            className="p-button-sm bg-blue-500 hover:bg-blue-600"
+                            onClick={downloadAllFiles}
+                            style={{ borderStyle: "none" }}
+                        />
+                        <p className="text-sm text-gray-500 mt-1">
+                            {quotation.files.length} file(s) available
+                        </p>
+                    </div>
+                )}
+
+                <div className="flex flex-col sm:flex-row justify-between mt-6 space-y-2 sm:space-y-0 sm:space-x-4">
+                    <Button
+                        label="Back"
+                        icon="pi pi-arrow-left"
+                        className="p-button-secondary"
+                        onClick={() => navigate(-1)}
+                        style={{ borderStyle: "none" }}
+                    />
+                    
+                    <div className="flex flex-col sm:flex-row gap-2">
                         {role === "admin" ? (
                             <Button
                                 label="Edit"
@@ -229,7 +282,7 @@ const QuotationDetail = () => {
                             <Button
                                 label={converting ? "Converting..." : "Convert to Order"}
                                 icon={converting ? "pi pi-spin pi-spinner" : "pi pi-shopping-cart"}
-                                className="bg-yellow-500 hover:bg-yellow-600"
+                                className="bg-green-500 hover:bg-green-600"
                                 onClick={convertToOrder}
                                 disabled={converting}
                                 style={{ borderStyle: "none" }}

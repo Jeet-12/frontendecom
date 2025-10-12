@@ -40,12 +40,8 @@ const ListQuotation = () => {
                 const sortedData = data.sort((a, b) =>
                     new Date(b.createdAt) - new Date(a.createdAt)
                 );
-                const quotationsWithSeqIds = sortedData.map((quotation, index) => ({
-                    ...quotation,
-                    displayId: `Q-${String(index + 1).padStart(10, '0')}`,
-                    searchId: `Q-${String(index + 1).padStart(10, 'o')}`
-                }));
-                setQuotations(quotationsWithSeqIds);
+                
+                setQuotations(sortedData);
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
@@ -120,12 +116,7 @@ const ListQuotation = () => {
 
         switch (searchType) {
             case "id":
-                // Search both the actual ID and the display ID (Q-0001) and search ID (Q-oooo1)
-                return (
-                    quotation._id.toLowerCase().includes(query) ||
-                    quotation.displayId.toLowerCase().includes(query) ||
-                    quotation.searchId.toLowerCase().includes(query)
-                );
+                return quotation._id.toLowerCase().includes(query);
             case "firstname":
                 return quotation.user?.firstname?.toLowerCase().includes(query);
             case "lastname":
@@ -172,7 +163,7 @@ const ListQuotation = () => {
                                     <input
                                         type="text"
                                         placeholder={
-                                            searchType === "id" ? "Search by ID (e.g., Q-0001 or Q-oooo1)" :
+                                            searchType === "id" ? "Search by Quotation ID" :
                                                 `Search by ${searchType.replace(/^\w/, c => c.toUpperCase())}...`
                                         }
                                         className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
@@ -314,7 +305,7 @@ const ListQuotation = () => {
                                 </div>
                                 <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
                                     <p className="text-xs text-gray-500 mb-1">
-                                        ID: {quotation.displayId} (or {quotation.searchId})
+                                        ID: {quotation._id}
                                     </p>
                                     <p className="text-base font-semibold text-gray-800">
                                         Created: {formatDate(quotation.createdAt)}
@@ -334,6 +325,13 @@ const ListQuotation = () => {
                                     <h3 className="text-2xl font-bold text-gray-800 mb-2">
                                         {quotation.designName}
                                     </h3>
+                                    <p className="text-sm text-gray-600 mb-1">
+                                        <strong>Quotation ID:</strong> {quotation._id}
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-1">
+                                        <strong>Status:</strong>{" "}
+                                        <span className="capitalize">{quotation.status}</span>
+                                    </p>
                                     <p className="text-sm text-gray-600 mb-1">
                                         <strong>Fabric:</strong> {quotation.fabric}
                                     </p>

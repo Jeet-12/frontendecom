@@ -44,13 +44,7 @@ const ListOrder = () => {
                     new Date(b.createdAt) - new Date(a.createdAt)
                 );
 
-                const ordersWithFormattedIds = sortedData.map((order, index) => ({
-                    ...order,
-                    displayId: `ORD-${String(index + 1).padStart(10, '0')}`,
-                    searchId: `ORD-${String(index + 1).padStart(10, 'o')}`
-                }));
-
-                setOrders(ordersWithFormattedIds);
+                setOrders(sortedData);
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
@@ -126,12 +120,7 @@ const ListOrder = () => {
 
         switch (searchType) {
             case "id":
-
-                return (
-                    order._id.toLowerCase().includes(query) ||
-                    order.displayId.toLowerCase().includes(query) ||
-                    order.searchId.toLowerCase().includes(query)
-                );
+                return order._id.toLowerCase().includes(query);
             case "firstname":
                 return order.user?.firstname?.toLowerCase().includes(query);
             case "lastname":
@@ -178,7 +167,7 @@ const ListOrder = () => {
                                     <input
                                         type="text"
                                         placeholder={
-                                            searchType === "id" ? "Search by ID (e.g., ORD-0000000001 or ORD-oooooooo1)" :
+                                            searchType === "id" ? "Search by Order ID" :
                                                 `Search by ${searchType.replace(/^\w/, c => c.toUpperCase())}...`
                                         }
                                         className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
@@ -333,7 +322,7 @@ const ListOrder = () => {
                                 </div>
                                 <div className="bg-gray-50 px-6 py-3 border-t border-gray-100">
                                     <p className="text-xs text-gray-500 mb-1">
-                                        ID: {order.displayId} (or {order.searchId})
+                                        ID: {order._id}
                                     </p>
                                     <p className="text-base font-semibold text-gray-800">
                                         Created: {formatDate(order.createdAt)}
@@ -354,7 +343,7 @@ const ListOrder = () => {
                                         {order.designName}
                                     </h3>
                                     <p className="text-sm text-gray-600 mb-1">
-                                        <strong>Order ID:</strong> {order.displayId}
+                                        <strong>Order ID:</strong> {order._id}
                                     </p>
                                     <p className="text-sm text-gray-600 mb-1">
                                         <strong>Status:</strong>{" "}

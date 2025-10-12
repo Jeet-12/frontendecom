@@ -23,7 +23,7 @@ const QuotationDetail = () => {
             try {
                 const data = await getQuotationById(id, token);
                 setQuotation(data);
-                // console.log(data)
+                console.log(data)
                 setLoading(false);
             } catch (err) {
                 setError("Failed to fetch quotation details.");
@@ -86,6 +86,7 @@ const QuotationDetail = () => {
                 totalPrice: (quotation.price) || 0, 
                 status: "inprogress",
                 files: quotation.files || [],
+                
             };
 
             const result = await createOrder(orderData, token);

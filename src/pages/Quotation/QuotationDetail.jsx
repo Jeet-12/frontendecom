@@ -23,7 +23,7 @@ const QuotationDetail = () => {
             try {
                 const data = await getQuotationById(id, token);
                 setQuotation(data);
-                console.log(data)
+                // console.log(data)
                 setLoading(false);
             } catch (err) {
                 setError("Failed to fetch quotation details.");

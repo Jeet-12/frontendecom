@@ -61,7 +61,7 @@ const OrderDetail = () => {
             try {
                 const data = await getOrderById(id, token);                
                 setOrder(data);
-                // console.log(data);
+                console.log(data);
                 
                 setLoading(false);
             } catch (err) {

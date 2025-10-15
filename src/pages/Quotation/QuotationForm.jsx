@@ -141,6 +141,30 @@ const QuotationForm = () => {
                 )}
               </div>
 
+              {/* Number of Colors */}
+              <div>
+                <label className="font-semibold text-sm pb-1 block text-gray-600">
+                  Number of Colors <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  {...register("noofcolors", {
+                    required: "Number of colors is required",
+                    min: { value: 1, message: "At least one color is required" },
+                    max: { value: 20, message: "Maximum 20 colors allowed" }
+                  })}
+                  value={formValues.noofcolors}
+                  onChange={(e) => handleNumberInput(e, 'noofcolors', 2)}
+                  className={`border ${
+                    errors.noofcolors ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                  placeholder="Enter number of colors"
+                />
+                {errors.noofcolors && (
+                  <p className="text-red-500 text-xs mt-1">{errors.noofcolors.message}</p>
+                )}
+              </div>
+
               {/* Fabric */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
@@ -164,30 +188,6 @@ const QuotationForm = () => {
                 />
                 {errors.fabric && (
                   <p className="text-red-500 text-xs mt-1">{errors.fabric.message}</p>
-                )}
-              </div>
-
-              {/* Number of Colors */}
-              <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Number of Colors <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("noofcolors", {
-                    required: "Number of colors is required",
-                    min: { value: 1, message: "At least one color is required" },
-                    max: { value: 20, message: "Maximum 20 colors allowed" }
-                  })}
-                  value={formValues.noofcolors}
-                  onChange={(e) => handleNumberInput(e, 'noofcolors', 2)}
-                  className={`border ${
-                    errors.noofcolors ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="Enter number of colors"
-                />
-                {errors.noofcolors && (
-                  <p className="text-red-500 text-xs mt-1">{errors.noofcolors.message}</p>
                 )}
               </div>
 
@@ -217,7 +217,7 @@ const QuotationForm = () => {
                 )}
               </div>
 
-              {/* Measurement - Changed to dropdown */}
+              {/* Measurement */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Measurement <span className="text-red-500">*</span>
@@ -238,44 +238,49 @@ const QuotationForm = () => {
                 )}
               </div>
 
-              {/* Width */}
-              <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Width 
-                </label>
-                <input
-                  type="text"
-                  {...register("width")}
-                  value={formValues.width}
-                  onChange={(e) => handleNumberInput(e, 'width')}
-                  className={`border ${
-                    errors.width ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="Enter width"
-                />
-                {errors.width && (
-                  <p className="text-red-500 text-xs mt-1">{errors.width.message}</p>
-                )}
-              </div>
+              {/* Width and Height - Arranged together in one row */}
+              <div className="md:col-span-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Width */}
+                  <div>
+                    <label className="font-semibold text-sm pb-1 block text-gray-600">
+                      Width 
+                    </label>
+                    <input
+                      type="text"
+                      {...register("width")}
+                      value={formValues.width}
+                      onChange={(e) => handleNumberInput(e, 'width')}
+                      className={`border ${
+                        errors.width ? "border-red-500" : "border-gray-300"
+                      } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                      placeholder="Enter width"
+                    />
+                    {errors.width && (
+                      <p className="text-red-500 text-xs mt-1">{errors.width.message}</p>
+                    )}
+                  </div>
 
-              {/* Height */}
-              <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Height 
-                </label>
-                <input
-                  type="text"
-                  {...register("height")}
-                  value={formValues.height}
-                  onChange={(e) => handleNumberInput(e, 'height')}
-                  className={`border ${
-                    errors.height ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="Enter height"
-                />
-                {errors.height && (
-                  <p className="text-red-500 text-xs mt-1">{errors.height.message}</p>
-                )}
+                  {/* Height */}
+                  <div>
+                    <label className="font-semibold text-sm pb-1 block text-gray-600">
+                      Height 
+                    </label>
+                    <input
+                      type="text"
+                      {...register("height")}
+                      value={formValues.height}
+                      onChange={(e) => handleNumberInput(e, 'height')}
+                      className={`border ${
+                        errors.height ? "border-red-500" : "border-gray-300"
+                      } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
+                      placeholder="Enter height"
+                    />
+                    {errors.height && (
+                      <p className="text-red-500 text-xs mt-1">{errors.height.message}</p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Stitch Range */}

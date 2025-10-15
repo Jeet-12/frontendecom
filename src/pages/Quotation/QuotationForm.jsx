@@ -102,61 +102,34 @@ const QuotationForm = () => {
           <SectionTitle title="Quotation Form" path="Home > Quotation Form" />
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8">
-            {/* Row 1: Design Name + Fabric Type */}
-             <div className="md:col-span-1 w-full md:w-1/2">
-    <label className="font-semibold text-sm pb-1 block text-gray-600">
-      Design Name <span className="text-red-500">*</span>
-    </label>
-    <input
-      type="text"
-      {...register("designname", {
-        required: "Design name is required",
-        minLength: {
-          value: 3,
-          message: "Design name must be at least 3 characters",
-        },
-      })}
-      value={formValues.designname}
-      onChange={(e) => handleTextInput(e, "designname")}
-      className={`border ${
-        errors.designname ? "border-red-500" : "border-gray-300"
-      } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
-      placeholder="Enter design name"
-    />
-    {errors.designname && (
-      <p className="text-red-500 text-xs mt-1">
-        {errors.designname.message}
-      </p>
-    )}
-  </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Design Name */}
-              <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Design Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("designname", {
-                    required: "Design name is required",
-                    minLength: {
-                      value: 3,
-                      message: "Design name must be at least 3 characters",
-                    },
-                  })}
-                  value={formValues.designname}
-                  onChange={(e) => handleTextInput(e, "designname")}
-                  className={`border ${
-                    errors.designname ? "border-red-500" : "border-gray-300"
+
+            <div className="md:col-span-1 w-full md:w-1/2">
+              <label className="font-semibold text-sm pb-1 block text-gray-600">
+                Design Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                {...register("designname", {
+                  required: "Design name is required",
+                  minLength: {
+                    value: 3,
+                    message: "Design name must be at least 3 characters",
+                  },
+                })}
+                value={formValues.designname}
+                onChange={(e) => handleTextInput(e, "designname")}
+                className={`border ${errors.designname ? "border-red-500" : "border-gray-300"
                   } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
-                  placeholder="Enter design name"
-                />
-                {errors.designname && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.designname.message}
-                  </p>
-                )}
-              </div>
+                placeholder="Enter design name"
+              />
+              {errors.designname && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.designname.message}
+                </p>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
 
               {/* Fabric Type */}
               <div>
@@ -173,9 +146,8 @@ const QuotationForm = () => {
                       shouldValidate: true,
                     })
                   }
-                  className={`border ${
-                    errors.fabrictype ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                  className={`border ${errors.fabrictype ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                 >
                   <option value="">Select Fabric Type</option>
                   <option value="Soft">Soft</option>
@@ -188,10 +160,7 @@ const QuotationForm = () => {
                   </p>
                 )}
               </div>
-            </div>
 
-            {/* Row 2: Fabric + Number of Colors + Colors */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Fabric */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
@@ -208,9 +177,8 @@ const QuotationForm = () => {
                   })}
                   value={formValues.fabric}
                   onChange={(e) => handleTextInput(e, "fabric")}
-                  className={`border ${
-                    errors.fabric ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                  className={`border ${errors.fabric ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                   placeholder="Enter fabric type"
                 />
                 {errors.fabric && (
@@ -219,6 +187,11 @@ const QuotationForm = () => {
                   </p>
                 )}
               </div>
+            </div>
+
+            {/* Row 2: Fabric + Number of Colors + Colors */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
 
               {/* Number of Colors */}
               <div>
@@ -234,9 +207,8 @@ const QuotationForm = () => {
                   })}
                   value={formValues.noofcolors}
                   onChange={(e) => handleNumberInput(e, "noofcolors", 2)}
-                  className={`border ${
-                    errors.noofcolors ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                  className={`border ${errors.noofcolors ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                   placeholder="Enter number of colors"
                 />
                 {errors.noofcolors && (
@@ -265,9 +237,8 @@ const QuotationForm = () => {
                   })}
                   value={formValues.colors}
                   onChange={(e) => handleTextInput(e, "colors")}
-                  className={`border ${
-                    errors.colors ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                  className={`border ${errors.colors ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                   placeholder="Enter colors separated by spaces"
                 />
                 {errors.colors && (
@@ -278,31 +249,31 @@ const QuotationForm = () => {
               </div>
             </div>
 
-            {/* Row 3: Measurement + Width + Height */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Measurement */}
-              <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Measurement <span className="text-red-500">*</span>
-                </label>
-                <select
-                  {...register("measurement", {
-                    required: "Measurement unit is required",
-                  })}
-                  value={formValues.measurement}
-                  onChange={(e) =>
-                    setValue("measurement", e.target.value, {
-                      shouldValidate: true,
-                    })
-                  }
-                  className={`border ${
-                    errors.measurement ? "border-red-500" : "border-gray-300"
+            <div className="md:col-span-1 w-full md:w-1/2">
+              <label className="font-semibold text-sm pb-1 block text-gray-600">
+                Measurement <span className="text-red-500">*</span>
+              </label>
+              <select
+                {...register("measurement", {
+                  required: "Measurement unit is required",
+                })}
+                value={formValues.measurement}
+                onChange={(e) =>
+                  setValue("measurement", e.target.value, {
+                    shouldValidate: true,
+                  })
+                }
+                className={`border ${errors.measurement ? "border-red-500" : "border-gray-300"
                   } rounded-lg px-3 py-2 text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
-                >
-                  <option value="inches">Inches</option>
-                  <option value="cm">Centimeters (cm)</option>
-                </select>
-              </div>
+              >
+                <option value="inches">Inches</option>
+                <option value="cm">Centimeters (cm)</option>
+              </select>
+            </div>
+            {/* Row 3: Measurement + Width + Height */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Measurement */}
+
 
               {/* Width */}
               <div>
@@ -314,9 +285,8 @@ const QuotationForm = () => {
                   {...register("width")}
                   value={formValues.width}
                   onChange={(e) => handleNumberInput(e, "width")}
-                  className={`border ${
-                    errors.width ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                  className={`border ${errors.width ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                   placeholder="Enter width"
                 />
               </div>
@@ -331,16 +301,15 @@ const QuotationForm = () => {
                   {...register("height")}
                   value={formValues.height}
                   onChange={(e) => handleNumberInput(e, "height")}
-                  className={`border ${
-                    errors.height ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                  className={`border ${errors.height ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                   placeholder="Enter height"
                 />
               </div>
             </div>
 
             {/* Row 4: Stitch Range + Format Required + Time to Complete */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Stitch Range */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
@@ -356,9 +325,8 @@ const QuotationForm = () => {
                       shouldValidate: true,
                     })
                   }
-                  className={`border ${
-                    errors.stitch_range ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                  className={`border ${errors.stitch_range ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                 >
                   <option value="">Choose Stitch Range</option>
                   <option value="1000-5000">1000-5000</option>
@@ -380,9 +348,8 @@ const QuotationForm = () => {
                   onChange={(e) =>
                     setValue("format", e.target.value, { shouldValidate: true })
                   }
-                  className={`border ${
-                    errors.format ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                  className={`border ${errors.format ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                 >
                   <option value="">Choose Format</option>
                   <option value="Tajima *.DST">Tajima *.DST</option>
@@ -396,36 +363,36 @@ const QuotationForm = () => {
                 </select>
               </div>
 
-              {/* Time to Complete */}
-              <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Time to Complete Job <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  {...register("timeTo_complete", {
-                    required: "Completion date is required",
-                    validate: (value) => {
-                      const selectedDate = new Date(value);
-                      const today = new Date();
-                      today.setHours(0, 0, 0, 0);
-                      return (
-                        selectedDate >= today || "Date cannot be in the past"
-                      );
-                    },
-                  })}
-                  value={formValues.timeTo_complete}
-                  onChange={(e) =>
-                    setValue("timeTo_complete", e.target.value, {
-                      shouldValidate: true,
-                    })
-                  }
-                  min={new Date().toISOString().split("T")[0]}
-                  className={`border ${
-                    errors.timeTo_complete ? "border-red-500" : "border-gray-300"
+
+            </div>
+            {/* Time to Complete */}
+            <div className="md:col-span-1 w-full md:w-1/2">
+              <label className="font-semibold text-sm pb-1 block text-gray-600">
+                Time to Complete Job <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                {...register("timeTo_complete", {
+                  required: "Completion date is required",
+                  validate: (value) => {
+                    const selectedDate = new Date(value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return (
+                      selectedDate >= today || "Date cannot be in the past"
+                    );
+                  },
+                })}
+                value={formValues.timeTo_complete}
+                onChange={(e) =>
+                  setValue("timeTo_complete", e.target.value, {
+                    shouldValidate: true,
+                  })
+                }
+                min={new Date().toISOString().split("T")[0]}
+                className={`border ${errors.timeTo_complete ? "border-red-500" : "border-gray-300"
                   } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
-                />
-              </div>
+              />
             </div>
 
             {/* Additional Info */}
@@ -447,11 +414,10 @@ const QuotationForm = () => {
                     shouldValidate: true,
                   })
                 }
-                className={`border ${
-                  errors.additionalinformation
-                    ? "border-red-500"
-                    : "border-gray-300"
-                } rounded-lg px-3 py-2 text-sm w-full h-24 focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                className={`border ${errors.additionalinformation
+                  ? "border-red-500"
+                  : "border-gray-300"
+                  } rounded-lg px-3 py-2 text-sm w-full h-24 focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                 placeholder="Enter any additional information"
               />
             </div>
@@ -464,9 +430,8 @@ const QuotationForm = () => {
               <input
                 type="file"
                 multiple
-                className={`border ${
-                  errors.files ? "border-red-500" : "border-gray-300"
-                } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                className={`border ${errors.files ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                 {...register("files")}
               />
             </div>
@@ -475,9 +440,8 @@ const QuotationForm = () => {
             <div className="flex justify-center">
               <button
                 type="submit"
-                className={`bg-[#93C572] hover:bg-[#79a759] text-white font-semibold w-full md:w-1/2 py-2 rounded-lg shadow-md transition-colors flex justify-center items-center mt-6 ${
-                  !isValid || isLoading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`bg-[#93C572] hover:bg-[#79a759] text-white font-semibold w-full md:w-1/2 py-2 rounded-lg shadow-md transition-colors flex justify-center items-center mt-6 ${!isValid || isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 disabled={!isValid || isLoading}
               >
                 {isLoading ? "Submitting..." : "Submit Quotation"}

@@ -6,7 +6,7 @@ import { updateQuotation } from "../../Services/Api"; // Your API call for updat
 
 const EditQuotation = () => {
   const { state: quotation } = useLocation();
-  // console.log(quotation);
+
   const {
     register,
     handleSubmit,
@@ -19,14 +19,15 @@ const EditQuotation = () => {
       fabric: quotation.fabric,
       noofcolors: quotation.noOfColors,
       colors: quotation.colors.join(" "),
-      measurement: quotation.measurement || "inches", // Added measurement field
+      measurement: quotation.measurement || "inches",
       width: quotation.width,
       height: quotation.height,
       stitch_range: quotation.stitchRange,
       format: quotation.formatRequired,
-      timeTo_complete: new Date(quotation.timeToComplete).toISOString().split("T")[0],
+      timeTo_complete: new Date(quotation.timeToComplete)
+        .toISOString()
+        .split("T")[0],
       additionalinformation: quotation.additionalInformation,
-      // quantity: quotation.quantity,
       price: quotation.price || "",
       stitching_count: quotation.stitching_count || "",
       comment: quotation.comment || "",
@@ -40,15 +41,14 @@ const EditQuotation = () => {
 
   const formatDate = (date) => {
     const d = new Date(date);
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
     const year = d.getFullYear();
     return `${month}/${day}/${year}`;
   };
 
   const onSubmit = async (data) => {
     setIsLoading(true);
-
     try {
       const updatedQuotation = {
         designName: data.designname,
@@ -56,34 +56,28 @@ const EditQuotation = () => {
         fabric: data.fabric,
         noOfColors: Number(data.noofcolors),
         colors: data.colors.trim().split(" "),
-        measurement: data.measurement, // Added measurement to update data
+        measurement: data.measurement,
         width: Number(data.width),
         height: Number(data.height),
         stitchRange: data.stitch_range,
         formatRequired: data.format,
         timeToComplete: formatDate(new Date(data.timeTo_complete)),
         additionalInformation: data.additionalinformation,
-        // quantity: Number(data.quantity),
-        ...(user?.role === 'admin' && {
+        ...(user?.role === "admin" && {
           price: data.price,
           stitching_count: Number(data.stitching_count),
           comment: data.comment,
         }),
       };
 
+      const result = await updateQuotation(quotation._id, updatedQuotation, token);
+      toast.success(result.message || "Quotation updated successfully!");
 
-
-      if (user?.role === 'admin') {
-        const result = await updateQuotation(quotation._id, updatedQuotation, token);
-        toast.success(result.message || "Quotation updated successfully!");
-        navigate(`/admin/quotation`);
-      } else if (user?.role === 'user') {
-        const result = await updateQuotation(quotation._id, updatedQuotation, token);
-        toast.success(result.message || "Quotation updated successfully!");
-        navigate(`/quotation`);
-      } else {
+      if (user?.role === "admin") navigate("/admin/quotation");
+      else if (user?.role === "user") navigate("/quotation");
+      else {
         toast.error("You are not authorized to perform this action.");
-        navigate(`/`);
+        navigate("/");
       }
     } catch (err) {
       console.error(err);
@@ -97,133 +91,186 @@ const EditQuotation = () => {
     <div className="flex flex-col justify-center bg-[#e6f0df] min-h-screen py-8">
       <div className="p-4 sm:p-6 lg:p-8 mx-auto md:w-full max-w-4xl">
         <div className="bg-white border border-gray-200 shadow-lg w-full rounded-lg p-6">
-          <h2 className="text-3xl text-center text-[#93C572] font-bold mb-6">Edit Quotation</h2>
-          <form onSubmit={handleSubmit(onSubmit)} noValidate>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Design Name */}
-              <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Design Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  className={`border ${errors.designname ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                  {...register("designname", { required: "Design name is required" })}
-                  placeholder="Enter design name"
-                />
-                {errors.designname && <p className="text-red-500 text-xs mt-1">{errors.designname.message}</p>}
-              </div>
+          <h2 className="text-3xl text-center text-[#93C572] font-bold mb-6">
+            Edit Quotation
+          </h2>
 
-              {/* Fabric Type */}
+          <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            {/* Design Name */}
+            <div className="mb-6">
+              <label className="font-semibold text-sm pb-1 block text-gray-600">
+                Design Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                className={`border ${
+                  errors.designname ? "border-red-500" : "border-gray-300"
+                } rounded-lg px-3 py-2 text-sm w-full`}
+                {...register("designname", {
+                  required: "Design name is required",
+                })}
+                placeholder="Enter design name"
+              />
+              {errors.designname && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.designname.message}
+                </p>
+              )}
+            </div>
+
+            {/* Fabric Type & Fabric */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Fabric Type <span className="text-red-500">*</span>
                 </label>
                 <select
-                  className={`border ${errors.fabrictype ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                  {...register("fabrictype", { required: "Fabric type is required" })}
+                  className={`border ${
+                    errors.fabrictype ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 text-sm w-full`}
+                  {...register("fabrictype", {
+                    required: "Fabric type is required",
+                  })}
                 >
                   <option value="">Select Fabric Type</option>
                   <option value="Soft">Soft</option>
                   <option value="Hard">Hard</option>
                   <option value="Plush">Plush</option>
                 </select>
-                {errors.fabrictype && <p className="text-red-500 text-xs mt-1">{errors.fabrictype.message}</p>}
+                {errors.fabrictype && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.fabrictype.message}
+                  </p>
+                )}
               </div>
 
-              {/* Fabric */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Fabric <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  className={`border ${errors.fabric ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                  className={`border ${
+                    errors.fabric ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 text-sm w-full`}
                   {...register("fabric", { required: "Fabric is required" })}
                   placeholder="Enter fabric"
                 />
-                {errors.fabric && <p className="text-red-500 text-xs mt-1">{errors.fabric.message}</p>}
+                {errors.fabric && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.fabric.message}
+                  </p>
+                )}
               </div>
+            </div>
 
-              {/* Number of Colors */}
+            {/* Colors & Count */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Number of Colors <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
-                  className={`border ${errors.noofcolors ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                  {...register("noofcolors", { required: "Number of colors is required", min: 1 })}
+                  className={`border ${
+                    errors.noofcolors ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 text-sm w-full`}
+                  {...register("noofcolors", {
+                    required: "Number of colors is required",
+                    min: 1,
+                  })}
                   placeholder="Enter number of colors"
                 />
-                {errors.noofcolors && <p className="text-red-500 text-xs mt-1">{errors.noofcolors.message}</p>}
+                {errors.noofcolors && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.noofcolors.message}
+                  </p>
+                )}
               </div>
 
-              {/* Colors */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Colors <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  className={`border ${errors.colors ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                  className={`border ${
+                    errors.colors ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 text-sm w-full`}
                   {...register("colors", { required: "Colors are required" })}
                   placeholder="Enter colors separated by spaces"
                 />
-                {errors.colors && <p className="text-red-500 text-xs mt-1">{errors.colors.message}</p>}
+                {errors.colors && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.colors.message}
+                  </p>
+                )}
               </div>
+            </div>
 
-              {/* Measurement - Changed to dropdown */}
-              <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Measurement <span className="text-red-500">*</span>
-                </label>
-                <select
-                  className={`border ${errors.measurement ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                  {...register("measurement", { required: "Measurement unit is required" })}
-                >
-                  <option value="inches">Inches</option>
-                  <option value="cm">Centimeters (cm)</option>
-                </select>
-                {errors.measurement && <p className="text-red-500 text-xs mt-1">{errors.measurement.message}</p>}
-              </div>
+            {/* Measurement */}
+            <div className="mt-6">
+              <label className="font-semibold text-sm pb-1 block text-gray-600">
+                Measurement <span className="text-red-500">*</span>
+              </label>
+              <select
+                className={`border ${
+                  errors.measurement ? "border-red-500" : "border-gray-300"
+                } rounded-lg px-3 py-2 text-sm w-full`}
+                {...register("measurement", {
+                  required: "Measurement unit is required",
+                })}
+              >
+                <option value="inches">Inches</option>
+                <option value="cm">Centimeters (cm)</option>
+              </select>
+              {errors.measurement && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.measurement.message}
+                </p>
+              )}
+            </div>
 
-              {/* Width */}
+            {/* Width & Height */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Width
                 </label>
                 <input
                   type="number"
-                  className={`border ${errors.width ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full"
                   {...register("width")}
                   placeholder="Enter width"
                 />
-                {errors.width && <p className="text-red-500 text-xs mt-1">{errors.width.message}</p>}
               </div>
 
-              {/* Height */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Height 
+                  Height
                 </label>
                 <input
                   type="number"
-                  className={`border ${errors.height ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                  className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full"
                   {...register("height")}
                   placeholder="Enter height"
                 />
-                {errors.height && <p className="text-red-500 text-xs mt-1">{errors.height.message}</p>}
               </div>
+            </div>
 
-              {/* Stitch Range */}
+            {/* Stitch Range & Format */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Stitch Range <span className="text-red-500">*</span>
                 </label>
                 <select
-                  className={`border ${errors.stitch_range ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                  {...register("stitch_range", { required: "Stitch range is required" })}
+                  className={`border ${
+                    errors.stitch_range ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 text-sm w-full`}
+                  {...register("stitch_range", {
+                    required: "Stitch range is required",
+                  })}
                 >
                   <option value="">Choose Stitch Range</option>
                   <option value="1000-5000">1000-5000</option>
@@ -232,17 +279,19 @@ const EditQuotation = () => {
                   <option value="10000-15000">10000-15000</option>
                   <option value="15000+">15000+</option>
                 </select>
-                {errors.stitch_range && <p className="text-red-500 text-xs mt-1">{errors.stitch_range.message}</p>}
               </div>
 
-              {/* Format Required */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Format Required <span className="text-red-500">*</span>
                 </label>
                 <select
-                  className={`border ${errors.format ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                  {...register("format", { required: "Format required is required" })}
+                  className={`border ${
+                    errors.format ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 text-sm w-full`}
+                  {...register("format", {
+                    required: "Format required is required",
+                  })}
                 >
                   <option value="">Choose Format</option>
                   <option value="Tajima *.DST">Tajima *.DST</option>
@@ -254,118 +303,106 @@ const EditQuotation = () => {
                   <option value="Toyota *.10o">Toyota *.10o</option>
                   <option value="Wilcom *.EMB">Wilcom *.EMB</option>
                 </select>
-                {errors.format && <p className="text-red-500 text-xs mt-1">{errors.format.message}</p>}
               </div>
+            </div>
 
-              {/* Time to Complete */}
-              <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Time to Complete <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="date"
-                  className={`border ${errors.timeTo_complete ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                  {...register("timeTo_complete", { required: "Time to complete is required" })}
-                />
-                {errors.timeTo_complete && <p className="text-red-500 text-xs mt-1">{errors.timeTo_complete.message}</p>}
-              </div>
+            {/* Time to Complete */}
+            <div className="mt-6">
+              <label className="font-semibold text-sm pb-1 block text-gray-600">
+                Time to Complete <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="date"
+                className={`border ${
+                  errors.timeTo_complete ? "border-red-500" : "border-gray-300"
+                } rounded-lg px-3 py-2 text-sm w-full`}
+                {...register("timeTo_complete", {
+                  required: "Time to complete is required",
+                })}
+              />
+            </div>
 
-              {/* Quantity */}
-              {/* <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Quantity <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="number"
-                  className={`border ${errors.quantity ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                  {...register("quantity", { required: "Quantity is required", min: 1 })}
-                  placeholder="Enter quantity"
-                />
-                {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity.message}</p>}
-              </div> */}
+            {/* Additional Info */}
+            <div className="mt-6">
+              <label className="font-semibold text-sm pb-1 block text-gray-600">
+                Additional Information
+              </label>
+              <textarea
+                className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full"
+                {...register("additionalinformation")}
+                placeholder="Enter any additional information"
+                rows="4"
+              />
+            </div>
 
-              {/* Additional Information */}
-              <div className="md:col-span-2">
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Additional Information
-                </label>
-                <textarea
-                  className={`border ${errors.additionalinformation ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                  {...register("additionalinformation")}
-                  placeholder="Enter any additional information"
-                  rows="4"
-                />
-                {errors.additionalinformation && <p className="text-red-500 text-xs mt-1">{errors.additionalinformation.message}</p>}
-              </div>
-
-
-              {user?.role === 'admin' && (
-                <>
-                  {/* Price */}
+            {/* Admin Section */}
+            {user?.role === "admin" && (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                   <div>
                     <label className="font-semibold text-sm pb-1 block text-gray-600">
                       Price ($) <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
-                      className={`border ${errors.price ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                      {...register("price", {
-                        required: "Price is required",
-                      })}
+                      className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full"
+                      {...register("price", { required: "Price is required" })}
                       placeholder="Enter price in USD"
                     />
-                    {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price.message}</p>}
                   </div>
 
-                  {/* Stitch Count */}
                   <div>
                     <label className="font-semibold text-sm pb-1 block text-gray-600">
                       Stitch Count <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="number"
-                      className={`border ${errors.stitching_count ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
+                      className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full"
                       {...register("stitching_count", {
                         required: "Stitch count is required",
-                        min: { value: 1, message: "Stitch count must be at least 1" }
+                        min: {
+                          value: 1,
+                          message: "Stitch count must be at least 1",
+                        },
                       })}
                       placeholder="Enter total stitch count"
                     />
-                    {errors.stitching_count && <p className="text-red-500 text-xs mt-1">{errors.stitching_count.message}</p>}
                   </div>
+                </div>
 
-                  {/* Admin Comment */}
-                  <div className="md:col-span-2">
-                    <label className="font-semibold text-sm pb-1 block text-gray-600">
-                      Comment
-                    </label>
-                    <textarea
-                      className={`border ${errors.comment ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 text-sm w-full`}
-                      {...register("comment", {
-                        maxLength: {
-                          value: 500,
-                          message: "Comment cannot exceed 500 characters"
-                        }
-                      })}
-                      placeholder="Enter any comments for the user"
-                      rows="3"
-                    />
-                    {errors.comment && <p className="text-red-500 text-xs mt-1">{errors.comment.message}</p>}
-                  </div>
-                </>
-              )}
-            </div>
+                <div className="mt-6">
+                  <label className="font-semibold text-sm pb-1 block text-gray-600">
+                    Comment
+                  </label>
+                  <textarea
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full"
+                    {...register("comment", {
+                      maxLength: {
+                        value: 500,
+                        message: "Comment cannot exceed 500 characters",
+                      },
+                    })}
+                    placeholder="Enter any comments for the user"
+                    rows="3"
+                  />
+                </div>
+              </>
+            )}
+
+            {/* Submit */}
             <button
               type="submit"
-              className={`mt-6 w-full py-2 rounded-lg bg-[#93C572] text-white font-semibold ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
-            // disabled={isLoading || !isValid} 
+              className={`mt-8 w-full py-2 rounded-lg bg-[#93C572] text-white font-semibold ${
+                isLoading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+              disabled={isLoading}
             >
               {isLoading ? "Updating Quotation..." : "Update Quotation"}
             </button>
           </form>
         </div>
       </div>
-    </div >
+    </div>
   );
 };
 

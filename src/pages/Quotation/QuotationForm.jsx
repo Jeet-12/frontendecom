@@ -103,6 +103,32 @@ const QuotationForm = () => {
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8">
             {/* Row 1: Design Name + Fabric Type */}
+             <div className="md:col-span-1 w-full md:w-1/2">
+    <label className="font-semibold text-sm pb-1 block text-gray-600">
+      Design Name <span className="text-red-500">*</span>
+    </label>
+    <input
+      type="text"
+      {...register("designname", {
+        required: "Design name is required",
+        minLength: {
+          value: 3,
+          message: "Design name must be at least 3 characters",
+        },
+      })}
+      value={formValues.designname}
+      onChange={(e) => handleTextInput(e, "designname")}
+      className={`border ${
+        errors.designname ? "border-red-500" : "border-gray-300"
+      } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+      placeholder="Enter design name"
+    />
+    {errors.designname && (
+      <p className="text-red-500 text-xs mt-1">
+        {errors.designname.message}
+      </p>
+    )}
+  </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Design Name */}
               <div>

@@ -23,6 +23,7 @@ const QuotationDetail = () => {
             try {
                 const data = await getQuotationById(id, token);
                 setQuotation(data);
+                // console.log(data)
                 setLoading(false);
             } catch (err) {
                 setError("Failed to fetch quotation details.");
@@ -67,53 +68,29 @@ const QuotationDetail = () => {
                 return `${month}/${day}/${year}`;
             };
 
-            // Create FormData object for multipart/form-data
-            const formData = new FormData();
-            
-            // Append all fields as form data
-            formData.append('user', userData.id);
-            formData.append('designName', quotation.designName?.trim() || "");
-            formData.append('fabricType', quotation.fabricType || "");
-            formData.append('fabric', quotation.fabric?.trim() || "");
-            formData.append('noOfColors', String(Number(quotation.noOfColors) || 0));
-            formData.append('colors', quotation.colors?.join(',') || "");
-            formData.append('measurement', quotation.measurement || "");
-            formData.append('width', String(Number(quotation.width) || 0));
-            formData.append('height', String(Number(quotation.height) || 0));
-            formData.append('stitchRange', quotation.stitchRange?.toString() || "");
-            formData.append('formatRequired', quotation.formatRequired || "");
-            formData.append('timeToComplete', formatDateToMMDDYYYY(quotation.timeToComplete));
-            formData.append('additionalInformation', quotation.additionalInformation?.trim() || "");
-            formData.append('totalPrice', String(quotation.price || 0));
-            formData.append('status', "inprogress");
+            // Prepare order data from quotation
+            const orderData = {
+                user: userData.id,
+                designName: quotation.designName?.trim() || "",
+                fabricType: quotation.fabricType || "",
+                fabric: quotation.fabric?.trim() || "",
+                noOfColors: Number(quotation.noOfColors) || 0,
+                colors: quotation.colors || [],
+                measurement: quotation.measurement || "", 
+                width: Number(quotation.width) || 0,
+                height: Number(quotation.height) || 0,
+                stitchRange: quotation.stitchRange?.toString() || "",
+                formatRequired: quotation.formatRequired || "",
+                timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete),
+                additionalInformation: quotation.additionalInformation?.trim() || "",
+                totalPrice: (quotation.price) || 0, 
+                status: "inprogress",
+                files: quotation.files || [],
+                
+            };
 
-            // Handle files if they exist
-            if (quotation.files && quotation.files.length > 0) {
-                // Fetch files and convert them to blob objects
-                for (let i = 0; i < quotation.files.length; i++) {
-                    const filePath = quotation.files[i];
-                    const fullUrl = `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${filePath}`;
-                    
-                    try {
-                        const response = await fetch(fullUrl);
-                        const blob = await response.blob();
-                        const fileName = filePath.split('/').pop();
-                        
-                        // Create a file object from blob
-                        const file = new File([blob], fileName, { type: blob.type });
-                        formData.append('files', file);
-                    } catch (fileError) {
-                        console.error(`Error fetching file ${filePath}:`, fileError);
-                    }
-                }
-            } else {
-                // Append empty files field if no files
-                formData.append('files', '');
-            }
-
-            // Create order with FormData
-            const result = await createOrder(formData, token);
-            console.log("Order creation result:", result);
+            const result = await createOrder(orderData, token);
+            console.log(result);
             
             toast.current.show({
                 severity: "success",
@@ -216,33 +193,12 @@ const QuotationDetail = () => {
                         <p>{quotation.colors.join(", ")}</p>
                     </div>
                     <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md text-black">
-                        <p className="font-semibold">Price:</p>
-                        <p>{quotation.price ?? 0}</p>
-                    </div>
-                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
-                        <p className="font-semibold">Stitch Range:</p>
-                        <p>{quotation.stitchRange}</p>
-                    </div>
-                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
-                        <p className="font-semibold">Format Required:</p>
-                        <p>{quotation.formatRequired}</p>
-                    </div>
-                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
-                        <p className="font-semibold">Dimensions:</p>
-                        <p>{quotation.width} x {quotation.height} {quotation.measurement}</p>
-                    </div>
-                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
-                        <p className="font-semibold">Completion Date:</p>
-                        <p>{new Date(quotation.timeToComplete).toLocaleDateString()}</p>
-                    </div>
-                    {quotation.additionalInformation && (
-                        <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md md:col-span-2">
-                            <p className="font-semibold">Additional Information:</p>
-                            <p>{quotation.additionalInformation}</p>
-                        </div>
-                    )}
+  <p className="font-semibold">Price:</p>
+  <p>{quotation.price ?? 0}</p>
+</div>
+
                     {role === "admin" && quotation.files && quotation.files.length > 0 && (
-                        <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md md:col-span-2">
+                        <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
                             <p className="font-semibold mb-2">Files:</p>
                             <Button
                                 label="Download All Files"

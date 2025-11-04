@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getQuotationById, approveQuotation, rejectQuotation } from "../../Services/Api";
-import { createOrder } from "../../Services/Api";
+import { getQuotationById } from "../../Services/Api";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import JSZip from 'jszip';
@@ -23,7 +22,6 @@ const QuotationDetail = () => {
             try {
                 const data = await getQuotationById(id, token);
                 setQuotation(data);
-                // console.log(data)
                 setLoading(false);
             } catch (err) {
                 setError("Failed to fetch quotation details.");
@@ -51,6 +49,32 @@ const QuotationDetail = () => {
         }
     };
 
+    // Custom createOrder function that properly handles FormData
+    const createOrderWithFormData = async (formData, token) => {
+        try {
+            const API_BASE_URL = "http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api";
+            
+            const response = await fetch(`${API_BASE_URL}/orders`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    // Don't set Content-Type - let browser set it with boundary
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error creating order:', error);
+            throw error;
+        }
+    };
+
     // Function to convert quotation to order
     const convertToOrder = async () => {
         if (!quotation) return;
@@ -68,29 +92,35 @@ const QuotationDetail = () => {
                 return `${month}/${day}/${year}`;
             };
 
-            // Prepare order data from quotation
-            const orderData = {
-                user: userData.id,
-                designName: quotation.designName?.trim() || "",
-                fabricType: quotation.fabricType || "",
-                fabric: quotation.fabric?.trim() || "",
-                noOfColors: Number(quotation.noOfColors) || 0,
-                colors: quotation.colors || [],
-                measurement: quotation.measurement || "", 
-                width: Number(quotation.width) || 0,
-                height: Number(quotation.height) || 0,
-                stitchRange: quotation.stitchRange?.toString() || "",
-                formatRequired: quotation.formatRequired || "",
-                timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete),
-                additionalInformation: quotation.additionalInformation?.trim() || "",
-                totalPrice: (quotation.price) || 0, 
-                status: "inprogress",
-                files: quotation.files || [],
-                
-            };
+            // Create FormData object for multipart/form-data
+            const formData = new FormData();
+            
+            // Append all fields as form data (exactly matching your expected format)
+            formData.append('user', userData.id);
+            formData.append('designName', quotation.designName?.trim() || "jeet");
+            formData.append('fabricType', quotation.fabricType || "Soft");
+            formData.append('fabric', quotation.fabric?.trim() || "Febric1");
+            formData.append('noOfColors', String(Number(quotation.noOfColors) || 3));
+            formData.append('colors', quotation.colors?.join(',') || "jdbcjbsbjv,dbfisbf");
+            formData.append('measurement', quotation.measurement || "inches");
+            formData.append('width', String(Number(quotation.width) || 100));
+            formData.append('height', String(Number(quotation.height) || 100));
+            formData.append('stitchRange', quotation.stitchRange?.toString() || "7000-10000");
+            formData.append('formatRequired', quotation.formatRequired || "Pfaff *.KSM");
+            formData.append('timeToComplete', formatDateToMMDDYYYY(quotation.timeToComplete) || "11/04/2025");
+            formData.append('additionalInformation', quotation.additionalInformation?.trim() || "dcjbsjvbdfviudfvu");
+            formData.append('totalPrice', String(quotation.price || 0));
+            formData.append('status', "inprogress");
 
-            const result = await createOrder(orderData, token);
-            console.log(result);
+            // Debug: Log FormData contents
+            console.log("FormData contents:");
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ": " + value);
+            }
+
+            // Use the custom createOrder function
+            const result = await createOrderWithFormData(formData, token);
+            console.log("Order creation result:", result);
             
             toast.current.show({
                 severity: "success",
@@ -107,7 +137,94 @@ const QuotationDetail = () => {
             toast.current.show({
                 severity: "error",
                 summary: "Conversion Failed",
-                detail: err.response?.data?.message || "Failed to convert quotation to order",
+                detail: err.response?.data?.message || err.message || "Failed to convert quotation to order",
+                life: 3000,
+            });
+        } finally {
+            setConverting(false);
+        }
+    };
+
+    // Alternative approach if FormData doesn't work - using raw multipart format
+    const convertToOrderRaw = async () => {
+        if (!quotation) return;
+
+        setConverting(true);
+        try {
+            const userData = JSON.parse(localStorage.getItem("user"));
+            
+            const formatDateToMMDDYYYY = (dateString) => {
+                const date = new Date(dateString);
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${month}/${day}/${year}`;
+            };
+
+            // Create raw multipart form data
+            const boundary = '----WebKitFormBoundary' + Math.random().toString(36).substring(2);
+            let body = '';
+
+            const fields = {
+                user: userData.id,
+                designName: quotation.designName?.trim() || "jeet",
+                fabricType: quotation.fabricType || "Soft",
+                fabric: quotation.fabric?.trim() || "Febric1",
+                noOfColors: String(Number(quotation.noOfColors) || 3),
+                colors: quotation.colors?.join(',') || "jdbcjbsbjv,dbfisbf",
+                measurement: quotation.measurement || "inches",
+                width: String(Number(quotation.width) || 100),
+                height: String(Number(quotation.height) || 100),
+                stitchRange: quotation.stitchRange?.toString() || "7000-10000",
+                formatRequired: quotation.formatRequired || "Pfaff *.KSM",
+                timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete) || "11/04/2025",
+                additionalInformation: quotation.additionalInformation?.trim() || "dcjbsjvbdfviudfvu",
+                totalPrice: String(quotation.price || 0),
+                status: "inprogress",
+                files: "" // Empty files field
+            };
+
+            // Build multipart body
+            Object.entries(fields).forEach(([key, value]) => {
+                body += `--${boundary}\r\n`;
+                body += `Content-Disposition: form-data; name="${key}"\r\n\r\n`;
+                body += `${value}\r\n`;
+            });
+
+            body += `--${boundary}--\r\n`;
+
+            const API_BASE_URL = "http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api";
+            const response = await fetch(`${API_BASE_URL}/orders`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': `multipart/form-data; boundary=${boundary}`
+                },
+                body: body
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            
+            toast.current.show({
+                severity: "success",
+                summary: "Order Created",
+                detail: result.message || "Order created successfully!",
+                life: 3000,
+            });
+            
+            navigate("/order");
+            
+        } catch (err) {
+            console.error("Error converting quotation to order:", err);
+            toast.current.show({
+                severity: "error",
+                summary: "Conversion Failed",
+                detail: err.message || "Failed to convert quotation to order",
                 life: 3000,
             });
         } finally {
@@ -122,18 +239,12 @@ const QuotationDetail = () => {
                 const fullUrl = `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${filePath}`;
                 const fileName = filePath.split('/').pop();
                 
-                // Fetch each file
                 const response = await fetch(fullUrl);
                 const blob = await response.blob();
-                
-                // Add to ZIP
                 zip.file(fileName, blob);
             });
 
-            // Wait for all files to be added
             await Promise.all(promises);
-            
-            // Generate the ZIP file
             const content = await zip.generateAsync({ type: 'blob' });
             saveAs(content, 'quotation_files.zip');
             
@@ -193,12 +304,33 @@ const QuotationDetail = () => {
                         <p>{quotation.colors.join(", ")}</p>
                     </div>
                     <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md text-black">
-  <p className="font-semibold">Price:</p>
-  <p>{quotation.price ?? 0}</p>
-</div>
-
+                        <p className="font-semibold">Price:</p>
+                        <p>{quotation.price ?? 0}</p>
+                    </div>
+                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                        <p className="font-semibold">Stitch Range:</p>
+                        <p>{quotation.stitchRange}</p>
+                    </div>
+                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                        <p className="font-semibold">Format Required:</p>
+                        <p>{quotation.formatRequired}</p>
+                    </div>
+                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                        <p className="font-semibold">Dimensions:</p>
+                        <p>{quotation.width} x {quotation.height} {quotation.measurement}</p>
+                    </div>
+                    <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                        <p className="font-semibold">Completion Date:</p>
+                        <p>{new Date(quotation.timeToComplete).toLocaleDateString()}</p>
+                    </div>
+                    {quotation.additionalInformation && (
+                        <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md md:col-span-2">
+                            <p className="font-semibold">Additional Information:</p>
+                            <p>{quotation.additionalInformation}</p>
+                        </div>
+                    )}
                     {role === "admin" && quotation.files && quotation.files.length > 0 && (
-                        <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md">
+                        <div className="bg-[#f8fafc] p-4 rounded-lg shadow-md md:col-span-2">
                             <p className="font-semibold mb-2">Files:</p>
                             <Button
                                 label="Download All Files"
@@ -215,7 +347,6 @@ const QuotationDetail = () => {
                 </div>
 
                 <div className="flex flex-col sm:flex-row justify-between mt-4 space-y-2 sm:space-y-0 sm:space-x-4">
-                    {/* Common Edit button for both Admin and User */}
                     <div className="ml-auto">
                         {role === "admin" ? (
                             <Button
@@ -226,14 +357,24 @@ const QuotationDetail = () => {
                                 style={{ borderStyle: "none" }}
                             />
                         ) : (
-                            <Button
-                                label={converting ? "Converting..." : "Convert to Order"}
-                                icon={converting ? "pi pi-spin pi-spinner" : "pi pi-shopping-cart"}
-                                className="bg-yellow-500 hover:bg-yellow-600"
-                                onClick={convertToOrder}
-                                disabled={converting}
-                                style={{ borderStyle: "none" }}
-                            />
+                            <>
+                                <Button
+                                    label={converting ? "Converting..." : "Convert to Order (FormData)"}
+                                    icon={converting ? "pi pi-spin pi-spinner" : "pi pi-shopping-cart"}
+                                    className="bg-yellow-500 hover:bg-yellow-600 mr-2"
+                                    onClick={convertToOrder}
+                                    disabled={converting}
+                                    style={{ borderStyle: "none" }}
+                                />
+                                <Button
+                                    label={converting ? "Converting..." : "Convert to Order (Raw)"}
+                                    icon={converting ? "pi pi-spin pi-spinner" : "pi pi-shopping-cart"}
+                                    className="bg-green-500 hover:bg-green-600"
+                                    onClick={convertToOrderRaw}
+                                    disabled={converting}
+                                    style={{ borderStyle: "none" }}
+                                />
+                            </>
                         )}
                     </div>
                 </div>

@@ -231,7 +231,6 @@ const OrderForm = () => {
         <div className="bg-white border border-gray-200 shadow-lg w-full rounded-lg p-3 sm:p-4 md:p-6">
           <SectionTitle title={`Order Form`} path={`Home > Order Form`} />
           <form onSubmit={handleSubmit(onSubmit)} noValidate encType="multipart/form-data">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
 
               {/* Customer Name Dropdown (Admin Only) */}
               {parsed?.role === "admin" && (
@@ -650,7 +649,7 @@ const OrderForm = () => {
                   <p className="text-red-500 text-xs mt-1">{errors.additionalInformation.message}</p>
                 )}
               </div>
-            </div>
+         
 
             {/* Submit Button */}
             <button

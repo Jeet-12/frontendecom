@@ -197,7 +197,7 @@ const QuotationDetail = () => {
             const response = await fetch(`${API_BASE_URL}/order/create`, {
                 method: 'POST',
                 headers: {
-                    'Authorization': `Bearer ${token}`,
+                    'x-auth-token': token,
                     'Content-Type': `multipart/form-data; boundary=${boundary}`
                 },
                 body: body

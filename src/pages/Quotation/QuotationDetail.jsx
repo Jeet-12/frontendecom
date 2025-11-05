@@ -194,7 +194,7 @@ const QuotationDetail = () => {
             body += `--${boundary}--\r\n`;
 
             const API_BASE_URL = "http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api";
-            const response = await fetch(`${API_BASE_URL}/orders`, {
+            const response = await fetch(`${API_BASE_URL}/order/create`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -358,16 +358,16 @@ const QuotationDetail = () => {
                             />
                         ) : (
                             <>
-                                <Button
-                                    label={converting ? "Converting..." : "Convert to Order (FormData)"}
+                                {/* <Button
+                                    label={converting ? "Converting..." : "Convert to Order"}
                                     icon={converting ? "pi pi-spin pi-spinner" : "pi pi-shopping-cart"}
                                     className="bg-yellow-500 hover:bg-yellow-600 mr-2"
                                     onClick={convertToOrder}
                                     disabled={converting}
                                     style={{ borderStyle: "none" }}
-                                />
+                                /> */}
                                 <Button
-                                    label={converting ? "Converting..." : "Convert to Order (Raw)"}
+                                    label={converting ? "Converting..." : "Convert to Order"}
                                     icon={converting ? "pi pi-spin pi-spinner" : "pi pi-shopping-cart"}
                                     className="bg-green-500 hover:bg-green-600"
                                     onClick={convertToOrderRaw}

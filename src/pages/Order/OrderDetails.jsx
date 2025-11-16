@@ -13,7 +13,7 @@ const OrderDetail = () => {
     const [error, setError] = useState(null);
     const [role, setRole] = useState(null);
     const [previewImages, setPreviewImages] = useState([]);
-    const [digitalFiles, setDigitalFiles] = useState([]); // Changed from digitalImage to digitalFiles (array)
+    const [digitalFiles, setDigitalFiles] = useState([]);
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
     const toast = useRef(null);
@@ -61,8 +61,7 @@ const OrderDetail = () => {
             try {
                 const data = await getOrderById(id, token);                
                 setOrder(data);
-                console.log(data);
-                
+                console.log("Order Data:", data); // Debug log
                 setLoading(false);
             } catch (err) {
                 setError("Failed to fetch order details.");
@@ -99,7 +98,6 @@ const OrderDetail = () => {
                 navigate('/login');
                 return;
             }
-            // console.log(error);
             setLoading(false);
         }
     };
@@ -110,11 +108,9 @@ const OrderDetail = () => {
         if (type === "preview") {
             const validImageTypes = ["image/png", "image/jpeg", "application/pdf"];
             
-            // Filter valid files
             const validFiles = files.filter(file => validImageTypes.includes(file.type));
             
             if (validFiles.length > 0) {
-                // Check if adding these files would exceed the limit of 4
                 if (previewImages.length + validFiles.length > 4) {
                     toast.current.show({
                         severity: "error",
@@ -141,17 +137,14 @@ const OrderDetail = () => {
                 });
             }
         } else if (type === "digital") {
-            // For digital files, allow up to 4 files
             const validDigitalTypes = ["application/zip", "application/x-zip-compressed", "multipart/x-zip"];
             
-            // Filter valid zip files
             const validFiles = files.filter(file => {
                 const isZipFile = file?.name.toLowerCase().endsWith(".zip");
                 return validDigitalTypes.includes(file.type) || isZipFile;
             });
             
             if (validFiles.length > 0) {
-                // Check if adding these files would exceed the limit of 4
                 if (digitalFiles.length + validFiles.length > 4) {
                     toast.current.show({
                         severity: "error",
@@ -192,12 +185,10 @@ const OrderDetail = () => {
         if (previewImages.length > 0 && digitalFiles.length > 0) {
             const formData = new FormData();
             
-            // Append all preview images
             previewImages.forEach((image, index) => {
                 formData.append("previewImage", image);
             });
             
-            // Append all digital files
             digitalFiles.forEach((file, index) => {
                 formData.append("digitalImage", file);
             });
@@ -219,10 +210,8 @@ const OrderDetail = () => {
                         detail: result.message,
                         life: 3000,
                     });
-                    // Refresh order data to show the new images
                     const updatedOrder = await getOrderById(id, token);
                     setOrder(updatedOrder);
-                    // Clear the uploaded files
                     setPreviewImages([]);
                     setDigitalFiles([]);
                 } else {
@@ -295,13 +284,13 @@ const OrderDetail = () => {
                         <p className="font-semibold text-lg">Colors:</p>
                         <p>{order.colors.join(", ")}</p>
                     </div>
-                    {/* <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
-                        <p className="font-semibold text-lg">Quantity:</p>
-                        <p>{order.quantity ?? 0}</p>
-                    </div> */}
+                    <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <p className="font-semibold text-lg">Number of Colors:</p>
+                        <p>{order.noOfColors}</p>
+                    </div>
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Total Price:</p>
-                        <p>$ {order.price ?? 0}</p>
+                        <p>$ {order.price || order.totalPrice || 0}</p>
                     </div>
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Status:</p>
@@ -318,6 +307,83 @@ const OrderDetail = () => {
                         ) : (
                             <p className="mt-2 text-xl">{order.status}</p>
                         )}
+                    </div>
+                    
+                    {/* Stitch Count - Show for both admin and user */}
+                    <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <p className="font-semibold text-lg">Stitch Count:</p>
+                        <p>{order.stitching_count ? order.stitching_count.toLocaleString() : "Not specified"}</p>
+                    </div>
+                    
+                    {/* Stitch Range - Show for both admin and user */}
+                    <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <p className="font-semibold text-lg">Stitch Range:</p>
+                        <p>{order.stitchRange || "Not specified"}</p>
+                    </div>
+                    
+                    {/* Width and Height */}
+                    <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <p className="font-semibold text-lg">Dimensions:</p>
+                        <p>{order.width} {order.measurement} x {order.height} {order.measurement}</p>
+                    </div>
+                    
+                    {/* Format Required */}
+                    <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <p className="font-semibold text-lg">Format Required:</p>
+                        <p>{order.formatRequired || "Not specified"}</p>
+                    </div>
+                    
+                    {/* Time to Complete */}
+                    <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <p className="font-semibold text-lg">Time to Complete:</p>
+                        <p>{new Date(order.timeToComplete).toLocaleDateString()}</p>
+                    </div>
+                    
+                    {/* Payment Status */}
+                    <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <p className="font-semibold text-lg">Payment Status:</p>
+                        <p className={`font-semibold ${
+                            order.paymentStatus === 'Paid' ? 'text-green-600' : 
+                            order.paymentStatus === 'Pending' ? 'text-yellow-600' : 'text-red-600'
+                        }`}>
+                            {order.paymentStatus || "Pending"}
+                        </p>
+                    </div>
+                </div>
+
+                {/* Additional Information - Show for both admin and user */}
+                {order.additionalInformation && (
+                    <div className="mb-6">
+                        <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                            <p className="font-semibold text-lg mb-2">Additional Information:</p>
+                            <p className="text-gray-700">{order.additionalInformation}</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Comment - Show for both admin and user */}
+                {order.comment && (
+                    <div className="mb-6">
+                        <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                            <p className="font-semibold text-lg mb-2">Admin Comment:</p>
+                            <p className="text-gray-700">{order.comment}</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Order ID and Dates */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <p className="font-semibold text-lg">Order ID:</p>
+                        <p className="text-sm font-mono">{order.uniqueId || order._id}</p>
+                    </div>
+                    <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <p className="font-semibold text-lg">Created:</p>
+                        <p>{new Date(order.createdAt).toLocaleDateString()}</p>
+                    </div>
+                    <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                        <p className="font-semibold text-lg">Last Updated:</p>
+                        <p>{new Date(order.updatedAt).toLocaleDateString()}</p>
                     </div>
                 </div>
 
@@ -349,7 +415,6 @@ const OrderDetail = () => {
                                 </div>
                             </div>
                             
-                            {/* Display selected preview images */}
                             {previewImages.length > 0 && (
                                 <div className="mb-4">
                                     <p className="text-sm text-gray-600 mb-2">Selected preview images:</p>
@@ -397,7 +462,6 @@ const OrderDetail = () => {
                                 </div>
                             </div>
                             
-                            {/* Display selected digital files */}
                             {digitalFiles.length > 0 && (
                                 <div className="mb-4">
                                     <p className="text-sm text-gray-600 mb-2">Selected digital files:</p>
@@ -451,7 +515,6 @@ const OrderDetail = () => {
                             className="p-button p-button-rounded"
                             style={{ backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)', borderStyle: "none" }}
                         />
-                        
                     </div>
                 ) : (
                     <div className="flex flex-col md:flex-row gap-4 mt-4">
@@ -472,7 +535,6 @@ const OrderDetail = () => {
                                     className="p-button p-button-rounded"
                                     style={{ backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)', borderStyle: "none" }}
                                 />
-
                             </>
                         )}
                     </div>

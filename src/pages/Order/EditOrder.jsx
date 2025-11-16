@@ -72,7 +72,7 @@ const EditOrder = () => {
       measurement: order.measurement || "inches",
       width: order.width,
       height: order.height,
-      totalPrice: order.totalPrice,
+      // totalPrice: order.totalPrice,
       stitchRange: order.stitchRange,
       formatRequired: order.formatRequired,
       timeToComplete: new Date(order.timeToComplete).toISOString().split("T")[0],
@@ -104,7 +104,7 @@ const EditOrder = () => {
         fabricType: data.fabricType,
         fabric: data.fabric,
         noOfColors: Number(data.noOfColors),
-        totalPrice: Number(data.totalPrice),
+        // totalPrice: Number(data.totalPrice),
         colors: data.colors.split(",").map((color) => color.trim()),
         measurement: data.measurement,
         width: Number(data.width),
@@ -142,12 +142,12 @@ const EditOrder = () => {
   };
 
   // Handle price input validation
-  const handlePriceInput = (e, fieldName = "totalPrice") => {
-    const value = e.target.value;
-    if (value === "" || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
-      setValue(fieldName, value, { shouldValidate: true });
-    }
-  };
+  // const handlePriceInput = (e, fieldName = "totalPrice") => {
+  //   const value = e.target.value;
+  //   if (value === "" || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
+  //     setValue(fieldName, value, { shouldValidate: true });
+  //   }
+  // };
 
   // Handle text input validation
   const handleTextInput = (e, fieldName, regex = /^[a-zA-Z0-9 ]*$/) => {

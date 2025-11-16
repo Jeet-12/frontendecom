@@ -77,7 +77,7 @@ const OrderForm = () => {
       formatRequired: quotation.formatRequired || "",
       timeToComplete: quotation.timeToComplete || new Date().toISOString().split("T")[0],
       additionalInformation: quotation.additionalInformation || "",
-      totalPrice: quotation.totalPrice || "",
+      // totalPrice: quotation.totalPrice || "",
       quantity: quotation.quantity || "1",
       customUserId: quotation.customUserId || "",
     }
@@ -94,12 +94,12 @@ const OrderForm = () => {
     }
   };
 
-  const handlePriceInput = (e) => {
-    const value = e.target.value;
-    if (value === "" || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
-      setValue("totalPrice", value, { shouldValidate: true });
-    }
-  };
+  // const handlePriceInput = (e) => {
+  //   const value = e.target.value;
+  //   if (value === "" || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
+  //     setValue("totalPrice", value, { shouldValidate: true });
+  //   }
+  // };
 
   const handleTextInput = (e, fieldName, regex = /^[a-zA-Z0-9 ]*$/) => {
     const value = e.target.value;
@@ -178,7 +178,7 @@ const OrderForm = () => {
       formData.append('formatRequired', data.formatRequired);
       formData.append('timeToComplete', formatDateToMMDDYYYY(data.timeToComplete));
       formData.append('additionalInformation', data.additionalInformation.trim());
-      formData.append('totalPrice', data.totalPrice || "0");
+      // formData.append('totalPrice', data.totalPrice || "0");
       formData.append('status', "inprogress");
 
       // Add customUserId only if admin has selected a customer
@@ -536,7 +536,7 @@ const OrderForm = () => {
                 </div>
 
                 {/* Total Price */}
-                {parsed?.role === "admin" && (
+                {/* {parsed?.role === "admin" && (
                   <div>
                     <label className="font-semibold text-sm pb-1 block text-gray-600">
                       Total Price <span className="text-red-500">*</span>
@@ -560,7 +560,7 @@ const OrderForm = () => {
                       <p className="text-red-500 text-xs mt-1">{errors.totalPrice.message}</p>
                     )}
                   </div>
-                )}
+                )} */}
               </div>
 
               {/* Quantity */}

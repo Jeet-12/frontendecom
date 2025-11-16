@@ -39,7 +39,8 @@ const ListOrder = () => {
         const fetchOrders = async () => {
             try {
                 const data = await getOrders(token);
-
+                console.log(data);
+                
                 const sortedData = data.sort((a, b) =>
                     new Date(b.createdAt) - new Date(a.createdAt)
                 );

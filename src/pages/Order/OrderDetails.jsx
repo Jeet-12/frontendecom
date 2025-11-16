@@ -199,7 +199,7 @@ const OrderDetail = () => {
             
             // Append all digital files
             digitalFiles.forEach((file, index) => {
-                formData.append("digitalFiles", file);
+                formData.append("digitalImage", file);
             });
 
             try {
@@ -301,7 +301,7 @@ const OrderDetail = () => {
                     </div> */}
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Total Price:</p>
-                        <p>$ {order.totalPrice ?? 0}</p>
+                        <p>$ {order.price ?? 0}</p>
                     </div>
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Status:</p>

@@ -295,7 +295,7 @@ const ListOrder = () => {
                                                 <div>
                                                     <p className="text-sm text-gray-500">Total Price</p>
                                                     <p className="font-medium text-green-600">
-                                                        ${order.totalPrice ?? "0.00"}
+                                                        ${order.price ?? "0.00"}
                                                     </p>
                                                 </div>
                                             </div>

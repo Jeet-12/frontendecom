@@ -428,7 +428,7 @@ const EditOrder = () => {
                 )}
               </div>
 
-              <div>
+              {/* <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Total Price <span className="text-red-500">*</span>
                 </label>
@@ -452,7 +452,7 @@ const EditOrder = () => {
                     {errors.totalPrice.message}
                   </p>
                 )}
-              </div>
+              </div> */}
             </div>
 
             {/* Format Required and Time */}

@@ -21,6 +21,8 @@ const QuotationDetail = () => {
         const fetchQuotation = async () => {
             try {
                 const data = await getQuotationById(id, token);
+                console.log(data);
+                
                 setQuotation(data);
                 setLoading(false);
             } catch (err) {
@@ -183,6 +185,7 @@ const QuotationDetail = () => {
                 status: "inprogress",
                 files: "" // Empty files field
             };
+
 
             // Build multipart body
             Object.entries(fields).forEach(([key, value]) => {

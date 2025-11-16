@@ -97,7 +97,7 @@ const OrderForm = () => {
   // const handlePriceInput = (e) => {
   //   const value = e.target.value;
   //   if (value === "" || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
-  //     setValue("totalPrice", value, { shouldValidate: true });
+  //     setValue("price", value, { shouldValidate: true });
   //   }
   // };
 

@@ -142,12 +142,12 @@ const EditOrder = () => {
   };
 
   // Handle price input validation
-  // const handlePriceInput = (e, fieldName = "totalPrice") => {
-  //   const value = e.target.value;
-  //   if (value === "" || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
-  //     setValue(fieldName, value, { shouldValidate: true });
-  //   }
-  // };
+  const handlePriceInput = (e, fieldName = "price") => {
+    const value = e.target.value;
+    if (value === "" || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
+      setValue(fieldName, value, { shouldValidate: true });
+    }
+  };
 
   // Handle text input validation
   const handleTextInput = (e, fieldName, regex = /^[a-zA-Z0-9 ]*$/) => {

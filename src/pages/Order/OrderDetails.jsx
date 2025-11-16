@@ -194,7 +194,7 @@ const OrderDetail = () => {
             
             // Append all preview images
             previewImages.forEach((image, index) => {
-                formData.append("previewImages", image);
+                formData.append("previewImage", image);
             });
             
             // Append all digital files

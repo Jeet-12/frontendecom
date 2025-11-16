@@ -438,19 +438,20 @@ const OrderDetail = () => {
                 {role === "admin" ? (
                     <div className="flex justify-between mt-8">
                         <Button
-                            label="Edit Order"
-                            icon={<FaEdit />}
-                            onClick={handleEdit}
-                            className="p-button p-button-rounded"
-                            style={{ backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)', borderStyle: "none" }}
-                        />
-                        <Button
                             label="Go Back"
                             icon="pi pi-arrow-left"
                             onClick={() => navigate("/admin/order")}
                             className="p-button p-button-rounded"
                             style={{ backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)', borderStyle: "none" }}
                         />
+                        <Button
+                            label="Edit Order"
+                            icon={<FaEdit />}
+                            onClick={handleEdit}
+                            className="p-button p-button-rounded"
+                            style={{ backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)', borderStyle: "none" }}
+                        />
+                        
                     </div>
                 ) : (
                     <div className="flex flex-col md:flex-row gap-4 mt-4">

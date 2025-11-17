@@ -212,6 +212,7 @@ const OrderDetail = () => {
                     });
                     const updatedOrder = await getOrderById(id, token);
                     setOrder(updatedOrder);
+                     navigate('/admin/order');
                     setPreviewImages([]);
                     setDigitalFiles([]);
                 } else {
@@ -361,7 +362,7 @@ const OrderDetail = () => {
                     </div>
                 )}
 
-                {/* Comment - Show for both admin and user */}
+
                 {order.comment && (
                     <div className="mb-6">
                         <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">

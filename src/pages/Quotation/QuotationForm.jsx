@@ -12,9 +12,7 @@ const QuotationForm = () => {
   const [token, setToken] = useState("");
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
-  const user = localStorage.getItem("user");
-  const parsed = JSON.parse(user);
-  console.log(parsed);
+ 
 
 
   const {
@@ -34,7 +32,9 @@ const QuotationForm = () => {
 
   useEffect(() => {
     const tokenData = localStorage.getItem("token");
-    setToken(tokenData);
+    setToken(tokenData); const user = localStorage.getItem("user");
+  const parsed = JSON.parse(user);
+  console.log(parsed);
 
     // Fetch users if admin
     if (parsed?.role === "admin") {

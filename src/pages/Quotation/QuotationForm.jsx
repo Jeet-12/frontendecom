@@ -4,11 +4,19 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { createQuotation } from "../../Services/Api";
 import { SectionTitle } from "../../components";
+import axios from "axios";
 
 const QuotationForm = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState("");
+  const [users, setUsers] = useState([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const user = localStorage.getItem("user");
+  const parsed = JSON.parse(user);
+  console.log(parsed);
+
+
   const {
     register,
     handleSubmit,
@@ -20,13 +28,52 @@ const QuotationForm = () => {
     mode: "onChange",
     defaultValues: {
       measurement: "inches",
+      customUserId: "",
     },
   });
 
   useEffect(() => {
     const tokenData = localStorage.getItem("token");
     setToken(tokenData);
-  }, []);
+
+    // Fetch users if admin
+    if (parsed?.role === "admin") {
+      fetchUsers(tokenData);
+    }
+  }, [parsed?.role]);
+
+  const fetchUsers = async (token) => {
+    setIsLoadingUsers(true);
+    try {
+      const response = await axios.get(
+        `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/auth/users`,
+        { headers: { 'x-auth-token': token } }
+      );
+
+      const data = response.data;
+      const userData = Array.isArray(data)
+        ? data
+        : Array.isArray(data.users)
+          ? data.users
+          : [];
+
+      setUsers(userData);
+    } catch (err) {
+      const status = err.response?.status;
+
+      if (status === 401) {
+        localStorage.clear();
+        toast.error('Session Expired. Please log in again.');
+        navigate('/login');
+        return;
+      }
+
+      console.error('Error fetching users:', err);
+      toast.error('Failed to fetch users.');
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  };
 
   const formValues = watch();
 
@@ -79,6 +126,11 @@ const QuotationForm = () => {
         status: "inProgress",
       };
 
+      // Add customUserId only if admin has selected a customer
+      if (parsed.role === "admin" && data.customUserId) {
+        quotationData.customUserId = data.customUserId;
+      }
+
       const result = await createQuotation(quotationData, token);
       toast.success(result.message || "Quotation created successfully!");
       navigate("/quotation");
@@ -102,6 +154,42 @@ const QuotationForm = () => {
           <SectionTitle title="Quotation Form" path="Home > Quotation Form" />
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8">
+
+            {/* Customer Name Dropdown (Admin Only) */}
+            {parsed?.role === "admin" && (
+              <div className="md:col-span-1 w-full md:w-1/2">
+                <label className="font-semibold text-sm pb-1 block text-gray-600">
+                  Customer Name <span className="text-red-500">*</span>
+                </label>
+                <select
+                  {...register("customUserId", {
+                    required: "Customer selection is required"
+                  })}
+                  value={formValues.customUserId}
+                  onChange={(e) => setValue("customUserId", e.target.value, { shouldValidate: true })}
+                  className={`border ${errors.customUserId ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b] bg-white`}
+                  disabled={isLoadingUsers}
+                >
+                  <option value="">Select Customer</option>
+                  {isLoadingUsers ? (
+                    <option value="" disabled>Loading customers...</option>
+                  ) : (
+                    users.map((user) => (
+                      <option key={user._id} value={user._id}>
+                        {user.companyname || user.firstname} {user.email ? `(${user.email})` : ''}
+                      </option>
+                    ))
+                  )}
+                </select>
+                {errors.customUserId && (
+                  <p className="text-red-500 text-xs mt-1">{errors.customUserId.message}</p>
+                )}
+                {users.length === 0 && !isLoadingUsers && (
+                  <p className="text-yellow-600 text-xs mt-1">No customers found</p>
+                )}
+              </div>
+            )}
 
             <div className="md:col-span-1 w-full md:w-1/2">
               <label className="font-semibold text-sm pb-1 block text-gray-600">

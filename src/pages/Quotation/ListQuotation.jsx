@@ -36,6 +36,8 @@ const ListQuotation = () => {
         const fetchQuotations = async () => {
             try {
                 const data = await getQuotations(token);
+                console.log(data);
+                
 
                 const sortedData = data.sort((a, b) =>
                     new Date(b.createdAt) - new Date(a.createdAt)

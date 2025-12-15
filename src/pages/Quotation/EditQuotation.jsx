@@ -141,7 +141,7 @@ const EditQuotation = () => {
           price: data.price,
           stitching_count: Number(data.stitching_count),
           comment: data.comment,
-          customUserId: data.customUserId, // Include customUserId for admin
+          customUserId: data.customUserId, 
         }),
       };
 

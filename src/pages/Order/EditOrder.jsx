@@ -626,7 +626,7 @@ const EditOrder = () => {
               className={`mt-8 w-full py-2 rounded-lg bg-[#93C572] text-white font-semibold flex justify-center items-center ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
-              disabled={isLoading || !isValid}
+              // disabled={isLoading || !isValid}
             >
               {isLoading ? (
                 <>

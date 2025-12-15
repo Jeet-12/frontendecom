@@ -32,7 +32,8 @@ const QuotationForm = () => {
 
   useEffect(() => {
     const tokenData = localStorage.getItem("token");
-    setToken(tokenData); const user = localStorage.getItem("user");
+    setToken(tokenData); 
+    const user = localStorage.getItem("user");
   const parsed = JSON.parse(user);
   console.log(parsed);
 

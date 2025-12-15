@@ -61,7 +61,7 @@ const OrderDetail = () => {
             try {
                 const data = await getOrderById(id, token);                
                 setOrder(data);
-                console.log("Order Data:", data); // Debug log
+                console.log("Order Data:", data);
                 setLoading(false);
             } catch (err) {
                 setError("Failed to fetch order details.");

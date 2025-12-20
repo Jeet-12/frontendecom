@@ -114,15 +114,6 @@ const UserProfile = () => {
         </ul>
       </div>
 
-      {/* AI Insights */}
-      <div className="mb-6 mt-4">
-        <h3 className="text-2xl font-semibold text-gray-700">AI Insights</h3>
-        <div className="p-4 bg-gradient-to-r from-[#93C572] to-[#7CB260] text-white rounded-lg shadow-md mt-4">
-          <p>Top-Selling Product: Green Tea Maker</p>
-          <p>Customer Retention: 87%</p>
-        </div>
-      </div>
-
       {/* Change Password */}
       <div className="mt-8">
         <button

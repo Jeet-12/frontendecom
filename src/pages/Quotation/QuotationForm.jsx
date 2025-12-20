@@ -12,8 +12,8 @@ const QuotationForm = () => {
   const [token, setToken] = useState("");
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
- 
-
+  const user = localStorage.getItem("user");
+  const parsed = JSON.parse(user);
 
   const {
     register,
@@ -32,11 +32,8 @@ const QuotationForm = () => {
 
   useEffect(() => {
     const tokenData = localStorage.getItem("token");
-    setToken(tokenData); 
-    const user = localStorage.getItem("user");
-  const parsed = JSON.parse(user);
-  console.log(parsed);
-
+    setToken(tokenData);
+    
     // Fetch users if admin
     if (parsed?.role === "admin") {
       fetchUsers(tokenData);
@@ -87,9 +84,11 @@ const QuotationForm = () => {
     }
   };
 
-  const handleTextInput = (e, fieldName, regex = /^[a-zA-Z0-9 ]*$/) => {
+  // Updated: Allow text input for width and height
+  const handleTextInput = (e, fieldName) => {
     const value = e.target.value;
-    if (regex.test(value)) {
+    // Allow alphanumeric, spaces, and common measurement symbols
+    if (/^[a-zA-Z0-9\s"'-/]*$/.test(value)) {
       setValue(fieldName, value, { shouldValidate: true });
     }
   };
@@ -117,8 +116,8 @@ const QuotationForm = () => {
         noOfColors: Number(data.noofcolors),
         colors: colorsArray,
         measurement: data.measurement,
-        width: Number(data.width),
-        height: Number(data.height),
+        width: data.width, // Changed from Number() to keep as text
+        height: data.height, // Changed from Number() to keep as text
         stitchRange: data.stitch_range.toString(),
         formatRequired: data.format,
         timeToComplete: formatDate(new Date(data.timeTo_complete)),
@@ -217,9 +216,8 @@ const QuotationForm = () => {
                 </p>
               )}
             </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-
               {/* Fabric Type */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
@@ -276,11 +274,6 @@ const QuotationForm = () => {
                   </p>
                 )}
               </div>
-            </div>
-
-            {/* Row 2: Fabric + Number of Colors + Colors */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
 
               {/* Number of Colors */}
               <div>
@@ -336,33 +329,35 @@ const QuotationForm = () => {
                   </p>
                 )}
               </div>
-            </div>
 
-            <div className="md:col-span-1 w-full md:w-1/2">
-              <label className="font-semibold text-sm pb-1 block text-gray-600">
-                Measurement <span className="text-red-500">*</span>
-              </label>
-              <select
-                {...register("measurement", {
-                  required: "Measurement unit is required",
-                })}
-                value={formValues.measurement}
-                onChange={(e) =>
-                  setValue("measurement", e.target.value, {
-                    shouldValidate: true,
-                  })
-                }
-                className={`border ${errors.measurement ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
-              >
-                <option value="inches">Inches</option>
-                <option value="cm">Centimeters (cm)</option>
-              </select>
-            </div>
-            {/* Row 3: Measurement + Width + Height */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Measurement */}
-
+              <div>
+                <label className="font-semibold text-sm pb-1 block text-gray-600">
+                  Measurement <span className="text-red-500">*</span>
+                </label>
+                <select
+                  {...register("measurement", {
+                    required: "Measurement unit is required",
+                  })}
+                  value={formValues.measurement}
+                  onChange={(e) =>
+                    setValue("measurement", e.target.value, {
+                      shouldValidate: true,
+                    })
+                  }
+                  className={`border ${errors.measurement ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                >
+                  <option value="inches">Inches</option>
+                  <option value="cm">Centimeters (cm)</option>
+                  <option value="other">Other</option>
+                </select>
+                {errors.measurement && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.measurement.message}
+                  </p>
+                )}
+              </div>
 
               {/* Width */}
               <div>
@@ -371,13 +366,23 @@ const QuotationForm = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("width")}
+                  {...register("width", {
+                    maxLength: {
+                      value: 50,
+                      message: "Width cannot exceed 50 characters"
+                    }
+                  })}
                   value={formValues.width}
-                  onChange={(e) => handleNumberInput(e, "width")}
+                  onChange={(e) => handleTextInput(e, "width")}
                   className={`border ${errors.width ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
-                  placeholder="Enter width"
+                  placeholder="e.g., 10 inches, 25 cm, medium, large"
                 />
+                {errors.width && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.width.message}
+                  </p>
+                )}
               </div>
 
               {/* Height */}
@@ -387,18 +392,25 @@ const QuotationForm = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("height")}
+                  {...register("height", {
+                    maxLength: {
+                      value: 50,
+                      message: "Height cannot exceed 50 characters"
+                    }
+                  })}
                   value={formValues.height}
-                  onChange={(e) => handleNumberInput(e, "height")}
+                  onChange={(e) => handleTextInput(e, "height")}
                   className={`border ${errors.height ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
-                  placeholder="Enter height"
+                  placeholder="e.g., 12 inches, 30 cm, small, extra large"
                 />
+                {errors.height && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.height.message}
+                  </p>
+                )}
               </div>
-            </div>
 
-            {/* Row 4: Stitch Range + Format Required + Time to Complete */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Stitch Range */}
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
@@ -452,40 +464,39 @@ const QuotationForm = () => {
                 </select>
               </div>
 
-
-            </div>
-            {/* Time to Complete */}
-            <div className="md:col-span-1 w-full md:w-1/2">
-              <label className="font-semibold text-sm pb-1 block text-gray-600">
-                Time to Complete Job <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                {...register("timeTo_complete", {
-                  required: "Completion date is required",
-                  validate: (value) => {
-                    const selectedDate = new Date(value);
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    return (
-                      selectedDate >= today || "Date cannot be in the past"
-                    );
-                  },
-                })}
-                value={formValues.timeTo_complete}
-                onChange={(e) =>
-                  setValue("timeTo_complete", e.target.value, {
-                    shouldValidate: true,
-                  })
-                }
-                min={new Date().toISOString().split("T")[0]}
-                className={`border ${errors.timeTo_complete ? "border-red-500" : "border-gray-300"
-                  } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
-              />
+              {/* Time to Complete */}
+              <div>
+                <label className="font-semibold text-sm pb-1 block text-gray-600">
+                  Time to Complete Job <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  {...register("timeTo_complete", {
+                    required: "Completion date is required",
+                    validate: (value) => {
+                      const selectedDate = new Date(value);
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      return (
+                        selectedDate >= today || "Date cannot be in the past"
+                      );
+                    },
+                  })}
+                  value={formValues.timeTo_complete}
+                  onChange={(e) =>
+                    setValue("timeTo_complete", e.target.value, {
+                      shouldValidate: true,
+                    })
+                  }
+                  min={new Date().toISOString().split("T")[0]}
+                  className={`border ${errors.timeTo_complete ? "border-red-500" : "border-gray-300"
+                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
+                />
+              </div>
             </div>
 
             {/* Additional Info */}
-            <div>
+            <div className="md:col-span-2">
               <label className="font-semibold text-sm pb-1 block text-gray-600">
                 Additional Information
               </label>
@@ -507,12 +518,12 @@ const QuotationForm = () => {
                   ? "border-red-500"
                   : "border-gray-300"
                   } rounded-lg px-3 py-2 text-sm w-full h-24 focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
-                placeholder="Enter any additional information"
+                placeholder="Enter any additional information or special instructions"
               />
             </div>
 
             {/* Files */}
-            <div>
+            <div className="md:col-span-2">
               <label className="font-semibold text-sm pb-1 block text-gray-600">
                 Files to Send
               </label>
@@ -523,17 +534,62 @@ const QuotationForm = () => {
                   } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                 {...register("files")}
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Upload reference files (images, documents, etc.)
+              </p>
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-center">
+            <div className="flex justify-center md:col-span-2">
               <button
                 type="submit"
-                className={`bg-[#93C572] hover:bg-[#79a759] text-white font-semibold w-full md:w-1/2 py-2 rounded-lg shadow-md transition-colors flex justify-center items-center mt-6 ${!isValid || isLoading ? "opacity-50 cursor-not-allowed" : ""
+                className={`bg-[#93C572] hover:bg-[#79a759] text-white font-semibold w-full md:w-1/2 py-3 rounded-lg shadow-md transition-colors flex justify-center items-center ${!isValid || isLoading ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 disabled={!isValid || isLoading}
               >
-                {isLoading ? "Submitting..." : "Submit Quotation"}
+                {isLoading ? (
+                  <>
+                    <svg
+                      className="animate-spin h-5 w-5 mr-3 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      ></path>
+                    </svg>
+                    Creating Quotation...
+                  </>
+                ) : (
+                  <>
+                    <span className="inline-block mr-2">Submit Quotation</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      className="w-4 h-4 inline-block"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                      />
+                    </svg>
+                  </>
+                )}
               </button>
             </div>
           </form>

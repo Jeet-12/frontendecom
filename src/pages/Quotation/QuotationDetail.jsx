@@ -111,7 +111,7 @@ const QuotationDetail = () => {
             formData.append('formatRequired', quotation.formatRequired || "Pfaff *.KSM");
             formData.append('timeToComplete', formatDateToMMDDYYYY(quotation.timeToComplete) || "11/04/2025");
             formData.append('additionalInformation', quotation.additionalInformation?.trim() || "dcjbsjvbdfviudfvu");
-            formData.append('totalPrice', String(quotation.price || 0));
+            formData.append('price', String(quotation.price || 0));
             formData.append('status', "inprogress");
 
             // Debug: Log FormData contents
@@ -181,7 +181,7 @@ const QuotationDetail = () => {
                 formatRequired: quotation.formatRequired || "Pfaff *.KSM",
                 timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete) || "11/04/2025",
                 additionalInformation: quotation.additionalInformation?.trim() || "dcjbsjvbdfviudfvu",
-                totalPrice: String(quotation.price || 0),
+                price: String(quotation.price || 0),
                 status: "inprogress",
                 files: "" // Empty files field
             };

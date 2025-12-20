@@ -413,7 +413,7 @@ const ListOrder = () => {
                                                 <div>
                                                     <p className="text-sm text-gray-500">Total Price</p>
                                                     <p className="font-medium text-green-600 text-lg">
-                                                        ${order.price || order.totalPrice || "0.00"}
+                                                        ${order.price || "0.00"}
                                                     </p>
                                                 </div>
                                             </div>
@@ -428,6 +428,7 @@ const ListOrder = () => {
                                                 style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
                                                 onClick={() => handleView(order)}
                                             />
+                                            {isAdmin == "admin" && (
                                             <Button
                                                 label="Delete"
                                                 icon={<FaTrash className="mr-2" />}
@@ -435,6 +436,7 @@ const ListOrder = () => {
                                                 style={{ backgroundColor: "#D40000", borderStyle: "none" }}
                                                 onClick={() => handleDelete(order)}
                                             />
+                                            )}
                                         </div>
                                     </div>
                                 </div>

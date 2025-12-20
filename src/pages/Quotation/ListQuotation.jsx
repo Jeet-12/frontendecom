@@ -447,6 +447,7 @@ const ListQuotation = () => {
                                         style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
                                         onClick={() => handleView(quotation)}
                                     />
+                                    {isAdmin == "admin" && (
                                     <Button
                                         label="Delete"
                                         icon={<FaTrash className="mr-2" />}
@@ -454,6 +455,7 @@ const ListQuotation = () => {
                                         style={{ backgroundColor: "#D40000", borderStyle: "none" }}
                                         onClick={() => handleDelete(quotation)}
                                     />
+                                    )}
                                 </div>
                             </div>
                         ))}

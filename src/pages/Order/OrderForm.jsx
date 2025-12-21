@@ -357,7 +357,7 @@ const OrderForm = () => {
               </div>
 
               {/* Colors */}
-              <div className="md:col-span-2">
+              <div >
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Colors <span className="text-red-500">*</span>
                 </label>
@@ -382,7 +382,7 @@ const OrderForm = () => {
               </div>
 
               {/* Measurement */}
-              <div>
+              <div className="md:col-span-2">
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Measurement <span className="text-red-500">*</span>
                 </label>

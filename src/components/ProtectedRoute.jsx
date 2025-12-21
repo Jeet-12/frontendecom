@@ -9,9 +9,9 @@ const ProtectedRoute = ({ children, role }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (user.role !== role) {
+  if (user.role.toLowerCase() !== role.toLowerCase()) {
     // If the role doesn't match, redirect based on user role
-    return <Navigate to={user.role === "admin" ? "/admin/admin-profile" : "/"} replace />;
+    return <Navigate to={user.role.toLowerCase() === "admin" ? "/admin/admin-profile" : "/"} replace />;
   }
 
  

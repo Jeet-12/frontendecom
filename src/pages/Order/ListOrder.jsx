@@ -17,7 +17,7 @@ const ListOrder = () => {
     const [searchType, setSearchType] = useState("designName");
     const toast = useRef(null);
     const token = localStorage.getItem("token");
-    const [isAdmin, setIsAdmin] = useState('user');
+    const [isAdmin, setIsAdmin] = useState(false);
     const location = useLocation();
     const { status } = location.state || {};
 
@@ -35,7 +35,9 @@ const ListOrder = () => {
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem("user"));
-        setIsAdmin(user.role);
+        if (user && user.role) {
+            setIsAdmin(user.role.toLowerCase() === 'admin');
+        }
         const fetchOrders = async () => {
             try {
                 const data = await getOrders(token);
@@ -68,7 +70,7 @@ const ListOrder = () => {
     }, [token]);
 
     const handleView = (order) => {
-        navigate(isAdmin == "admin" ? `/admin/order/${order._id}` : `/order/${order._id}`);
+        navigate(isAdmin ? `/admin/order/${order._id}` : `/order/${order._id}`);
     };
 
     const handleDelete = (order) => {
@@ -251,14 +253,14 @@ const ListOrder = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-800">
-                            {isAdmin == "admin" ? "Order Management" : "My Orders"}
+                            {isAdmin ? "Order Management" : "My Orders"}
                         </h1>
                         <p className="text-gray-600">
-                            {isAdmin == "admin" ? "Manage all customer orders" : "Track your order requests"}
+                            {isAdmin ? "Manage all customer orders" : "Track your order requests"}
                         </p>
                     </div>
 
-                    {isAdmin == "admin" ? (
+                    {isAdmin ? (
                         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
                             <div className="relative flex-grow max-w-md flex">
                                 <select
@@ -352,7 +354,7 @@ const ListOrder = () => {
                             onClick={() => navigate("form")}
                         />
                     </div>
-                ) : isAdmin == "admin" ? (
+                ) : isAdmin ? (
                     <div className="space-y-4">
                         {filteredOrders.map((order) => (
                             <div
@@ -428,7 +430,7 @@ const ListOrder = () => {
                                                 style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
                                                 onClick={() => handleView(order)}
                                             />
-                                            {isAdmin == "admin" && (
+                                            {isAdmin && (
                                             <Button
                                                 label="Delete"
                                                 icon={<FaTrash className="mr-2" />}

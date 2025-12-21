@@ -331,7 +331,7 @@ const QuotationForm = () => {
               </div>
 
               {/* Measurement */}
-              <div className="md:col-span-1 w-full md:w-1/2">
+              <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Measurement <span className="text-red-500">*</span>
                 </label>

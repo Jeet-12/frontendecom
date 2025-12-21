@@ -262,7 +262,7 @@ const OrderForm = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Design Name */}
-              <div className="md:col-span-1">
+              <div className="md:col-span-2">
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Design Name <span className="text-red-500">*</span>
                 </label>

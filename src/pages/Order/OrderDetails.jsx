@@ -291,7 +291,7 @@ const OrderDetail = () => {
                     </div>
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Total Price:</p>
-                        <p>$ {order.price || order.totalPrice || 0}</p>
+                        <p>$ {order.price || 0}</p>
                     </div>
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Status:</p>
@@ -429,9 +429,7 @@ const OrderDetail = () => {
                                                 >
                                                     <FaTimes />
                                                 </button>
-                                                <p className="text-xs text-gray-500">
-                                                    {(file.size / 1024).toFixed(1)} KB
-                                                </p>
+                                               
                                             </div>
                                         ))}
                                     </div>
@@ -476,9 +474,7 @@ const OrderDetail = () => {
                                                 >
                                                     <FaTimes />
                                                 </button>
-                                                <p className="text-xs text-gray-500">
-                                                    {(file.size / 1024).toFixed(1)} KB
-                                                </p>
+                                               
                                             </div>
                                         ))}
                                     </div>

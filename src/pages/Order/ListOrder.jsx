@@ -511,7 +511,7 @@ const ListOrder = () => {
                                         </div>
                                         <div className="pt-2">
                                             <p className="text-lg font-bold text-green-600">
-                                                Total: ${order.totalPrice || order.price || "0.00"}
+                                                Total: ${order.price || "0.00"}
                                             </p>
                                         </div>
                                     </div>

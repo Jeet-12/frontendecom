@@ -113,10 +113,11 @@ const EditQuotation = () => {
     }
   };
 
-  // Handle text input validation
-  const handleTextInput = (e, fieldName, regex = /^[a-zA-Z0-9 ]*$/) => {
+  // Updated: Allow text input for width and height
+  const handleTextInput = (e, fieldName) => {
     const value = e.target.value;
-    if (regex.test(value)) {
+    // Allow alphanumeric, spaces, and common measurement symbols
+    if (/^[a-zA-Z0-9\s"'-/]*$/.test(value)) {
       setValue(fieldName, value, { shouldValidate: true });
     }
   };
@@ -131,8 +132,8 @@ const EditQuotation = () => {
         noOfColors: Number(data.noofcolors),
         colors: data.colors.trim().split(" "),
         measurement: data.measurement,
-        width: Number(data.width),
-        height: Number(data.height),
+        width: data.width, // Changed from Number(data.width) to keep as text
+        height: data.height, // Changed from Number(data.height) to keep as text
         stitchRange: data.stitch_range,
         formatRequired: data.format,
         timeToComplete: formatDate(new Date(data.timeTo_complete)),
@@ -363,6 +364,7 @@ const EditQuotation = () => {
               >
                 <option value="inches">Inches</option>
                 <option value="cm">Centimeters (cm)</option>
+                <option value="other">Other</option>
               </select>
               {errors.measurement && (
                 <p className="text-red-500 text-xs mt-1">
@@ -379,13 +381,23 @@ const EditQuotation = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("width")}
+                  {...register("width", {
+                    maxLength: {
+                      value: 50,
+                      message: "Width cannot exceed 50 characters"
+                    }
+                  })}
                   value={formValues.width}
-                  onChange={(e) => handleNumberInput(e, "width")}
+                  onChange={(e) => handleTextInput(e, "width")}
                   className={`border ${errors.width ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="Enter width"
+                  placeholder="e.g., 10 inches, 25 cm, medium, large"
                 />
+                {errors.width && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.width.message}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -394,13 +406,23 @@ const EditQuotation = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("height")}
+                  {...register("height", {
+                    maxLength: {
+                      value: 50,
+                      message: "Height cannot exceed 50 characters"
+                    }
+                  })}
                   value={formValues.height}
-                  onChange={(e) => handleNumberInput(e, "height")}
+                  onChange={(e) => handleTextInput(e, "height")}
                   className={`border ${errors.height ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="Enter height"
+                  placeholder="e.g., 12 inches, 30 cm, small, extra large"
                 />
+                {errors.height && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.height.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -606,7 +628,7 @@ const EditQuotation = () => {
             {/* Submit */}
             <button
               type="submit"
-              className={`mt-8 w-full py-2 rounded-lg bg-[#93C572] text-white font-semibold flex justify-center items-center ${
+              className={`mt-8 w-full py-3 rounded-lg bg-[#93C572] text-white font-semibold flex justify-center items-center hover:bg-[#79a759] transition-colors ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={isLoading || !isValid}
@@ -636,7 +658,23 @@ const EditQuotation = () => {
                   Updating Quotation...
                 </>
               ) : (
-                "Update Quotation"
+                <>
+                  <span className="mr-2">Update Quotation</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-4 h-4 inline-block"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </>
               )}
             </button>
           </form>

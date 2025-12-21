@@ -72,7 +72,6 @@ const EditOrder = () => {
       measurement: order.measurement || "inches",
       width: order.width,
       height: order.height,
-      // totalPrice: order.totalPrice,
       stitchRange: order.stitchRange,
       formatRequired: order.formatRequired,
       timeToComplete: new Date(order.timeToComplete).toISOString().split("T")[0],
@@ -82,7 +81,7 @@ const EditOrder = () => {
         ? order.stitching_count
         : "",
       comment: order.comment || "",
-      customUserId: order.customUserId || "", // Add customUserId for admin
+      customUserId: order.customUserId || "",
     },
   });
 
@@ -94,41 +93,6 @@ const EditOrder = () => {
     const day = String(d.getDate()).padStart(2, "0");
     const year = d.getFullYear();
     return `${month}/${day}/${year}`;
-  };
-
-  const onSubmit = async (data) => {
-    setIsLoading(true);
-    try {
-      const updatedData = {
-        designName: data.designName,
-        fabricType: data.fabricType,
-        fabric: data.fabric,
-        noOfColors: Number(data.noOfColors),
-        // totalPrice: Number(data.totalPrice),
-        colors: data.colors.split(",").map((color) => color.trim()),
-        measurement: data.measurement,
-        width: Number(data.width),
-        height: Number(data.height),
-        stitchRange: data.stitchRange,
-        formatRequired: data.formatRequired,
-        timeToComplete: formatDate(new Date(data.timeToComplete)),
-        additionalInformation: data.additionalInformation,
-        ...(user?.role === "admin" && {
-          price: data.price,
-          stitching_count: Number(data.stitching_count),
-          comment: data.comment,
-          customUserId: data.customUserId, // Include customUserId for admin
-        }),
-      };
-
-      const result = await updateOrder(order._id, updatedData, token);
-      toast.success(result.message || "Order updated successfully!");
-      navigate(user?.role === "admin" ? "/admin/order" : "/order");
-    } catch (error) {
-      toast.error(error.message || "Failed to update Order.");
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   // Handle number input validation
@@ -149,11 +113,46 @@ const EditOrder = () => {
     }
   };
 
-  // Handle text input validation
-  const handleTextInput = (e, fieldName, regex = /^[a-zA-Z0-9 ]*$/) => {
+  // Updated: Allow text input for width and height
+  const handleTextInput = (e, fieldName) => {
     const value = e.target.value;
-    if (regex.test(value)) {
+    // Allow alphanumeric, spaces, and common measurement symbols
+    if (/^[a-zA-Z0-9\s"'-/]*$/.test(value)) {
       setValue(fieldName, value, { shouldValidate: true });
+    }
+  };
+
+  const onSubmit = async (data) => {
+    setIsLoading(true);
+    try {
+      const updatedData = {
+        designName: data.designName,
+        fabricType: data.fabricType,
+        fabric: data.fabric,
+        noOfColors: Number(data.noOfColors),
+        colors: data.colors.split(",").map((color) => color.trim()),
+        measurement: data.measurement,
+        width: data.width, // Changed from Number(data.width) to keep as text
+        height: data.height, // Changed from Number(data.height) to keep as text
+        stitchRange: data.stitchRange,
+        formatRequired: data.formatRequired,
+        timeToComplete: formatDate(new Date(data.timeToComplete)),
+        additionalInformation: data.additionalInformation,
+        ...(user?.role === "admin" && {
+          price: data.price,
+          stitching_count: Number(data.stitching_count),
+          comment: data.comment,
+          customUserId: data.customUserId,
+        }),
+      };
+
+      const result = await updateOrder(order._id, updatedData, token);
+      toast.success(result.message || "Order updated successfully!");
+      navigate(user?.role === "admin" ? "/admin/order" : "/order");
+    } catch (error) {
+      toast.error(error.message || "Failed to update Order.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -168,7 +167,7 @@ const EditOrder = () => {
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             {/* Customer Name Dropdown (Admin Only) */}
             {user?.role === "admin" && (
-              <div className="w-full md:w-1/2 mb-6">
+              <div className="w-full mb-6">
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Customer Name <span className="text-red-500">*</span>
                 </label>
@@ -203,7 +202,7 @@ const EditOrder = () => {
             )}
 
             {/* Design Name */}
-            <div className="w-full md:w-1/2 mb-4">
+            <div className="w-full mb-6">
               <label className="font-semibold text-sm pb-1 block text-gray-600">
                 Design Name <span className="text-red-500">*</span>
               </label>
@@ -336,7 +335,7 @@ const EditOrder = () => {
             </div>
 
             {/* Measurement */}
-            <div className="mt-6 md:w-1/2">
+            <div className="mt-6">
               <label className="font-semibold text-sm pb-1 block text-gray-600">
                 Measurement <span className="text-red-500">*</span>
               </label>
@@ -351,6 +350,7 @@ const EditOrder = () => {
               >
                 <option value="inches">Inches</option>
                 <option value="cm">Centimeters (cm)</option>
+                <option value="other">Other</option>
               </select>
               {errors.measurement && (
                 <p className="text-red-500 text-xs mt-1">
@@ -367,12 +367,17 @@ const EditOrder = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("width")}
+                  {...register("width", {
+                    maxLength: {
+                      value: 50,
+                      message: "Width cannot exceed 50 characters"
+                    }
+                  })}
                   value={formValues.width}
-                  onChange={(e) => handleNumberInput(e, 'width')}
+                  onChange={(e) => handleTextInput(e, 'width')}
                   className={`border ${errors.width ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="Enter width"
+                  placeholder="e.g., 10 inches, 25 cm, medium, large"
                 />
                 {errors.width && (
                   <p className="text-red-500 text-xs mt-1">
@@ -380,18 +385,24 @@ const EditOrder = () => {
                   </p>
                 )}
               </div>
+              
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Height
                 </label>
                 <input
                   type="text"
-                  {...register("height")}
+                  {...register("height", {
+                    maxLength: {
+                      value: 50,
+                      message: "Height cannot exceed 50 characters"
+                    }
+                  })}
                   value={formValues.height}
-                  onChange={(e) => handleNumberInput(e, 'height')}
+                  onChange={(e) => handleTextInput(e, 'height')}
                   className={`border ${errors.height ? "border-red-500" : "border-gray-300"
                     } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="Enter height"
+                  placeholder="e.g., 12 inches, 30 cm, small, extra large"
                 />
                 {errors.height && (
                   <p className="text-red-500 text-xs mt-1">
@@ -401,7 +412,7 @@ const EditOrder = () => {
               </div>
             </div>
 
-            {/* Stitch Range & Total Price */}
+            {/* Stitch Range */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
@@ -427,32 +438,6 @@ const EditOrder = () => {
                   </p>
                 )}
               </div>
-
-              {/* <div>
-                <label className="font-semibold text-sm pb-1 block text-gray-600">
-                  Total Price <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  {...register("totalPrice", { 
-                    required: "Total Price is required",
-                    validate: value => {
-                      const num = parseFloat(value);
-                      return num > 0 || "Price must be greater than 0";
-                    }
-                  })}
-                  value={formValues.totalPrice}
-                  onChange={handlePriceInput}
-                  className={`border ${errors.totalPrice ? "border-red-500" : "border-gray-300"
-                    } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                  placeholder="Enter Total Price"
-                />
-                {errors.totalPrice && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.totalPrice.message}
-                  </p>
-                )}
-              </div> */}
             </div>
 
             {/* Format Required and Time */}
@@ -623,10 +608,10 @@ const EditOrder = () => {
 
             <button
               type="submit"
-              className={`mt-8 w-full py-2 rounded-lg bg-[#93C572] text-white font-semibold flex justify-center items-center ${
+              className={`mt-8 w-full py-3 rounded-lg bg-[#93C572] text-white font-semibold flex justify-center items-center hover:bg-[#79a759] transition-colors ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
-              // disabled={isLoading || !isValid}
+              disabled={isLoading || !isValid}
             >
               {isLoading ? (
                 <>
@@ -650,10 +635,26 @@ const EditOrder = () => {
                       d="M4 12a8 8 0 018-8v8H4z"
                     ></path>
                   </svg>
-                  Updating order...
+                  Updating Order...
                 </>
               ) : (
-                "Update order"
+                <>
+                  <span className="mr-2">Update Order</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-4 h-4 inline-block"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
+                  </svg>
+                </>
               )}
             </button>
           </form>

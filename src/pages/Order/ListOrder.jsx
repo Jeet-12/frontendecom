@@ -727,7 +727,7 @@ const ListOrder = () => {
                                             }}
                                             onClick={() => handleView(order)}
                                         />
-                                        <Button
+                                         {/* <Button
                                             label="Edit"
                                             icon={<FaEdit className="mr-2" />}
                                             className="p-button p-button-outlined p-button-secondary flex-1"
@@ -737,7 +737,8 @@ const ListOrder = () => {
                                                 fontSize: "0.875rem"
                                             }}
                                             onClick={() => handleEdit(order)}
-                                        />
+                                        /> */}
+                                      { isAdmin &&(
                                         <Button
                                             label="Delete"
                                             icon={<FaTrash className="mr-2" />}
@@ -749,6 +750,7 @@ const ListOrder = () => {
                                             }}
                                             onClick={() => handleDelete(order)}
                                         />
+                                      )}
                                     </div>
                                 </div>
                             </div>

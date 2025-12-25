@@ -631,7 +631,7 @@ const EditQuotation = () => {
               className={`mt-8 w-full py-3 rounded-lg bg-[#93C572] text-white font-semibold flex justify-center items-center hover:bg-[#79a759] transition-colors ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
-              disabled={isLoading || !isValid}
+              // disabled={isLoading || !isValid}
             >
               {isLoading ? (
                 <>

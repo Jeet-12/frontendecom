@@ -417,7 +417,7 @@ const ListOrder = () => {
                 </div>
 
                 {/* Status Filter Chips (Admin only) */}
-                {isAdmin && <StatusFilterChips />}
+                {/* {isAdmin && <StatusFilterChips />} */}
 
                 {/* Content Section */}
                 {loading ? (

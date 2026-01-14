@@ -173,7 +173,7 @@ const EditQuotation = () => {
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate>
             {/* Customer Name Dropdown (Admin Only) */}
-            {user?.role === "admin" && (
+            {/* {user?.role === "admin" && (
               <div className="mb-6">
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Customer Name <span className="text-red-500">*</span>
@@ -206,7 +206,7 @@ const EditQuotation = () => {
                   <p className="text-yellow-600 text-xs mt-1">No customers found</p>
                 )}
               </div>
-            )}
+            )} */}
 
             {/* Design Name */}
             <div className="mb-6">

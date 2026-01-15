@@ -96,21 +96,17 @@ const EditQuotation = () => {
   };
 
   // Handle number input validation
-  const handleNumberInput = (e, fieldName, maxDigits = 5) => {
+  const handleNumberInput = (e, fieldName) => {
     const value = e.target.value;
-    if (value === "" || /^[0-9\b]+$/.test(value)) {
-      if (value === "" || value.length <= maxDigits) {
         setValue(fieldName, value, { shouldValidate: true });
-      }
-    }
+     
   };
 
   // Handle price input validation
   const handlePriceInput = (e, fieldName = "price") => {
     const value = e.target.value;
-    if (value === "" || /^[0-9]*\.?[0-9]{0,2}$/.test(value)) {
       setValue(fieldName, value, { shouldValidate: true });
-    }
+  
   };
 
   // Updated: Allow text input for width and height
@@ -552,11 +548,7 @@ const EditQuotation = () => {
                     <input
                       type="text"
                       {...register("price", { 
-                        required: "Price is required",
-                        validate: value => {
-                          const num = parseFloat(value);
-                          return num > 0 || "Price must be greater than 0";
-                        }
+                        required: "Price is required"
                       })}
                       value={formValues.price}
                       onChange={(e) => handlePriceInput(e, 'price')}

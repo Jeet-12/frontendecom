@@ -132,8 +132,8 @@ const EditOrder = () => {
         noOfColors: Number(data.noOfColors),
         colors: data.colors.split(",").map((color) => color.trim()),
         measurement: data.measurement,
-        width: data.width, // Changed from Number(data.width) to keep as text
-        height: data.height, // Changed from Number(data.height) to keep as text
+        width: data.width, 
+        height: data.height,
         stitchRange: data.stitchRange,
         formatRequired: data.formatRequired,
         timeToComplete: formatDate(new Date(data.timeToComplete)),

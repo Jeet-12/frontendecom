@@ -140,7 +140,7 @@ const EditOrder = () => {
         additionalInformation: data.additionalInformation,
         ...(user?.role === "admin" && {
           price: data.price,
-          stitching_count: Number(data.stitching_count),
+          stitching_count: data.stitching_count,
           comment: data.comment,
           customUserId: data.customUserId,
         }),
@@ -534,21 +534,25 @@ const EditOrder = () => {
                   <label className="font-semibold text-sm pb-1 block text-gray-600">
                     Price ($) <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="text"
-                    {...register("price", { 
-                      required: "Price is required",
-                      validate: value => {
-                        const num = parseFloat(value);
-                        return num > 0 || "Price must be greater than 0";
-                      }
-                    })}
-                    value={formValues.price}
-                    onChange={(e) => handlePriceInput(e, 'price')}
-                    className={`border ${errors.price ? "border-red-500" : "border-gray-300"
-                      } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                    placeholder="Enter price in USD"
-                  />
+                 <input
+  type="text"
+  {...register("price", {
+    required: "Price is required",
+    maxLength: {
+      value: 50,
+      message: "Price cannot exceed 50 characters",
+    },
+  })}
+  value={formValues.price}
+  onChange={(e) =>
+    setValue("price", e.target.value, { shouldValidate: true })
+  }
+  className={`border ${errors.price ? "border-red-500" : "border-gray-300"}
+    rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2
+    focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors`}
+  placeholder="e.g. $25, 25 USD, Negotiable"
+/>
+
                   {errors.price && (
                     <p className="text-red-500 text-xs mt-1">
                       {errors.price.message}
@@ -560,18 +564,25 @@ const EditOrder = () => {
                   <label className="font-semibold text-sm pb-1 block text-gray-600">
                     Stitch Count <span className="text-red-500">*</span>
                   </label>
-                  <input
-                    type="text"
-                    {...register("stitching_count", {
-                      required: "Stitch count is required",
-                      min: { value: 1, message: "Stitch count must be at least 1" },
-                    })}
-                    value={formValues.stitching_count}
-                    onChange={(e) => handleNumberInput(e, 'stitching_count', 6)}
-                    className={`border ${errors.stitching_count ? "border-red-500" : "border-gray-300"
-                      } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                    placeholder="Enter total stitch count"
-                  />
+                <input
+  type="text"
+  {...register("stitching_count", {
+    required: "Stitch count is required",
+    maxLength: {
+      value: 100,
+      message: "Stitch count cannot exceed 100 characters",
+    },
+  })}
+  value={formValues.stitching_count}
+  onChange={(e) =>
+    setValue("stitching_count", e.target.value, { shouldValidate: true })
+  }
+  className={`border ${errors.stitching_count ? "border-red-500" : "border-gray-300"}
+    rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2
+    focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors`}
+  placeholder="e.g. Approx 12k, Around 15000, As per design"
+/>
+
                   {errors.stitching_count && (
                     <p className="text-red-500 text-xs mt-1">
                       {errors.stitching_count.message}

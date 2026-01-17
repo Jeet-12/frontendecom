@@ -81,7 +81,7 @@ const EditQuotation = () => {
       price: quotation.price || "",
       stitching_count: quotation.stitching_count || "",
       comment: quotation.comment || "",
-      customUserId: quotation.customUserId || "", // Add customUserId for admin
+      customUserId: quotation.customUserId || "",
     },
   });
 
@@ -136,7 +136,7 @@ const EditQuotation = () => {
         additionalInformation: data.additionalinformation,
         ...(user?.role === "admin" && {
           price: data.price,
-          stitching_count: Number(data.stitching_count),
+          stitching_count: data.stitching_count,
           comment: data.comment,
           customUserId: data.customUserId,
         }),

@@ -39,6 +39,7 @@ const Admin = () => {
       subItems: [
         { name: "Create Orders", to: "order/form" },
         { name: "View Orders", to: "order" },
+        { name: "Paid Orders", to: "order/paid" },
       ],
     },
     {

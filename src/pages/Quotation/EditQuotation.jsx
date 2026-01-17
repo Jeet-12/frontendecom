@@ -11,7 +11,7 @@ const EditQuotation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [users, setUsers] = useState([]);
-  
+
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -19,7 +19,7 @@ const EditQuotation = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       if (user?.role !== "admin") return;
-      
+
       setIsLoadingUsers(true);
       try {
         const response = await axios.get(
@@ -98,15 +98,15 @@ const EditQuotation = () => {
   // Handle number input validation
   const handleNumberInput = (e, fieldName) => {
     const value = e.target.value;
-        setValue(fieldName, value, { shouldValidate: true });
-     
+    setValue(fieldName, value, { shouldValidate: true });
+
   };
 
   // Handle price input validation
   const handlePriceInput = (e, fieldName = "price") => {
     const value = e.target.value;
-      setValue(fieldName, value, { shouldValidate: true });
-  
+    setValue(fieldName, value, { shouldValidate: true });
+
   };
 
   // Updated: Allow text input for width and height
@@ -138,7 +138,7 @@ const EditQuotation = () => {
           price: data.price,
           stitching_count: Number(data.stitching_count),
           comment: data.comment,
-          customUserId: data.customUserId, 
+          customUserId: data.customUserId,
         }),
       };
 
@@ -264,7 +264,7 @@ const EditQuotation = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("fabric", { 
+                  {...register("fabric", {
                     required: "Fabric is required",
                     minLength: {
                       value: 2,
@@ -295,13 +295,13 @@ const EditQuotation = () => {
                   type="text"
                   {...register("noofcolors", {
                     required: "Number of colors is required",
-                    min: { 
-                      value: 1, 
-                      message: "At least one color is required" 
+                    min: {
+                      value: 1,
+                      message: "At least one color is required"
                     },
-                    max: { 
-                      value: 20, 
-                      message: "Maximum 20 colors allowed" 
+                    max: {
+                      value: 20,
+                      message: "Maximum 20 colors allowed"
                     }
                   })}
                   value={formValues.noofcolors}
@@ -323,7 +323,7 @@ const EditQuotation = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("colors", { 
+                  {...register("colors", {
                     required: "Colors are required",
                     validate: (value) => {
                       const colors = value.trim().split(" ").filter(c => c !== "");
@@ -547,7 +547,7 @@ const EditQuotation = () => {
                     </label>
                     <input
                       type="text"
-                      {...register("price", { 
+                      {...register("price", {
                         required: "Price is required"
                       })}
                       value={formValues.price}
@@ -571,17 +571,18 @@ const EditQuotation = () => {
                       type="text"
                       {...register("stitching_count", {
                         required: "Stitch count is required",
-                        min: {
-                          value: 1,
-                          message: "Stitch count must be at least 1",
+                        maxLength: {
+                          value: 100,
+                          message: "Stitch count cannot exceed 100 characters",
                         },
                       })}
                       value={formValues.stitching_count}
-                      onChange={(e) => handleNumberInput(e, "stitching_count", 6)}
+                      onChange={(e) => handleTextInput(e, "stitching_count")}
                       className={`border ${errors.stitching_count ? "border-red-500" : "border-gray-300"
                         } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors text-[#4b4b4b]`}
-                      placeholder="Enter total stitch count"
+                      placeholder="e.g. Approx 12k, High density, Manual count"
                     />
+
                     {errors.stitching_count && (
                       <p className="text-red-500 text-xs mt-1">
                         {errors.stitching_count.message}
@@ -620,10 +621,9 @@ const EditQuotation = () => {
             {/* Submit */}
             <button
               type="submit"
-              className={`mt-8 w-full py-3 rounded-lg bg-[#93C572] text-white font-semibold flex justify-center items-center hover:bg-[#79a759] transition-colors ${
-                isLoading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              // disabled={isLoading || !isValid}
+              className={`mt-8 w-full py-3 rounded-lg bg-[#93C572] text-white font-semibold flex justify-center items-center hover:bg-[#79a759] transition-colors ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+            // disabled={isLoading || !isValid}
             >
               {isLoading ? (
                 <>

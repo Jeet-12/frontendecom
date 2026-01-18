@@ -82,10 +82,16 @@ const PaidOrders = () => {
                 }
                 console.log("Paid Orders data:", data);
 
-                // Sort by creation date (newest first)
-                const sortedData = data.sort((a, b) =>
-                    new Date(b.createdAt) - new Date(a.createdAt)
-                );
+                let sortedData = [];
+                if (Array.isArray(data)) {
+                    // Sort by creation date (newest first)
+                    sortedData = data.sort((a, b) =>
+                        new Date(b.createdAt) - new Date(a.createdAt)
+                    );
+                } else if (data?.message) {
+                    console.log("Info:", data.message);
+                    sortedData = [];
+                }
 
                 setOrders(sortedData);
                 setLoading(false);

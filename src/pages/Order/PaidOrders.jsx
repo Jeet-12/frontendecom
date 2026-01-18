@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
-import { deleteOrder, getPaidOrders } from "../../Services/Api";
+import { deleteOrder, getPaidOrders, getCompletedAndPaidOrders } from "../../Services/Api";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { FaSearch, FaEye, FaTrash, FaPlus, FaCheckCircle, FaTimesCircle, FaClock, FaTruck, FaCogs, FaEdit } from "react-icons/fa";
@@ -74,19 +74,12 @@ const PaidOrders = () => {
 
         const fetchOrders = async () => {
             try {
-                const response = await fetch("http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/order/paid", {
-                    method: 'GET',
-                    headers: {
-                        'x-auth-token': token,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch orders: ${response.status} ${response.statusText}`);
+                let data;
+                if (isAdmin) {
+                    data = await getPaidOrders(token);
+                } else {
+                    data = await getCompletedAndPaidOrders(token);
                 }
-
-                const data = await response.json();
                 console.log("Paid Orders data:", data);
 
                 // Sort by creation date (newest first)

@@ -216,6 +216,19 @@ export const getPaidOrders = async (token) => {
     return await response.json();
 };
 
+export const getCompletedAndPaidOrders = async (token) => {
+    const response = await fetchWithAuth(endpoints.getCompletedAndPaidOrders, {
+        method: 'GET',
+        headers: {
+            'x-auth-token': token,
+        },
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to fetch completed and paid orders: ${response.statusText}`);
+    }
+    return await response.json();
+};
+
 export const getOrderById = async (id, token) => {
     const response = await fetchWithAuth(endpoints.getOrderById(id), {
         method: 'GET',

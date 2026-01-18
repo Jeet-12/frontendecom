@@ -17,6 +17,7 @@ export const endpoints = {
   createOrder: `${import.meta.env.VITE_API_BASE_URL}api/order/create`,
   updateOrder: (id) => `${import.meta.env.VITE_API_BASE_URL}api/order/${id}`,
   getPaidOrders: "http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/order/paid",
+  getCompletedAndPaidOrders: `${import.meta.env.VITE_API_BASE_URL}api/order/completed-and-paid-orders`,
 
 
   approveQuotation: (id) => `${import.meta.env.VITE_API_BASE_URL}api/quotation/approve/${id}`,

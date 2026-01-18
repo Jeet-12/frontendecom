@@ -24,6 +24,7 @@ import OrderForm from "./pages/Order/OrderForm.jsx";
 import QuotationForm from "./pages/Quotation/QuotationForm.jsx";
 import ListQuotation from "./pages/Quotation/ListQuotation.jsx";
 import ListOrder from "./pages/Order/ListOrder.jsx";
+import PaidOrders from "./pages/Order/PaidOrders.jsx";
 import Admin from "./pages/Admin/Admin.jsx";
 import Addprofile from "./pages/Admin/Addprofile.jsx";
 import ChangePassword from "./pages/Admin/ChangePassword.jsx";
@@ -217,6 +218,7 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "order", element: <ListOrder /> },
+      { path: "order/paid", element: <PaidOrders /> },
       { path: "order/:id", element: <OrderDetails /> },
       { path: "order/edit/:id", element: <EditOrder /> },
       { path: "order/form", element: <OrderForm /> },

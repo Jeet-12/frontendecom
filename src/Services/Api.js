@@ -37,25 +37,25 @@ export const getAuthorizedUser = async (token) => {
             'x-auth-token': token,
         },
     });
-    navigate('/login'); 
+    navigate('/login');
 
     return await response.json();
 
 
 };
 
-    // getAuthorizedUser.interceptors.response.use(
-    //     (response) => response,
-    //     (error) => {
-    //       if (error.response?.status === 401) {
-        
-    //         const navigate = useNavigate();
-        
-    //         navigate('/login'); 
-    //       }
-    //       return Promise.reject(error);
-    //     }
-    //   );
+// getAuthorizedUser.interceptors.response.use(
+//     (response) => response,
+//     (error) => {
+//       if (error.response?.status === 401) {
+
+//         const navigate = useNavigate();
+
+//         navigate('/login'); 
+//       }
+//       return Promise.reject(error);
+//     }
+//   );
 
 // New quotation functions
 
@@ -64,12 +64,12 @@ export const getAuthorizedUser = async (token) => {
  */
 
 export const getQuotations = async (token) => {
-   
+
     const response = await fetchWithAuth(endpoints.getQuotations, {
         method: 'GET',
         headers: {
             'x-auth-token': token,
-           
+
         },
     });
     // console.log(response.data)
@@ -115,25 +115,25 @@ export const deleteQuotation = async (id, token) => {
 /**
  * Create a new quotation
  */
-export const createQuotation = async(quotationData, token) => {
+export const createQuotation = async (quotationData, token) => {
     // console.log(quotationData,token)
     // console.log(token)
-   if(quotationData && token){
-    const payloadData = createObjectToFormData(quotationData)
-    
-    const response = await fetchWithAuth(endpoints.createQuotation, {
-        method: 'POST',
-        headers: {
-            'x-auth-token': token,
-            
-        },
-        body: payloadData,
-    });
-    if (!response.ok) {
-        throw new Error(`Failed to create quotation: ${response.statusText}`);
+    if (quotationData && token) {
+        const payloadData = createObjectToFormData(quotationData)
+
+        const response = await fetchWithAuth(endpoints.createQuotation, {
+            method: 'POST',
+            headers: {
+                'x-auth-token': token,
+
+            },
+            body: payloadData,
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to create quotation: ${response.statusText}`);
+        }
+        return await response.json();
     }
-    return await response.json();
-   }
 };
 
 
@@ -142,20 +142,20 @@ export const createQuotation = async(quotationData, token) => {
  * Update an existing quotation by ID
  */
 export const updateQuotation = async (id, quotationData, token) => {
-//   console.log(id, quotationData, token)
-  const formData = new FormData()
-//   console.log(Object.keys(quotationData))
-  Object.keys(quotationData).forEach(key=>{
-    // console.log(key)
-    formData.append(key, quotationData[key])
-  })
-//   console.log(formData)
+    //   console.log(id, quotationData, token)
+    const formData = new FormData()
+    //   console.log(Object.keys(quotationData))
+    Object.keys(quotationData).forEach(key => {
+        // console.log(key)
+        formData.append(key, quotationData[key])
+    })
+    //   console.log(formData)
     const response = await fetchWithAuth(endpoints.updateQuotation(id), {
         method: 'PUT',
         headers: {
-        
+
             'x-auth-token': token,
-            
+
         },
         body: formData,
     });
@@ -168,23 +168,23 @@ export const updateQuotation = async (id, quotationData, token) => {
 
 // orders  
 
-export const createOrder = async(orderData, token) => {
+export const createOrder = async (orderData, token) => {
 
 
-    if(orderData && token ){
+    if (orderData && token) {
         const payloadData = createObjectToFormData(orderData)
-    const response = await fetchWithAuth(endpoints.createOrder, {
-        method: 'POST',
-        headers: {
-            'x-auth-token': token,
-            'Content-Type': 'multipart/form-data'
-        },
-        body:payloadData ,
-    });
-    if (!response.ok) {
-        throw new Error(`Failed to create Order: ${response.statusText}`);
-    }
-    return await response.json();
+        const response = await fetchWithAuth(endpoints.createOrder, {
+            method: 'POST',
+            headers: {
+                'x-auth-token': token,
+                'Content-Type': 'multipart/form-data'
+            },
+            body: payloadData,
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to create Order: ${response.statusText}`);
+        }
+        return await response.json();
     }
 };
 
@@ -193,12 +193,25 @@ export const getOrders = async (token) => {
         method: 'GET',
         headers: {
             'x-auth-token': token,
-        
+
         },
     });
     // console.log(response)
     if (!response.ok) {
         throw new Error(`Failed to fetch order: ${response.statusText}`);
+    }
+    return await response.json();
+};
+
+export const getPaidOrders = async (token) => {
+    const response = await fetchWithAuth(endpoints.getPaidOrders, {
+        method: 'GET',
+        headers: {
+            'x-auth-token': token,
+        },
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to fetch paid orders: ${response.statusText}`);
     }
     return await response.json();
 };
@@ -232,27 +245,27 @@ export const deleteOrder = async (id, token) => {
 export const updateOrder = async (id, orderData, token) => {
     // console.log(id, orderData, token)
     const formData = new FormData()
-  //   console.log(Object.keys(quotationData))
-    Object.keys(orderData).forEach(key=>{
-    //   console.log(key)
-      formData.append(key, orderData[key])
+    //   console.log(Object.keys(quotationData))
+    Object.keys(orderData).forEach(key => {
+        //   console.log(key)
+        formData.append(key, orderData[key])
     })
     // console.log(formData)
-      const response = await fetchWithAuth(endpoints.updateOrder(id), {
-          method: 'PUT',
-          headers: {
-          
-              'x-auth-token': token,
-              
-          },
-          body: formData,
-      });
-      if (!response.ok) {
-          throw new Error(`Failed to update quotation: ${response.statusText}`);
-      }
-      return await response.json();
-  };
-  
+    const response = await fetchWithAuth(endpoints.updateOrder(id), {
+        method: 'PUT',
+        headers: {
+
+            'x-auth-token': token,
+
+        },
+        body: formData,
+    });
+    if (!response.ok) {
+        throw new Error(`Failed to update quotation: ${response.statusText}`);
+    }
+    return await response.json();
+};
+
 
 
 
@@ -261,14 +274,14 @@ export const changePasswordApi = async (userId, newPassword, token) => {
     // console.log(endpoints.changePassword)
     // console.log(`${userId}`,newPassword,token)
     const response = await fetchWithAuth(endpoints.changePassword, {
-        method: 'PUT', 
+        method: 'PUT',
         headers: {
-            'x-auth-token': token, 
+            'x-auth-token': token,
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            userId, 
-            newPassword, 
+            userId,
+            newPassword,
         }),
     });
 
@@ -317,7 +330,7 @@ export const rejectQuotation = async (id, token) => {
 };
 
 
-export const updateOrderStatus = async (id,status, token) => {
+export const updateOrderStatus = async (id, status, token) => {
     const response = await fetchWithAuth(endpoints.updateOrderStatus(id), {
         method: 'PUT',
         headers: {

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getOrderById, updateOrderStatus } from "../../Services/Api";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import { FaEdit, FaCheckCircle, FaFileUpload, FaTimes } from "react-icons/fa";
+import { FaEdit, FaCheckCircle, FaFileUpload, FaTimes, FaFileDownload } from "react-icons/fa";
 import axios from "axios";
 
 const OrderDetail = () => {
@@ -59,7 +59,7 @@ const OrderDetail = () => {
 
         const fetchOrder = async () => {
             try {
-                const data = await getOrderById(id, token);                
+                const data = await getOrderById(id, token);
                 setOrder(data);
                 console.log("Order Data:", data);
                 setLoading(false);
@@ -107,9 +107,9 @@ const OrderDetail = () => {
 
         if (type === "preview") {
             const validImageTypes = ["image/png", "image/jpeg", "application/pdf"];
-            
+
             const validFiles = files.filter(file => validImageTypes.includes(file.type));
-            
+
             if (validFiles.length > 0) {
                 if (previewImages.length + validFiles.length > 4) {
                     toast.current.show({
@@ -120,7 +120,7 @@ const OrderDetail = () => {
                     });
                     return;
                 }
-                
+
                 setPreviewImages(prev => [...prev, ...validFiles]);
                 toast.current.show({
                     severity: "success",
@@ -138,12 +138,12 @@ const OrderDetail = () => {
             }
         } else if (type === "digital") {
             const validDigitalTypes = ["application/zip", "application/x-zip-compressed", "multipart/x-zip"];
-            
+
             const validFiles = files.filter(file => {
                 const isZipFile = file?.name.toLowerCase().endsWith(".zip");
                 return validDigitalTypes.includes(file.type) || isZipFile;
             });
-            
+
             if (validFiles.length > 0) {
                 if (digitalFiles.length + validFiles.length > 4) {
                     toast.current.show({
@@ -154,7 +154,7 @@ const OrderDetail = () => {
                     });
                     return;
                 }
-                
+
                 setDigitalFiles(prev => [...prev, ...validFiles]);
                 toast.current.show({
                     severity: "success",
@@ -184,11 +184,11 @@ const OrderDetail = () => {
     const handleSubmit = async () => {
         if (previewImages.length > 0 && digitalFiles.length > 0) {
             const formData = new FormData();
-            
+
             previewImages.forEach((image, index) => {
                 formData.append("previewImage", image);
             });
-            
+
             digitalFiles.forEach((file, index) => {
                 formData.append("digitalImage", file);
             });
@@ -212,7 +212,7 @@ const OrderDetail = () => {
                     });
                     const updatedOrder = await getOrderById(id, token);
                     setOrder(updatedOrder);
-                     navigate('/admin/order');
+                    navigate('/admin/order');
                     setPreviewImages([]);
                     setDigitalFiles([]);
                 } else {
@@ -309,44 +309,43 @@ const OrderDetail = () => {
                             <p className="mt-2 text-xl">{order.status}</p>
                         )}
                     </div>
-                    
+
                     {/* Stitch Count - Show for both admin and user */}
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Stitch Count:</p>
                         <p>{order.stitching_count ? order.stitching_count.toLocaleString() : "Not specified"}</p>
                     </div>
-                    
+
                     {/* Stitch Range - Show for both admin and user */}
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Stitch Range:</p>
                         <p>{order.stitchRange || "Not specified"}</p>
                     </div>
-                    
+
                     {/* Width and Height */}
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Dimensions:</p>
                         <p>{order.width} {order.measurement} x {order.height} {order.measurement}</p>
                     </div>
-                    
+
                     {/* Format Required */}
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Format Required:</p>
                         <p>{order.formatRequired || "Not specified"}</p>
                     </div>
-                    
+
                     {/* Time to Complete */}
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Time to Complete:</p>
                         <p>{new Date(order.timeToComplete).toLocaleDateString()}</p>
                     </div>
-                    
+
                     {/* Payment Status */}
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Payment Status:</p>
-                        <p className={`font-semibold ${
-                            order.paymentStatus === 'Paid' ? 'text-green-600' : 
-                            order.paymentStatus === 'Pending' ? 'text-yellow-600' : 'text-red-600'
-                        }`}>
+                        <p className={`font-semibold ${order.paymentStatus === 'Paid' ? 'text-green-600' :
+                                order.paymentStatus === 'Pending' ? 'text-yellow-600' : 'text-red-600'
+                            }`}>
                             {order.paymentStatus || "Pending"}
                         </p>
                     </div>
@@ -372,6 +371,29 @@ const OrderDetail = () => {
                     </div>
                 )}
 
+                {/* Attached Files - Show only for admin */}
+                {role === 'admin' && order.files && order.files.length > 0 && (
+                    <div className="mb-6">
+                        <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
+                            <p className="font-semibold text-lg mb-2">Attached Files:</p>
+                            <div className="flex flex-wrap gap-2">
+                                {order.files.map((file, index) => (
+                                    <a
+                                        key={index}
+                                        href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm text-blue-600 hover:text-blue-800"
+                                    >
+                                        <FaFileDownload />
+                                        <span className="truncate max-w-xs">{file.split('/').pop()}</span>
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* Order ID and Dates */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
@@ -391,7 +413,7 @@ const OrderDetail = () => {
                 {role === "admin" && order.status === "complete" && (
                     <div className="mb-8">
                         <h4 className="font-semibold text-2xl mb-4">Upload Files</h4>
-                        
+
                         {/* Preview Images Upload */}
                         <div className="mb-6">
                             <h5 className="font-semibold text-lg mb-2">Preview Images (Up to 4)</h5>
@@ -415,7 +437,7 @@ const OrderDetail = () => {
                                     />
                                 </div>
                             </div>
-                            
+
                             {previewImages.length > 0 && (
                                 <div className="mb-4">
                                     <p className="text-sm text-gray-600 mb-2">Selected preview images:</p>
@@ -429,7 +451,7 @@ const OrderDetail = () => {
                                                 >
                                                     <FaTimes />
                                                 </button>
-                                               
+
                                             </div>
                                         ))}
                                     </div>
@@ -460,7 +482,7 @@ const OrderDetail = () => {
                                     />
                                 </div>
                             </div>
-                            
+
                             {digitalFiles.length > 0 && (
                                 <div className="mb-4">
                                     <p className="text-sm text-gray-600 mb-2">Selected digital files:</p>
@@ -474,7 +496,7 @@ const OrderDetail = () => {
                                                 >
                                                     <FaTimes />
                                                 </button>
-                                               
+
                                             </div>
                                         ))}
                                     </div>

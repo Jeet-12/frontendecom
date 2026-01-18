@@ -67,15 +67,17 @@ const PaidOrders = () => {
     useEffect(() => {
         // Get user from localStorage
         const userData = getUserFromStorage();
+        const userIsAdmin = userData?.role?.toLowerCase() === "admin";
+
         if (userData) {
             setUser(userData);
-            setIsAdmin(userData.role === "admin");
+            setIsAdmin(userIsAdmin);
         }
 
         const fetchOrders = async () => {
             try {
                 let data;
-                if (isAdmin) {
+                if (userIsAdmin) {
                     data = await getPaidOrders(token);
                 } else {
                     data = await getCompletedAndPaidOrders(token);

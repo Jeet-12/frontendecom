@@ -74,7 +74,19 @@ const PaidOrders = () => {
 
         const fetchOrders = async () => {
             try {
-                const data = await getPaidOrders(token);
+                const response = await fetch("http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/order/paid", {
+                    method: 'GET',
+                    headers: {
+                        'x-auth-token': token,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch orders: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
                 console.log("Paid Orders data:", data);
 
                 // Sort by creation date (newest first)

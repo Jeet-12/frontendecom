@@ -154,7 +154,7 @@ const ListOrder = () => {
     // Enhanced status badge component with icons and colors
     const getStatusBadge = (status) => {
         const statusConfig = {
-            completed: {
+            complete: {
                 label: "Completed",
                 severity: "success",
                 icon: <FaCheckCircle className="mr-1" />,
@@ -170,7 +170,7 @@ const ListOrder = () => {
                 iconColor: "text-yellow-500",
                 primeSeverity: "warning"
             },
-            processing: {
+            inprogress: {
                 label: "Processing",
                 severity: "info",
                 icon: <FaCogs className="mr-1" />,

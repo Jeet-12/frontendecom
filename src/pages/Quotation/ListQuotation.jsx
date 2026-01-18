@@ -308,9 +308,9 @@ const ListQuotation = () => {
                                                     <h3 className="text-xl font-semibold text-gray-800 mb-2">
                                                         {quotation.designName}
                                                     </h3>
-                                                    <div className="flex items-center">
+                                                    {/* <div className="flex items-center">
                                                         {getStatusBadge(quotation.status)}
-                                                    </div>
+                                                    </div> */}
                                                 </div>
                                             </div>
 
@@ -340,7 +340,7 @@ const ListQuotation = () => {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <div>
+                                                {/* <div>
                                                     <p className="text-sm text-gray-500">Status Details</p>
                                                     <div className="mt-1">
                                                         {getStatusBadge(quotation.status)}
@@ -350,7 +350,7 @@ const ListQuotation = () => {
                                                             </p>
                                                         )}
                                                     </div>
-                                                </div>
+                                                </div> */}
                                             </div>
                                         </div>
 

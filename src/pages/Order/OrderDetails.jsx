@@ -372,15 +372,15 @@ const OrderDetail = () => {
                 )}
 
                 {/* Attached Files - Show only for admin */}
-                {role === 'admin' && order.customImage && order.customImage.length > 0 && (
+                {role === 'admin' && order.files && order.files.length > 0 && (
                     <div className="mb-6">
                         <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                             <p className="font-semibold text-lg mb-2">Attached Files:</p>
                             <div className="flex flex-wrap gap-2">
-                                {/* {order.customImage.map((file, index) => ( */}
+                                {order.files.map((file, index) => (
                                     <a
                                         key={index}
-                                        href={order.customImage}
+                                        href={file}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm text-blue-600 hover:text-blue-800"
@@ -388,7 +388,7 @@ const OrderDetail = () => {
                                         <FaFileDownload />
                                         <span className="truncate max-w-xs">{file.split('/').pop()}</span>
                                     </a>
-                                {/* ))} */}
+                                ))} 
                             </div>
                         </div>
                     </div>

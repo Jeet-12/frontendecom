@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getOrderById, updateOrderStatus } from "../../Services/Api";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import { FaEdit, FaCheckCircle, FaFileUpload, FaTimes, FaFileDownload, FaEye, FaDownload, FaFile } from "react-icons/fa";
+import { FaEdit, FaCheckCircle, FaFileUpload, FaTimes, FaFileDownload } from "react-icons/fa";
 import axios from "axios";
 
 const OrderDetail = () => {
@@ -19,11 +19,6 @@ const OrderDetail = () => {
     const toast = useRef(null);
     const [isModalOpen, setModalOpen] = useState(false);
     const [imageUrl, setImageUrl] = useState("");
-    
-    // State for custom image modal
-    const [isCustomImageModalOpen, setCustomImageModalOpen] = useState(false);
-    const [customImageUrl, setCustomImageUrl] = useState("");
-    const [customImageName, setCustomImageName] = useState("");
 
     const openModal = () => {
         setImageUrl(`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${order.previewImage}`);
@@ -32,33 +27,6 @@ const OrderDetail = () => {
 
     const closeModal = () => {
         setModalOpen(false);
-    };
-
-    // Function to open custom image modal
-    const openCustomImageModal = (url) => {
-        const fileName = url.split('/').pop();
-        setCustomImageUrl(url);
-        setCustomImageName(fileName);
-        setCustomImageModalOpen(true);
-    };
-
-    // Function to close custom image modal
-    const closeCustomImageModal = () => {
-        setCustomImageModalOpen(false);
-        setCustomImageUrl("");
-        setCustomImageName("");
-    };
-
-    // Function to check if URL is an image
-    const isImageFile = (url) => {
-        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];
-        const lowerUrl = url.toLowerCase();
-        return imageExtensions.some(ext => lowerUrl.endsWith(ext));
-    };
-
-    // Function to check if URL is a PDF
-    const isPdfFile = (url) => {
-        return url.toLowerCase().endsWith('.pdf');
     };
 
     const handleStatusUpdate = async (newStatus) => {
@@ -342,13 +310,13 @@ const OrderDetail = () => {
                         )}
                     </div>
 
-                    {/* Stitch Count */}
+                    {/* Stitch Count - Show for both admin and user */}
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Stitch Count:</p>
                         <p>{order.stitching_count ? order.stitching_count.toLocaleString() : "Not specified"}</p>
                     </div>
 
-                    {/* Stitch Range */}
+                    {/* Stitch Range - Show for both admin and user */}
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Stitch Range:</p>
                         <p>{order.stitchRange || "Not specified"}</p>
@@ -383,7 +351,7 @@ const OrderDetail = () => {
                     </div>
                 </div>
 
-                {/* Additional Information */}
+                {/* Additional Information - Show for both admin and user */}
                 {order.additionalInformation && (
                     <div className="mb-6">
                         <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
@@ -393,7 +361,7 @@ const OrderDetail = () => {
                     </div>
                 )}
 
-                {/* Admin Comment */}
+
                 {order.comment && (
                     <div className="mb-6">
                         <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
@@ -404,72 +372,23 @@ const OrderDetail = () => {
                 )}
 
                 {/* Attached Files - Show only for admin */}
-                {role === 'admin' && order.customImage && (
+                {role === 'admin' && order.customImage && order.customImage.length > 0 && (
                     <div className="mb-6">
                         <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                             <p className="font-semibold text-lg mb-2">Attached Files:</p>
-                            <div className="flex flex-wrap gap-3">
-                                {/* Handle single customImage string */}
-                                {order.customImage && (
-                                    <div className="flex items-center gap-3 px-4 py-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <FaFile className="text-blue-500 text-lg" />
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-700 truncate max-w-xs">
-                                                    {order.customImage.split('/').pop()}
-                                                </p>
-                                                <div className="flex gap-2 mt-2">
-                                                    <button
-                                                        onClick={() => openCustomImageModal(order.customImage)}
-                                                        className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-sm"
-                                                    >
-                                                        <FaEye /> Preview
-                                                    </button>
-                                                    <a
-                                                        href={order.customImage}
-                                                        download
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors text-sm"
-                                                    >
-                                                        <FaDownload /> Download
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                )}
-                                
-                                {/* Handle files array if it exists */}
-                                {order.files && order.files.length > 0 && order.files.map((file, index) => (
-                                    <div key={index} className="flex items-center gap-3 px-4 py-3 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                                        <div className="flex items-center gap-3">
-                                            <FaFile className="text-blue-500 text-lg" />
-                                            <div>
-                                                <p className="text-sm font-medium text-gray-700 truncate max-w-xs">
-                                                    {file.split('/').pop()}
-                                                </p>
-                                                <div className="flex gap-2 mt-2">
-                                                    <button
-                                                        onClick={() => openCustomImageModal(file)}
-                                                        className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-sm"
-                                                    >
-                                                        <FaEye /> Preview
-                                                    </button>
-                                                    <a
-                                                        href={file}
-                                                        download
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors text-sm"
-                                                    >
-                                                        <FaDownload /> Download
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
+                            <div className="flex flex-wrap gap-2">
+                                {/* {order.customImage.map((file, index) => ( */}
+                                    <a
+                                        key={index}
+                                        href={order.customImage}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm text-blue-600 hover:text-blue-800"
+                                    >
+                                        <FaFileDownload />
+                                        <span className="truncate max-w-xs">{file.split('/').pop()}</span>
+                                    </a>
+                                {/* ))} */}
                             </div>
                         </div>
                     </div>
@@ -532,6 +451,7 @@ const OrderDetail = () => {
                                                 >
                                                     <FaTimes />
                                                 </button>
+
                                             </div>
                                         ))}
                                     </div>
@@ -576,6 +496,7 @@ const OrderDetail = () => {
                                                 >
                                                     <FaTimes />
                                                 </button>
+
                                             </div>
                                         ))}
                                     </div>
@@ -638,7 +559,6 @@ const OrderDetail = () => {
                     </div>
                 )}
 
-                {/* Preview Image Modal */}
                 {isModalOpen && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
                         <div className="bg-white rounded-lg shadow-lg p-4 max-w-4xl w-full mx-4 relative">
@@ -660,64 +580,6 @@ const OrderDetail = () => {
                             <p className="text-gray-500 text-sm mt-2 text-center">
                                 *This image is watermarked for preview purposes.
                             </p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Custom Image Modal */}
-                {isCustomImageModalOpen && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-                        <div className="bg-white rounded-lg shadow-lg p-4 max-w-6xl w-full mx-4 relative">
-                            <button
-                                onClick={closeCustomImageModal}
-                                className="absolute top-2 right-2 text-gray-600 hover:text-gray-800 text-xl bg-white rounded-full w-8 h-8 flex items-center justify-center z-10"
-                            >
-                                &times;
-                            </button>
-                            
-                            <div className="flex justify-between items-center mb-4">
-                                <h4 className="text-2xl font-semibold">File Preview</h4>
-                                <div className="flex gap-2">
-                                    <a
-                                        href={customImageUrl}
-                                        download
-                                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                                    >
-                                        <FaDownload /> Download
-                                    </a>
-                                </div>
-                            </div>
-                            
-                            <div className="mb-2">
-                                <p className="text-gray-600 text-sm">
-                                    <span className="font-medium">File:</span> {customImageName}
-                                </p>
-                            </div>
-                            
-                            <div className="flex justify-center items-center max-h-[70vh] overflow-auto">
-                                {isImageFile(customImageUrl) ? (
-                                    <img
-                                        src={customImageUrl}
-                                        alt="Custom Preview"
-                                        className="max-w-full max-h-[65vh] object-contain rounded-lg"
-                                        crossOrigin="anonymous"
-                                    />
-                                ) : isPdfFile(customImageUrl) ? (
-                                    <div className="w-full h-[65vh]">
-                                        <iframe
-                                            src={`${customImageUrl}#view=FitH`}
-                                            title="PDF Preview"
-                                            className="w-full h-full border rounded-lg"
-                                        />
-                                    </div>
-                                ) : (
-                                    <div className="text-center p-8">
-                                        <FaFile className="text-6xl text-gray-400 mb-4" />
-                                        <p className="text-gray-600">Preview not available for this file type</p>
-                                        <p className="text-sm text-gray-500 mt-2">Please download to view the file</p>
-                                    </div>
-                                )}
-                            </div>
                         </div>
                     </div>
                 )}

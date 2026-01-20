@@ -133,7 +133,7 @@ const ListQuotation = () => {
                 formatRequired: quotation.formatRequired || "Pfaff *.KSM",
                 timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete) || "11/04/2025",
                 additionalInformation: quotation.additionalInformation?.trim() || "dcjbsjvbdfviudfvu",
-                price: String(quotation.price || 0),
+                price:0,
                 status: "inprogress",
                 files: "" // Empty files field
             };

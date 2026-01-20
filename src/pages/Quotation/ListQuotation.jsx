@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { deleteQuotation, getQuotations } from "../../Services/Api";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import { FaSearch, FaEye, FaTrash, FaPlus, FaInfoCircle, FaCheckCircle, FaTimesCircle, FaClock } from "react-icons/fa";
+import { FaSearch, FaEye, FaTrash, FaPlus, FaInfoCircle, FaCheckCircle, FaTimesCircle, FaClock, FaShoppingCart } from "react-icons/fa";
 import { Badge } from "primereact/badge";
 
 const ListQuotation = () => {
@@ -14,6 +14,7 @@ const ListQuotation = () => {
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [searchType, setSearchType] = useState("designName");
+    const [convertingId, setConvertingId] = useState(null);
     const toast = useRef(null);
     const token = localStorage.getItem("token");
     const [isAdmin, setISAdmin] = useState('user');
@@ -26,7 +27,7 @@ const ListQuotation = () => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = String(date.getFullYear()).slice(-2);
-        
+
         return `${day}/${month}/${year}`;
     };
 
@@ -36,12 +37,12 @@ const ListQuotation = () => {
         const fetchQuotations = async () => {
             try {
                 const data = await getQuotations(token);
-                console.log(data);
+                // console.log(data);
 
                 const sortedData = data.sort((a, b) =>
                     new Date(b.createdAt) - new Date(a.createdAt)
                 );
-                
+
                 setQuotations(sortedData);
                 setLoading(false);
             } catch (err) {
@@ -96,6 +97,95 @@ const ListQuotation = () => {
                 detail: err.message || "Failed to delete quotation",
                 life: 3000
             });
+        }
+    };
+
+    const convertToOrder = async (quotation) => {
+        if (!quotation) return;
+
+        setConvertingId(quotation._id);
+        try {
+            const userData = JSON.parse(localStorage.getItem("user"));
+
+            const formatDateToMMDDYYYY = (dateString) => {
+                const date = new Date(dateString);
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const year = date.getFullYear();
+                return `${month}/${day}/${year}`;
+            };
+
+            // Create raw multipart form data
+            const boundary = '----WebKitFormBoundary' + Math.random().toString(36).substring(2);
+            let body = '';
+
+            const fields = {
+                user: userData.id,
+                designName: quotation.designName?.trim() || "jeet",
+                fabricType: quotation.fabricType || "Soft",
+                fabric: quotation.fabric?.trim() || "Febric1",
+                noOfColors: String(Number(quotation.noOfColors) || 3),
+                colors: quotation.colors?.join(',') || "jdbcjbsbjv,dbfisbf",
+                measurement: quotation.measurement || "inches",
+                width: String(Number(quotation.width) || 100),
+                height: String(Number(quotation.height) || 100),
+                stitchRange: quotation.stitchRange?.toString() || "7000-10000",
+                formatRequired: quotation.formatRequired || "Pfaff *.KSM",
+                timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete) || "11/04/2025",
+                additionalInformation: quotation.additionalInformation?.trim() || "dcjbsjvbdfviudfvu",
+                price: String(quotation.price || 0),
+                status: "inprogress",
+                files: "" // Empty files field
+            };
+
+
+            // Build multipart body
+            Object.entries(fields).forEach(([key, value]) => {
+                body += `--${boundary}\r\n`;
+                body += `Content-Disposition: form-data; name="${key}"\r\n\r\n`;
+                body += `${value}\r\n`;
+            });
+
+            body += `--${boundary}--\r\n`;
+
+            const API_BASE_URL = "http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api";
+            // const API_BASE_URL = "http://localhost:8000/api";
+
+            const response = await fetch(`${API_BASE_URL}/order/create`, {
+                method: 'POST',
+                headers: {
+                    'x-auth-token': token,
+                    'Content-Type': `multipart/form-data; boundary=${boundary}`
+                },
+                body: body
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => null);
+                throw new Error(errorData?.message || `HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            toast.current.show({
+                severity: "success",
+                summary: "Order Created",
+                detail: result.message || "Order created successfully!",
+                life: 3000,
+            });
+
+            navigate("/order");
+
+        } catch (err) {
+            console.error("Error converting quotation to order:", err);
+            toast.current.show({
+                severity: "error",
+                summary: "Conversion Failed",
+                detail: err.message || "Failed to convert quotation to order",
+                life: 3000,
+            });
+        } finally {
+            setConvertingId(null);
         }
     };
 
@@ -222,8 +312,8 @@ const ListQuotation = () => {
                                         type="text"
                                         placeholder={
                                             searchType === "id" ? "Search by Quotation ID" :
-                                            searchType === "status" ? "Search by status (pending, approved, declined)" :
-                                            `Search by ${searchType.replace(/^\w/, c => c.toUpperCase())}...`
+                                                searchType === "status" ? "Search by status (pending, approved, declined)" :
+                                                    `Search by ${searchType.replace(/^\w/, c => c.toUpperCase())}...`
                                         }
                                         className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-r-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                                         value={searchQuery}
@@ -314,7 +404,7 @@ const ListQuotation = () => {
                                                 </div>
                                             </div>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
                                                 <div>
                                                     <p className="text-sm text-gray-500">Customer</p>
                                                     <p className="font-medium">
@@ -340,17 +430,18 @@ const ListQuotation = () => {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                {/* <div>
-                                                    <p className="text-sm text-gray-500">Status Details</p>
-                                                    <div className="mt-1">
-                                                        {getStatusBadge(quotation.status)}
-                                                        {quotation.statusUpdatedAt && (
-                                                            <p className="text-xs text-gray-500 mt-1">
-                                                                Updated: {formatDate(quotation.statusUpdatedAt)}
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                </div> */}
+                                                <div>
+                                                    <p className="text-sm text-gray-500">Price</p>
+                                                    <p className="font-medium text-green-600">
+                                                        {quotation.price ? `$${quotation.price}` : "N/A"}
+                                                    </p>
+                                                </div>
+                                                <div className="md:col-span-2">
+                                                    <p className="text-sm text-gray-500">Comment</p>
+                                                    <p className="text-sm text-gray-700">
+                                                        {quotation.comment || "No comments"}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -400,7 +491,7 @@ const ListQuotation = () => {
                                             {getStatusBadge(quotation.status)}
                                         </div>
                                     </div>
-                                    
+
                                     <div className="space-y-2">
                                         <p className="text-sm text-gray-600">
                                             <strong className="text-gray-700">Quotation ID:</strong> {quotation._id}
@@ -412,7 +503,7 @@ const ListQuotation = () => {
                                             <strong className="text-gray-700">Fabric Type:</strong> {quotation.fabricType}
                                         </p>
                                         <p className="text-sm text-gray-600">
-                                            <strong className="text-gray-700">Colors:</strong> 
+                                            <strong className="text-gray-700">Colors:</strong>
                                             <div className="flex flex-wrap gap-1 mt-1">
                                                 {quotation.colors.map((color, i) => (
                                                     <span
@@ -425,8 +516,18 @@ const ListQuotation = () => {
                                             </div>
                                         </p>
                                         <p className="text-sm text-gray-600">
-                                            <strong className="text-gray-700">Dimensions:</strong> {quotation.height} x {quotation.width} 
+                                            <strong className="text-gray-700">Dimensions:</strong> {quotation.height} x {quotation.width}
                                         </p>
+                                        <p className="text-sm text-gray-600">
+                                            <strong className="text-gray-700">Price:</strong>
+                                            <span className="text-green-600 font-semibold ml-1">
+                                                {quotation.price ? `$${quotation.price}` : "N/A"}
+                                            </span>
+                                        </p>
+                                        <p className="text-sm text-gray-600">
+                                            <strong className="text-gray-700">Comment:</strong> {quotation.comment || "N/A"}
+                                        </p>
+
                                         <div className="pt-2 border-t border-gray-100">
                                             <p className="text-sm text-gray-500">
                                                 Created: {formatDate(quotation.createdAt)}
@@ -439,23 +540,33 @@ const ListQuotation = () => {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex justify-between mt-4">
+                                <div className="flex flex-col gap-2 mt-4">
+                                    <div className="flex justify-between gap-2">
+                                        <Button
+                                            label="View Details"
+                                            icon={<FaEye className="mr-2" />}
+                                            className="p-button p-button-outlined flex-1"
+                                            style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
+                                            onClick={() => handleView(quotation)}
+                                        />
+                                        {isAdmin == "admin" && (
+                                            <Button
+                                                label="Delete"
+                                                icon={<FaTrash className="mr-2" />}
+                                                className="p-button p-button-outlined p-button-danger flex-1"
+                                                style={{ backgroundColor: "#D40000", borderStyle: "none" }}
+                                                onClick={() => handleDelete(quotation)}
+                                            />
+                                        )}
+                                    </div>
                                     <Button
-                                        label="View Details"
-                                        icon={<FaEye className="mr-2" />}
-                                        className="p-button p-button-outlined"
-                                        style={{ backgroundColor: "rgb(147, 197, 114)", borderStyle: "none" }}
-                                        onClick={() => handleView(quotation)}
+                                        label={convertingId === quotation._id ? "Converting..." : "Convert to Order"}
+                                        icon={convertingId === quotation._id ? "pi pi-spin pi-spinner" : <FaShoppingCart className="mr-2" />}
+                                        className="p-button w-full"
+                                        style={{ backgroundColor: "#F59E0B", border: "none" }}
+                                        onClick={() => convertToOrder(quotation)}
+                                        disabled={convertingId !== null}
                                     />
-                                    {isAdmin == "admin" && (
-                                    <Button
-                                        label="Delete"
-                                        icon={<FaTrash className="mr-2" />}
-                                        className="p-button p-button-outlined p-button-danger"
-                                        style={{ backgroundColor: "#D40000", borderStyle: "none" }}
-                                        onClick={() => handleDelete(quotation)}
-                                    />
-                                    )}
                                 </div>
                             </div>
                         ))}

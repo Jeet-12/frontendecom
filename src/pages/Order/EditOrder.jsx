@@ -11,7 +11,7 @@ const EditOrder = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [users, setUsers] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
-  
+
   const token = localStorage.getItem("token");
   const user = JSON.parse(localStorage.getItem("user"));
 
@@ -19,7 +19,7 @@ const EditOrder = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       if (user?.role !== "admin") return;
-      
+
       setIsLoadingUsers(true);
       try {
         const response = await axios.get(
@@ -132,8 +132,8 @@ const EditOrder = () => {
         noOfColors: Number(data.noOfColors),
         colors: data.colors.split(",").map((color) => color.trim()),
         measurement: data.measurement,
-        width: data.width, 
-        height: data.height,
+        width: data.width || 0,
+        height: data.height || 0,
         stitchRange: data.stitchRange,
         formatRequired: data.formatRequired,
         timeToComplete: formatDate(new Date(data.timeToComplete)),
@@ -385,7 +385,7 @@ const EditOrder = () => {
                   </p>
                 )}
               </div>
-              
+
               <div>
                 <label className="font-semibold text-sm pb-1 block text-gray-600">
                   Height
@@ -534,24 +534,24 @@ const EditOrder = () => {
                   <label className="font-semibold text-sm pb-1 block text-gray-600">
                     Price ($) <span className="text-red-500">*</span>
                   </label>
-                 <input
-  type="text"
-  {...register("price", {
-    required: "Price is required",
-    maxLength: {
-      value: 50,
-      message: "Price cannot exceed 50 characters",
-    },
-  })}
-  value={formValues.price}
-  onChange={(e) =>
-    setValue("price", e.target.value, { shouldValidate: true })
-  }
-  className={`border ${errors.price ? "border-red-500" : "border-gray-300"}
+                  <input
+                    type="text"
+                    {...register("price", {
+                      required: "Price is required",
+                      maxLength: {
+                        value: 50,
+                        message: "Price cannot exceed 50 characters",
+                      },
+                    })}
+                    value={formValues.price}
+                    onChange={(e) =>
+                      setValue("price", e.target.value, { shouldValidate: true })
+                    }
+                    className={`border ${errors.price ? "border-red-500" : "border-gray-300"}
     rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2
     focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors`}
-  placeholder="e.g. $25, 25 USD, Negotiable"
-/>
+                    placeholder="e.g. $25, 25 USD, Negotiable"
+                  />
 
                   {errors.price && (
                     <p className="text-red-500 text-xs mt-1">
@@ -564,24 +564,24 @@ const EditOrder = () => {
                   <label className="font-semibold text-sm pb-1 block text-gray-600">
                     Stitch Count <span className="text-red-500">*</span>
                   </label>
-                <input
-  type="text"
-  {...register("stitching_count", {
-    required: "Stitch count is required",
-    maxLength: {
-      value: 100,
-      message: "Stitch count cannot exceed 100 characters",
-    },
-  })}
-  value={formValues.stitching_count}
-  onChange={(e) =>
-    setValue("stitching_count", e.target.value, { shouldValidate: true })
-  }
-  className={`border ${errors.stitching_count ? "border-red-500" : "border-gray-300"}
+                  <input
+                    type="text"
+                    {...register("stitching_count", {
+                      required: "Stitch count is required",
+                      maxLength: {
+                        value: 100,
+                        message: "Stitch count cannot exceed 100 characters",
+                      },
+                    })}
+                    value={formValues.stitching_count}
+                    onChange={(e) =>
+                      setValue("stitching_count", e.target.value, { shouldValidate: true })
+                    }
+                    className={`border ${errors.stitching_count ? "border-red-500" : "border-gray-300"}
     rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2
     focus:ring-[#AFE1AF] focus:border-[#93C572] transition-colors`}
-  placeholder="e.g. Approx 12k, Around 15000, As per design"
-/>
+                    placeholder="e.g. Approx 12k, Around 15000, As per design"
+                  />
 
                   {errors.stitching_count && (
                     <p className="text-red-500 text-xs mt-1">
@@ -619,10 +619,9 @@ const EditOrder = () => {
 
             <button
               type="submit"
-              className={`mt-8 w-full py-3 rounded-lg bg-[#93C572] text-white font-semibold flex justify-center items-center hover:bg-[#79a759] transition-colors ${
-                isLoading ? "opacity-50 cursor-not-allowed" : ""
-              }`}
-              // disabled={isLoading || !isValid}
+              className={`mt-8 w-full py-3 rounded-lg bg-[#93C572] text-white font-semibold flex justify-center items-center hover:bg-[#79a759] transition-colors ${isLoading ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+            // disabled={isLoading || !isValid}
             >
               {isLoading ? (
                 <>

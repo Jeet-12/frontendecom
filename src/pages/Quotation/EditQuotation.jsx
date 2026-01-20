@@ -128,8 +128,8 @@ const EditQuotation = () => {
         noOfColors: Number(data.noofcolors),
         colors: data.colors.trim().split(" "),
         measurement: data.measurement,
-        width: data.width, // Changed from Number(data.width) to keep as text
-        height: data.height, // Changed from Number(data.height) to keep as text
+        width: data.width || 0,
+        height: data.height || 0,
         stitchRange: data.stitch_range,
         formatRequired: data.format,
         timeToComplete: formatDate(new Date(data.timeTo_complete)),

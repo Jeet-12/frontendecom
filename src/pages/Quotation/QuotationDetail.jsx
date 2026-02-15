@@ -181,7 +181,7 @@ const QuotationDetail = () => {
                 formatRequired: quotation.formatRequired || "Pfaff *.KSM",
                 timeToComplete: formatDateToMMDDYYYY(quotation.timeToComplete) || "11/04/2025",
                 additionalInformation: quotation.additionalInformation?.trim() || "dcjbsjvbdfviudfvu",
-                price: 0,
+                price: quotation.price || 0,
                 status: "inprogress",
                 files: "" // Empty files field
             };
@@ -369,6 +369,7 @@ const QuotationDetail = () => {
                                     disabled={converting}
                                     style={{ borderStyle: "none" }}
                                 /> */}
+                                {status === "complete" && (
                                 <Button
                                     label={converting ? "Converting..." : "Convert to Order"}
                                     icon={converting ? "pi pi-spin pi-spinner" : "pi pi-shopping-cart"}
@@ -377,6 +378,7 @@ const QuotationDetail = () => {
                                     disabled={converting}
                                     style={{ borderStyle: "none" }}
                                 />
+                                )}
                             </>
                         )}
                     </div>

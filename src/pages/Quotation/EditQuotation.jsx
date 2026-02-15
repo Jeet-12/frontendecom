@@ -134,6 +134,7 @@ const EditQuotation = () => {
         formatRequired: data.format,
         timeToComplete: formatDate(new Date(data.timeTo_complete)),
         additionalInformation: data.additionalinformation,
+        status: "complete",
         ...(user?.role === "admin" && {
           price: data.price,
           stitching_count: data.stitching_count,

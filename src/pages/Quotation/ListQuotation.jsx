@@ -559,7 +559,7 @@ const ListQuotation = () => {
                                             />
                                         )}
                                     </div>
-                                    {status === "complete" && (
+                                    {quotation.status === "complete" && (
                                        
                                     <Button
                                         label={convertingId === quotation._id ? "Converting..." : "Convert to Order"}

@@ -556,7 +556,7 @@ const ListOrder = () => {
                                                 <div>
                                                     <p className="text-sm text-gray-500">Total Price</p>
                                                     <p className="font-medium text-green-600 text-lg">
-                                                        ${order.price ? parseFloat(order.price).toFixed(2) : "0.00"}
+                                                        ${order.price ? order.price : "0.00"}
                                                     </p>
                                                 </div>
                                             </div>
@@ -682,7 +682,7 @@ const ListOrder = () => {
                                             <div>
                                                 <p className="text-sm text-gray-500">Total Price</p>
                                                 <p className="text-lg font-bold text-green-600">
-                                                    ${order.price ? parseFloat(order.price).toFixed(2) : "0.00"}
+                                                    ${order.price ? order.price : "0.00"}
                                                 </p>
                                             </div>
                                         </div>

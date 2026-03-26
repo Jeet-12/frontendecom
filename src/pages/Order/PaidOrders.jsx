@@ -559,16 +559,7 @@ const PaidOrders = () => {
                                         </div>
                                         
                                         <div className="flex items-center gap-3 w-full sm:w-auto">
-                                            {order.digitalImage && (
-                                                <a 
-                                                    href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${order.digitalImage}`}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="flex-1 sm:flex-none inline-flex items-center justify-center px-6 py-2.5 rounded-xl text-sm font-bold bg-gray-900 text-white hover:bg-black transition-colors shadow-lg shadow-gray-200"
-                                                >
-                                                    Download Files
-                                                </a>
-                                            )}
+                                            
                                             <Button
                                                 label="View Details"
                                                 icon={<FaEye className="mr-2" />}

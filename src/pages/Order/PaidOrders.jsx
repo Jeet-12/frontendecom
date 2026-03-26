@@ -94,14 +94,21 @@ const PaidOrders = () => {
                 console.log("Paid Orders data:", data);
 
                 let sortedData = [];
+                let ordersArray = [];
+
                 if (Array.isArray(data)) {
-                    // Sort by creation date (newest first)
-                    sortedData = data.sort((a, b) =>
-                        new Date(b.createdAt) - new Date(a.createdAt)
-                    );
+                    ordersArray = data;
+                } else if (data && Array.isArray(data.orders)) {
+                    ordersArray = data.orders;
                 } else if (data?.message) {
                     console.log("Info:", data.message);
-                    sortedData = [];
+                }
+
+                if (ordersArray.length > 0) {
+                    // Sort by creation date (newest first)
+                    sortedData = ordersArray.sort((a, b) =>
+                        new Date(b.createdAt) - new Date(a.createdAt)
+                    );
                 }
 
                 setOrders(sortedData);
@@ -480,7 +487,12 @@ const PaidOrders = () => {
                                                     <p className="text-2xl font-black text-green-600">
                                                         ${order.price ? parseFloat(order.price).toFixed(2) : "0.00"}
                                                     </p>
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Paid via {order.paymentStatus === 'Paid' ? 'PayPal' : 'System'}</p>
+                                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                                                        {order.paypalOrderId ? `PayPal: ${order.paypalOrderId}` : `Paid Status: ${order.paymentStatus}`}
+                                                    </p>
+                                                    {order.paymentStatus === 'Paid' && (
+                                                        <Badge value="PAID" severity="success" className="mt-1" />
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>
@@ -525,6 +537,25 @@ const PaidOrders = () => {
                                                     <span className="block w-full text-[10px] font-medium text-gray-400 mt-0.5">{order.noOfColors || 0} Colors Total</span>
                                                 </div>
                                             </div>
+                                            {order.paymentDetails?.payer?.email_address && (
+                                                <div className="space-y-1 lg:col-span-4 mt-2 pt-4 border-t border-gray-50 flex flex-wrap items-center justify-between gap-4">
+                                                    <div className="flex flex-col">
+                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Payer Name</p>
+                                                        <p className="text-sm font-semibold text-gray-800">
+                                                            {order.paymentDetails.payer.name?.given_name} {order.paymentDetails.payer.name?.surname}
+                                                            <span className="ml-2 text-xs text-gray-400 font-medium">({order.paymentDetails.payer.address?.country_code || "N/A"})</span>
+                                                        </p>
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">PayPal Account</p>
+                                                        <p className="text-sm font-semibold text-gray-600">{order.paymentDetails.payer.email_address}</p>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Transaction ID</p>
+                                                        <p className="text-xs font-mono text-gray-500">{order.paymentDetails.purchase_units?.[0]?.payments?.captures?.[0]?.id || "N/A"}</p>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {(order.additionalInformation || order.comment) && (

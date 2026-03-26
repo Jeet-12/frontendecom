@@ -153,17 +153,7 @@ const OrderCard = ({ order }) => {
       <div className="p-6 flex-1 flex flex-col">
         {/* Design Info */}
         <div className="flex gap-4 mb-6">
-          <div className="w-16 h-16 rounded-xl overflow-hidden bg-gray-100 border border-gray-100 flex-shrink-0 group-hover:scale-110 transition-transform duration-500">
-            <img
-              src={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${order.previewImage}`}
-              alt={order.designName}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "https://via.placeholder.com/400x400?text=Design";
-              }}
-            />
-          </div>
+          
           <div className="flex-1 min-w-0">
             <h3 className="text-lg font-bold text-gray-900 truncate group-hover:text-green-600 transition-colors">
               {order.designName || "Unnamed Design"}

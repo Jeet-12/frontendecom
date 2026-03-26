@@ -445,10 +445,7 @@ const PaidOrders = () => {
                                             src={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${order.previewImage}`}
                                             alt={order.designName}
                                             className="w-full h-full object-cover"
-                                            onError={(e) => {
-                                                e.target.onerror = null;
-                                                e.target.src = "https://via.placeholder.com/400x400?text=No+Preview";
-                                            }}
+                                           
                                         />
                                     ) : (
                                         <div className="text-gray-300 flex flex-col items-center">
@@ -482,7 +479,7 @@ const PaidOrders = () => {
                                                 </div>
                                             </div>
                                             <div className="flex flex-col items-end gap-2">
-                                                {getStatusBadge(order.status)}
+                                              
                                                 <div className="text-right">
                                                     <p className="text-2xl font-black text-green-600">
                                                         ${order.price ? parseFloat(order.price).toFixed(2) : "0.00"}
@@ -490,9 +487,7 @@ const PaidOrders = () => {
                                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
                                                         {order.paypalOrderId ? `PayPal: ${order.paypalOrderId}` : `Paid Status: ${order.paymentStatus}`}
                                                     </p>
-                                                    {order.paymentStatus === 'Paid' && (
-                                                        <Badge value="PAID" severity="success" className="mt-1" />
-                                                    )}
+                                                   
                                                 </div>
                                             </div>
                                         </div>
@@ -616,10 +611,7 @@ const PaidOrders = () => {
                     <p className="text-sm font-medium text-gray-400">
                         Showing <span className="text-gray-900">{filteredOrders.length}</span> of <span className="text-gray-900">{orders.length}</span> paid orders
                     </p>
-                    <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">System Sync Active</span>
-                    </div>
+                   
                 </div>
             </div>
         </div>

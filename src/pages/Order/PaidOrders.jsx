@@ -438,27 +438,8 @@ const PaidOrders = () => {
                                 key={order._id}
                                 className="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden flex flex-col md:flex-row"
                             >
-                                {/* Order Thumbnail/Preview */}
-                                <div className="w-full md:w-64 bg-gray-50 relative overflow-hidden group-hover:scale-105 transition-transform duration-500 min-h-[200px] flex items-center justify-center border-r border-gray-100">
-                                    {order.previewImage ? (
-                                        <img
-                                            src={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${order.previewImage}`}
-                                            alt={order.designName}
-                                            className="w-full h-full object-cover"
-                                           
-                                        />
-                                    ) : (
-                                        <div className="text-gray-300 flex flex-col items-center">
-                                            <FaSearch className="text-4xl mb-2 opacity-20" />
-                                            <span className="text-xs font-semibold uppercase tracking-wider">No Preview Available</span>
-                                        </div>
-                                    )}
-                                    <div className="absolute top-3 left-3">
-                                        <span className="bg-white/90 backdrop-blur shadow-sm text-[10px] font-bold px-2 py-1 rounded-lg text-gray-700 uppercase tracking-widest border border-gray-100">
-                                            {order.uniqueId || "Quick-Order"}
-                                        </span>
-                                    </div>
-                                </div>
+                                
+                                
 
                                 {/* Order Content */}
                                 <div className="flex-1 p-6 md:p-8 flex flex-col justify-between">

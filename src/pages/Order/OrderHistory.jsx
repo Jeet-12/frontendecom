@@ -188,17 +188,47 @@ const OrderCard = ({ order }) => {
         </div>
 
         {/* Card Footer Actions */}
-        <div className="mt-auto flex items-center justify-between pt-2">
-            <div className="flex items-center gap-2 text-[11px] text-gray-400 font-semibold">
-                <FaClock className="text-gray-300" />
-                {order.paymentStatus || 'Paid'}
+        <div className="mt-auto pt-4 border-t border-gray-100">
+            <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-[11px] text-gray-400 font-semibold">
+                        <FaClock className="text-gray-300" />
+                        {order.paymentStatus || 'Paid'}
+                    </div>
+                    <button 
+                        onClick={() => navigate(`/order/${order._id}`)}
+                        className="inline-flex items-center gap-2 text-sm font-bold text-green-600 hover:text-green-700 transition-colors"
+                    >
+                        View Details <FaEye />
+                    </button>
+                </div>
+                
+                {order.paymentStatus === 'Paid' && (
+                    <div className="flex gap-2">
+                        {order.digitalImage && (
+                             <a
+                                href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${Array.isArray(order.digitalImage) ? order.digitalImage[0] : order.digitalImage}`}
+                                download
+                                className="flex-1 flex items-center justify-center gap-2 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-xs font-bold shadow-sm"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <FaFileDownload /> Download Design
+                            </a>
+                        )}
+                        {order.previewImage && (
+                             <a
+                                href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${Array.isArray(order.previewImage) ? order.previewImage[0] : order.previewImage}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex-1 flex items-center justify-center gap-2 py-2 bg-white border border-green-200 text-green-700 rounded-lg hover:bg-green-50 transition-colors text-xs font-bold"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                <FaEye /> Preview
+                            </a>
+                        )}
+                    </div>
+                )}
             </div>
-            <button 
-                onClick={() => navigate(`/order/${order._id}`)}
-                className="inline-flex items-center gap-2 text-sm font-bold text-green-600 hover:text-green-700 transition-colors"
-            >
-                View Details <FaEye />
-            </button>
         </div>
       </div>
     </div>

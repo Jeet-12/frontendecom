@@ -200,6 +200,15 @@ const Header = () => {
                     >
                       Completed
                     </div>
+                    <div
+                      className={`py-2 px-4 hover:bg-[#F3F4F6] rounded-md cursor-pointer ${location.pathname === "/order/paid" ? "text-[#3B82F6] font-semibold" : "text-[#10B981]"}`}
+                      onClick={() => {
+                        navigate("/order/paid");
+                        setIsOrderDropdownOpen(false);
+                      }}
+                    >
+                      Paid Orders
+                    </div>
                   </div>
                 )}
               </div>
@@ -289,6 +298,16 @@ const Header = () => {
                           onClick={() => handleStatusClick("Complete")}
                         >
                           Completed
+                        </div>
+                        <div
+                          className={`py-2 px-4 hover:bg-[#F3F4F6] rounded-md cursor-pointer ${location.pathname === "/order/paid" ? "text-[#3B82F6] font-semibold" : "text-[#10B981]"}`}
+                          onClick={() => {
+                            navigate("/order/paid");
+                            setIsOrderDropdownOpen(false);
+                            setIsMobileMenuOpen(false);
+                          }}
+                        >
+                          Paid Orders
                         </div>
                       </div>
                     )}

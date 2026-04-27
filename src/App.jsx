@@ -207,6 +207,14 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
+      {
+        path: "order/paid",
+        element: (
+          <ProtectedRoute role="user">
+            <PaidOrders />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   {

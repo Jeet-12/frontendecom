@@ -182,7 +182,7 @@ const OrderDetail = () => {
     };
 
     const handleSubmit = async () => {
-        if (previewImages.length > 0 && digitalFiles.length > 0) {
+        if (previewImages.length > 0 || digitalFiles.length > 0) {
             const formData = new FormData();
 
             previewImages.forEach((image, index) => {
@@ -216,7 +216,8 @@ const OrderDetail = () => {
                     setPreviewImages([]);
                     setDigitalFiles([]);
                 } else {
-                    throw new Error("Failed to upload files.");
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || "Failed to upload files.");
                 }
             } catch (error) {
                 toast.current.show({
@@ -230,7 +231,7 @@ const OrderDetail = () => {
             toast.current.show({
                 severity: "error",
                 summary: "Missing Files",
-                detail: "Please upload at least one preview image and one digitized file before submitting.",
+                detail: "Please upload at least one preview image or one digitized file before submitting.",
                 life: 3000,
             });
         }
@@ -409,6 +410,60 @@ const OrderDetail = () => {
                         <p>{new Date(order.updatedAt).toLocaleDateString()}</p>
                     </div>
                 </div>
+
+                {/* Completed Files Download Section for Customer (Show only if Paid) */}
+                {role === 'user' && order.paymentStatus === 'Paid' && (
+                    <div className="mb-8 p-6 bg-green-50 rounded-lg border-2 border-green-200">
+                        <h4 className="text-2xl font-bold text-green-800 mb-4 flex items-center gap-2">
+                            <FaFileDownload /> Download Your Completed Design
+                        </h4>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {/* Preview Images */}
+                            <div>
+                                <h5 className="font-semibold text-lg mb-2 text-gray-700">Stitch Out Images (Previews)</h5>
+                                {order.previewImage ? (
+                                    <div className="flex flex-wrap gap-2">
+                                        {(Array.isArray(order.previewImage) ? order.previewImage : [order.previewImage]).map((file, idx) => (
+                                            <a
+                                                key={idx}
+                                                href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center gap-2 px-3 py-2 bg-white border border-green-200 rounded-lg hover:bg-green-100 transition-colors text-sm text-green-700 font-medium"
+                                            >
+                                                <FaEye /> View Preview {idx + 1}
+                                            </a>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-500 italic">No preview images available.</p>
+                                )}
+                            </div>
+
+                            {/* Digitized Files */}
+                            <div>
+                                <h5 className="font-semibold text-lg mb-2 text-gray-700">Digitized Production Files</h5>
+                                {order.digitalImage ? (
+                                    <div className="flex flex-wrap gap-2">
+                                        {(Array.isArray(order.digitalImage) ? order.digitalImage : [order.digitalImage]).map((file, idx) => (
+                                            <a
+                                                key={idx}
+                                                href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
+                                                download
+                                                className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-bold shadow-md"
+                                            >
+                                                <FaFileDownload /> Download File {idx + 1}
+                                            </a>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-500 italic">No production files available yet.</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {role === "admin" && order.status === "complete" && (
                     <div className="mb-8">

@@ -21,7 +21,8 @@ const OrderDetail = () => {
     const [imageUrl, setImageUrl] = useState("");
 
     const openModal = () => {
-        setImageUrl(`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${order.previewImage}`);
+        const imgPath = Array.isArray(order.previewImage) ? order.previewImage[0] : order.previewImage;
+        setImageUrl(`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${imgPath}`);
         setModalOpen(true);
     };
 
@@ -137,11 +138,13 @@ const OrderDetail = () => {
                 });
             }
         } else if (type === "digital") {
-            const validDigitalTypes = ["application/zip", "application/x-zip-compressed", "multipart/x-zip"];
+            const validDigitalTypes = ["application/zip", "application/x-zip-compressed", "multipart/x-zip", "application/octet-stream", "application/x-zip"];
 
             const validFiles = files.filter(file => {
                 const isZipFile = file?.name.toLowerCase().endsWith(".zip");
-                return validDigitalTypes.includes(file.type) || isZipFile;
+                const isEmbFile = file?.name.toLowerCase().endsWith(".emb");
+                const isDstFile = file?.name.toLowerCase().endsWith(".dst");
+                return validDigitalTypes.includes(file.type) || isZipFile || isEmbFile || isDstFile;
             });
 
             if (validFiles.length > 0) {
@@ -159,14 +162,14 @@ const OrderDetail = () => {
                 toast.current.show({
                     severity: "success",
                     summary: "Files Uploaded",
-                    detail: `${validFiles.length} digitized file(s) uploaded successfully.`,
+                    detail: `${validFiles.length} digitized file(s) added.`,
                     life: 3000,
                 });
             } else {
                 toast.current.show({
                     severity: "error",
                     summary: "Invalid Files",
-                    detail: "Please upload valid .zip files.",
+                    detail: "Please upload valid production files (.zip, .dst, .emb).",
                     life: 3000,
                 });
             }
@@ -185,45 +188,49 @@ const OrderDetail = () => {
         if (previewImages.length > 0 || digitalFiles.length > 0) {
             const formData = new FormData();
 
-            previewImages.forEach((image, index) => {
+            previewImages.forEach((image) => {
                 formData.append("previewImage", image);
             });
 
-            digitalFiles.forEach((file, index) => {
+            digitalFiles.forEach((file) => {
                 formData.append("digitalImage", file);
             });
 
             try {
-                const response = await fetch(`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/order/${id}/update-images`, {
-                    method: "PATCH",
-                    headers: {
-                        "x-auth-token": token,
-                    },
-                    body: formData,
-                });
+                const response = await axios.patch(
+                    `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/order/${id}/update-images`,
+                    formData,
+                    {
+                        headers: {
+                            "x-auth-token": token,
+                            "Content-Type": "multipart/form-data",
+                        },
+                    }
+                );
 
-                if (response.ok) {
-                    const result = await response.json();
+                if (response.status === 200 || response.status === 201) {
                     toast.current.show({
                         severity: "success",
                         summary: "Files Uploaded",
-                        detail: result.message,
+                        detail: response.data.message || "Files updated successfully",
                         life: 3000,
                     });
                     const updatedOrder = await getOrderById(id, token);
                     setOrder(updatedOrder);
-                    navigate('/admin/order');
+                    setTimeout(() => {
+                        navigate('/admin/order');
+                    }, 1500);
                     setPreviewImages([]);
                     setDigitalFiles([]);
                 } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.message || "Failed to upload files.");
+                    throw new Error("Failed to upload files.");
                 }
             } catch (error) {
+                console.error("Upload error:", error);
                 toast.current.show({
                     severity: "error",
                     summary: "Upload Error",
-                    detail: error.message,
+                    detail: error.response?.data?.message || error.message || "Failed to upload files.",
                     life: 3000,
                 });
             }
@@ -284,7 +291,7 @@ const OrderDetail = () => {
                     </div>
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Colors:</p>
-                        <p>{order.colors.join(", ")}</p>
+                        <p>{Array.isArray(order.colors) ? order.colors.join(", ") : (order.colors || "Not specified")}</p>
                     </div>
                     <div className="bg-[#f8fafc] p-6 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg">
                         <p className="font-semibold text-lg">Number of Colors:</p>

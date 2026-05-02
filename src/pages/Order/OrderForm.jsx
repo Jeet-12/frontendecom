@@ -19,7 +19,8 @@ const OrderForm = () => {
 
   // Valid file types
   const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf',
-    'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+    'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -539,12 +540,12 @@ const OrderForm = () => {
                   <input
                     type="file"
                     multiple
-                    accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+                    accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,video/*"
                     onChange={handleFilesUpload}
                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#93C572] file:text-white hover:file:bg-[#79a759]"
                   />
                   <p className="text-xs text-gray-500 mt-2">
-                    Supported formats: JPEG, PNG, PDF, DOC, DOCX (Max 4MB per file, max 4 files)
+                    Supported formats: JPEG, PNG, PDF, DOC, DOCX, MP4, MOV, WEBM (Max 4MB per file, max 4 files)
                   </p>
 
                   {/* File preview */}

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getOrderById, updateOrderStatus } from "../../Services/Api";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import { FaEdit, FaCheckCircle, FaFileUpload, FaTimes, FaFileDownload } from "react-icons/fa";
+import { FaEdit, FaCheckCircle, FaFileUpload, FaTimes, FaFileDownload, FaEye, FaVideo } from "react-icons/fa";
 import axios from "axios";
 
 const OrderDetail = () => {
@@ -14,6 +14,7 @@ const OrderDetail = () => {
     const [role, setRole] = useState(null);
     const [previewImages, setPreviewImages] = useState([]);
     const [digitalFiles, setDigitalFiles] = useState([]);
+    const [videoFiles, setVideoFiles] = useState([]);
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
     const toast = useRef(null);
@@ -173,6 +174,42 @@ const OrderDetail = () => {
                     life: 3000,
                 });
             }
+        } else if (type === "video") {
+            const validVideoTypes = ["video/mp4", "video/webm", "video/ogg", "video/quicktime"];
+            const validFiles = files.filter(file => {
+                const isVideo = validVideoTypes.includes(file.type) || 
+                              file.name.toLowerCase().endsWith(".mp4") || 
+                              file.name.toLowerCase().endsWith(".mov") || 
+                              file.name.toLowerCase().endsWith(".webm");
+                return isVideo;
+            });
+
+            if (validFiles.length > 0) {
+                if (videoFiles.length + validFiles.length > 2) {
+                    toast.current.show({
+                        severity: "error",
+                        summary: "Limit Exceeded",
+                        detail: "You can only upload up to 2 videos.",
+                        life: 3000,
+                    });
+                    return;
+                }
+
+                setVideoFiles(prev => [...prev, ...validFiles]);
+                toast.current.show({
+                    severity: "success",
+                    summary: "Files Uploaded",
+                    detail: `${validFiles.length} video(s) added successfully.`,
+                    life: 3000,
+                });
+            } else {
+                toast.current.show({
+                    severity: "error",
+                    summary: "Invalid Files",
+                    detail: "Please upload valid video files (.mp4, .mov, .webm).",
+                    life: 3000,
+                });
+            }
         }
     };
 
@@ -184,8 +221,12 @@ const OrderDetail = () => {
         setDigitalFiles(prev => prev.filter((_, i) => i !== index));
     };
 
+    const removeVideoFile = (index) => {
+        setVideoFiles(prev => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async () => {
-        if (previewImages.length > 0 || digitalFiles.length > 0) {
+        if (previewImages.length > 0 || digitalFiles.length > 0 || videoFiles.length > 0) {
             const formData = new FormData();
 
             previewImages.forEach((image) => {
@@ -194,6 +235,10 @@ const OrderDetail = () => {
 
             digitalFiles.forEach((file) => {
                 formData.append("digitalImage", file);
+            });
+
+            videoFiles.forEach((video) => {
+                formData.append("video", video);
             });
 
             try {
@@ -222,6 +267,7 @@ const OrderDetail = () => {
                     }, 1500);
                     setPreviewImages([]);
                     setDigitalFiles([]);
+                    setVideoFiles([]);
                 } else {
                     throw new Error("Failed to upload files.");
                 }
@@ -238,7 +284,7 @@ const OrderDetail = () => {
             toast.current.show({
                 severity: "error",
                 summary: "Missing Files",
-                detail: "Please upload at least one preview image or one digitized file before submitting.",
+                detail: "Please upload at least one preview image, digitized file, or video before submitting.",
                 life: 3000,
             });
         }
@@ -468,6 +514,33 @@ const OrderDetail = () => {
                                     <p className="text-sm text-gray-500 italic">No production files available yet.</p>
                                 )}
                             </div>
+
+                            {/* Videos */}
+                            <div className="md:col-span-2 mt-4">
+                                <h5 className="font-semibold text-lg mb-2 text-gray-700">Order Videos</h5>
+                                {order.video ? (
+                                    <div className="flex flex-wrap gap-4">
+                                        {(Array.isArray(order.video) ? order.video : [order.video]).map((file, idx) => (
+                                            <div key={idx} className="flex flex-col gap-2">
+                                                <video 
+                                                    src={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`} 
+                                                    className="w-full max-w-sm rounded-lg shadow-md border border-gray-200"
+                                                    controls
+                                                />
+                                                <a
+                                                    href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
+                                                    download
+                                                    className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-bold shadow-md w-full"
+                                                >
+                                                    <FaFileDownload /> Download Video {idx + 1}
+                                                </a>
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-gray-500 italic">No videos available.</p>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
@@ -566,6 +639,50 @@ const OrderDetail = () => {
                             )}
                         </div>
 
+                        {/* Video Upload */}
+                        <div className="mb-6">
+                            <h5 className="font-semibold text-lg mb-2">Order Videos (Up to 2)</h5>
+                            <div className="flex gap-4 mb-4">
+                                <div>
+                                    <Button
+                                        label="Upload Videos"
+                                        onClick={() => document.getElementById("file-video").click()}
+                                        icon={<FaVideo />}
+                                        className="p-button-outlined p-button-rounded w-full"
+                                        style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
+                                        disabled={videoFiles.length >= 2}
+                                    />
+                                    <input
+                                        type="file"
+                                        id="file-video"
+                                        accept="video/*"
+                                        onChange={(e) => handleImageUpload(e, "video")}
+                                        className="hidden"
+                                        multiple
+                                    />
+                                </div>
+                            </div>
+
+                            {videoFiles.length > 0 && (
+                                <div className="mb-4">
+                                    <p className="text-sm text-gray-600 mb-2">Selected videos:</p>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                        {videoFiles.map((file, index) => (
+                                            <div key={index} className="relative border rounded p-2">
+                                                <p className="text-xs truncate">{file.name}</p>
+                                                <button
+                                                    onClick={() => removeVideoFile(index)}
+                                                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                                                >
+                                                    <FaTimes />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         {/* Submit Button */}
                         <div className="flex gap-4">
                             <Button
@@ -574,7 +691,7 @@ const OrderDetail = () => {
                                 onClick={handleSubmit}
                                 className="p-button-success p-button-rounded w-full"
                                 style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                disabled={previewImages.length === 0 || digitalFiles.length === 0}
+                                disabled={previewImages.length === 0 && digitalFiles.length === 0 && videoFiles.length === 0}
                             />
                         </div>
                     </div>

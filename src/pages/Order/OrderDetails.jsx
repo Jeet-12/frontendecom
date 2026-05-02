@@ -14,7 +14,6 @@ const OrderDetail = () => {
     const [role, setRole] = useState(null);
     const [previewImages, setPreviewImages] = useState([]);
     const [digitalFiles, setDigitalFiles] = useState([]);
-    const [videoFiles, setVideoFiles] = useState([]);
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
     const toast = useRef(null);
@@ -108,16 +107,22 @@ const OrderDetail = () => {
         const files = Array.from(e.target.files);
 
         if (type === "preview") {
-            const validImageTypes = ["image/png", "image/jpeg", "application/pdf"];
+            const validPreviewTypes = ["image/png", "image/jpeg", "application/pdf", "video/mp4", "video/webm", "video/quicktime"];
 
-            const validFiles = files.filter(file => validImageTypes.includes(file.type));
+            const validFiles = files.filter(file => {
+                const isVideo = file.type.startsWith("video/") || 
+                              file.name.toLowerCase().endsWith(".mp4") || 
+                              file.name.toLowerCase().endsWith(".mov") || 
+                              file.name.toLowerCase().endsWith(".webm");
+                return validPreviewTypes.includes(file.type) || isVideo;
+            });
 
             if (validFiles.length > 0) {
                 if (previewImages.length + validFiles.length > 4) {
                     toast.current.show({
                         severity: "error",
                         summary: "Limit Exceeded",
-                        detail: "You can only upload up to 4 preview images.",
+                        detail: "You can only upload up to 4 preview files (images/videos).",
                         life: 3000,
                     });
                     return;
@@ -127,25 +132,26 @@ const OrderDetail = () => {
                 toast.current.show({
                     severity: "success",
                     summary: "Files Uploaded",
-                    detail: `${validFiles.length} preview image(s) uploaded successfully.`,
+                    detail: `${validFiles.length} preview file(s) added successfully.`,
                     life: 3000,
                 });
             } else {
                 toast.current.show({
                     severity: "error",
                     summary: "Invalid Files",
-                    detail: "Please upload valid images (PNG, JPEG) or PDFs.",
+                    detail: "Please upload valid images, PDFs, or videos.",
                     life: 3000,
                 });
             }
         } else if (type === "digital") {
-            const validDigitalTypes = ["application/zip", "application/x-zip-compressed", "multipart/x-zip", "application/octet-stream", "application/x-zip"];
+            const validDigitalTypes = ["application/zip", "application/x-zip-compressed", "multipart/x-zip", "application/octet-stream", "application/x-zip", "video/mp4", "video/webm"];
 
             const validFiles = files.filter(file => {
                 const isZipFile = file?.name.toLowerCase().endsWith(".zip");
                 const isEmbFile = file?.name.toLowerCase().endsWith(".emb");
                 const isDstFile = file?.name.toLowerCase().endsWith(".dst");
-                return validDigitalTypes.includes(file.type) || isZipFile || isEmbFile || isDstFile;
+                const isVideo = file.type.startsWith("video/") || file.name.toLowerCase().endsWith(".mp4");
+                return validDigitalTypes.includes(file.type) || isZipFile || isEmbFile || isDstFile || isVideo;
             });
 
             if (validFiles.length > 0) {
@@ -170,43 +176,7 @@ const OrderDetail = () => {
                 toast.current.show({
                     severity: "error",
                     summary: "Invalid Files",
-                    detail: "Please upload valid production files (.zip, .dst, .emb).",
-                    life: 3000,
-                });
-            }
-        } else if (type === "video") {
-            const validVideoTypes = ["video/mp4", "video/webm", "video/ogg", "video/quicktime"];
-            const validFiles = files.filter(file => {
-                const isVideo = validVideoTypes.includes(file.type) || 
-                              file.name.toLowerCase().endsWith(".mp4") || 
-                              file.name.toLowerCase().endsWith(".mov") || 
-                              file.name.toLowerCase().endsWith(".webm");
-                return isVideo;
-            });
-
-            if (validFiles.length > 0) {
-                if (videoFiles.length + validFiles.length > 2) {
-                    toast.current.show({
-                        severity: "error",
-                        summary: "Limit Exceeded",
-                        detail: "You can only upload up to 2 videos.",
-                        life: 3000,
-                    });
-                    return;
-                }
-
-                setVideoFiles(prev => [...prev, ...validFiles]);
-                toast.current.show({
-                    severity: "success",
-                    summary: "Files Uploaded",
-                    detail: `${validFiles.length} video(s) added successfully.`,
-                    life: 3000,
-                });
-            } else {
-                toast.current.show({
-                    severity: "error",
-                    summary: "Invalid Files",
-                    detail: "Please upload valid video files (.mp4, .mov, .webm).",
+                    detail: "Please upload valid production files (.zip, .dst, .emb) or videos.",
                     life: 3000,
                 });
             }
@@ -221,24 +191,13 @@ const OrderDetail = () => {
         setDigitalFiles(prev => prev.filter((_, i) => i !== index));
     };
 
-    const removeVideoFile = (index) => {
-        setVideoFiles(prev => prev.filter((_, i) => i !== index));
+    const removeDigitalFile = (index) => {
+        setDigitalFiles(prev => prev.filter((_, i) => i !== index));
     };
 
     const handleSubmit = async () => {
-        if (previewImages.length > 0 || digitalFiles.length > 0 || videoFiles.length > 0) {
-            const formData = new FormData();
-
-            previewImages.forEach((image) => {
-                formData.append("previewImage", image);
-            });
-
             digitalFiles.forEach((file) => {
                 formData.append("digitalImage", file);
-            });
-
-            videoFiles.forEach((video) => {
-                formData.append("video", video);
             });
 
             try {
@@ -267,7 +226,6 @@ const OrderDetail = () => {
                     }, 1500);
                     setPreviewImages([]);
                     setDigitalFiles([]);
-                    setVideoFiles([]);
                 } else {
                     throw new Error("Failed to upload files.");
                 }
@@ -284,7 +242,7 @@ const OrderDetail = () => {
             toast.current.show({
                 severity: "error",
                 summary: "Missing Files",
-                detail: "Please upload at least one preview image, digitized file, or video before submitting.",
+                detail: "Please upload at least one preview file or digitized file before submitting.",
                 life: 3000,
             });
         }
@@ -472,73 +430,82 @@ const OrderDetail = () => {
                         </h4>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {/* Preview Images */}
+                            {/* Preview Files (Images & Videos) */}
                             <div>
-                                <h5 className="font-semibold text-lg mb-2 text-gray-700">Stitch Out Images (Previews)</h5>
+                                <h5 className="font-semibold text-lg mb-2 text-gray-700">Stitch Out Previews (Images/Videos)</h5>
                                 {order.previewImage ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {(Array.isArray(order.previewImage) ? order.previewImage : [order.previewImage]).map((file, idx) => (
-                                            <a
-                                                key={idx}
-                                                href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center gap-2 px-3 py-2 bg-white border border-green-200 rounded-lg hover:bg-green-100 transition-colors text-sm text-green-700 font-medium"
-                                            >
-                                                <FaEye /> View Preview {idx + 1}
-                                            </a>
-                                        ))}
+                                    <div className="flex flex-wrap gap-4">
+                                        {(Array.isArray(order.previewImage) ? order.previewImage : [order.previewImage]).map((file, idx) => {
+                                            const isVideo = typeof file === 'string' && (file.toLowerCase().endsWith(".mp4") || file.toLowerCase().endsWith(".mov") || file.toLowerCase().endsWith(".webm"));
+                                            return isVideo ? (
+                                                <div key={idx} className="flex flex-col gap-2">
+                                                    <video 
+                                                        src={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`} 
+                                                        className="w-full max-w-xs rounded-lg shadow-md border border-green-200"
+                                                        controls
+                                                    />
+                                                    <a
+                                                        href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
+                                                        download
+                                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-bold shadow-md"
+                                                    >
+                                                        <FaFileDownload /> Download Video
+                                                    </a>
+                                                </div>
+                                            ) : (
+                                                <a
+                                                    key={idx}
+                                                    href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-2 px-3 py-2 bg-white border border-green-200 rounded-lg hover:bg-green-100 transition-colors text-sm text-green-700 font-medium"
+                                                >
+                                                    <FaEye /> View Preview {idx + 1}
+                                                </a>
+                                            );
+                                        })}
                                     </div>
                                 ) : (
-                                    <p className="text-sm text-gray-500 italic">No preview images available.</p>
+                                    <p className="text-sm text-gray-500 italic">No previews available.</p>
                                 )}
                             </div>
 
-                            {/* Digitized Files */}
+                            {/* Digitized Production Files */}
                             <div>
                                 <h5 className="font-semibold text-lg mb-2 text-gray-700">Digitized Production Files</h5>
                                 {order.digitalImage ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {(Array.isArray(order.digitalImage) ? order.digitalImage : [order.digitalImage]).map((file, idx) => (
-                                            <a
-                                                key={idx}
-                                                href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
-                                                download
-                                                className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-bold shadow-md"
-                                            >
-                                                <FaFileDownload /> Download File {idx + 1}
-                                            </a>
-                                        ))}
+                                    <div className="flex flex-wrap gap-4">
+                                        {(Array.isArray(order.digitalImage) ? order.digitalImage : [order.digitalImage]).map((file, idx) => {
+                                            const isVideo = typeof file === 'string' && (file.toLowerCase().endsWith(".mp4") || file.toLowerCase().endsWith(".mov") || file.toLowerCase().endsWith(".webm"));
+                                            return isVideo ? (
+                                                <div key={idx} className="flex flex-col gap-2">
+                                                    <video 
+                                                        src={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`} 
+                                                        className="w-full max-w-xs rounded-lg shadow-md border border-green-200"
+                                                        controls
+                                                    />
+                                                    <a
+                                                        href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
+                                                        download
+                                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-bold shadow-md"
+                                                    >
+                                                        <FaFileDownload /> Download Video
+                                                    </a>
+                                                </div>
+                                            ) : (
+                                                <a
+                                                    key={idx}
+                                                    href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
+                                                    download
+                                                    className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-bold shadow-md"
+                                                >
+                                                    <FaFileDownload /> Download File {idx + 1}
+                                                </a>
+                                            );
+                                        })}
                                     </div>
                                 ) : (
                                     <p className="text-sm text-gray-500 italic">No production files available yet.</p>
-                                )}
-                            </div>
-
-                            {/* Videos */}
-                            <div className="md:col-span-2 mt-4">
-                                <h5 className="font-semibold text-lg mb-2 text-gray-700">Order Videos</h5>
-                                {order.video ? (
-                                    <div className="flex flex-wrap gap-4">
-                                        {(Array.isArray(order.video) ? order.video : [order.video]).map((file, idx) => (
-                                            <div key={idx} className="flex flex-col gap-2">
-                                                <video 
-                                                    src={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`} 
-                                                    className="w-full max-w-sm rounded-lg shadow-md border border-gray-200"
-                                                    controls
-                                                />
-                                                <a
-                                                    href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
-                                                    download
-                                                    className="flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-bold shadow-md w-full"
-                                                >
-                                                    <FaFileDownload /> Download Video {idx + 1}
-                                                </a>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p className="text-sm text-gray-500 italic">No videos available.</p>
                                 )}
                             </div>
                         </div>
@@ -549,33 +516,31 @@ const OrderDetail = () => {
                     <div className="mb-8">
                         <h4 className="font-semibold text-2xl mb-4">Upload Files</h4>
 
-                        {/* Preview Images Upload */}
+                        {/* Preview Files Upload */}
                         <div className="mb-6">
-                            <h5 className="font-semibold text-lg mb-2">Preview Images (Up to 4)</h5>
-                            <div className="flex gap-4 mb-4">
-                                <div>
-                                    <Button
-                                        label="Upload Preview Images"
-                                        onClick={() => document.getElementById("file-preview").click()}
-                                        icon={<FaFileUpload />}
-                                        className="p-button-outlined p-button-rounded w-full"
-                                        style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                        disabled={previewImages.length >= 4}
-                                    />
-                                    <input
-                                        type="file"
-                                        id="file-preview"
-                                        accept="image/*,application/pdf"
-                                        onChange={(e) => handleImageUpload(e, "preview")}
-                                        className="hidden"
-                                        multiple
-                                    />
-                                </div>
+                            <h5 className="font-semibold text-lg mb-2">Preview Images & Videos (Up to 4)</h5>
+                            <div className="flex flex-wrap gap-4 mb-4">
+                                <Button
+                                    label="Upload Previews"
+                                    onClick={() => document.getElementById("file-preview").click()}
+                                    icon={<FaFileUpload />}
+                                    className="p-button-outlined p-button-rounded"
+                                    style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
+                                    disabled={previewImages.length >= 4}
+                                />
+                                <input
+                                    type="file"
+                                    id="file-preview"
+                                    accept="image/*,application/pdf,video/*"
+                                    onChange={(e) => handleImageUpload(e, "preview")}
+                                    className="hidden"
+                                    multiple
+                                />
                             </div>
 
                             {previewImages.length > 0 && (
                                 <div className="mb-4">
-                                    <p className="text-sm text-gray-600 mb-2">Selected preview images:</p>
+                                    <p className="text-sm text-gray-600 mb-2">Selected preview files:</p>
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                                         {previewImages.map((file, index) => (
                                             <div key={index} className="relative border rounded p-2">
@@ -586,7 +551,6 @@ const OrderDetail = () => {
                                                 >
                                                     <FaTimes />
                                                 </button>
-
                                             </div>
                                         ))}
                                     </div>
@@ -596,26 +560,24 @@ const OrderDetail = () => {
 
                         {/* Digital Files Upload */}
                         <div className="mb-6">
-                            <h5 className="font-semibold text-lg mb-2">Digitized Files (Up to 4)</h5>
-                            <div className="flex gap-4 mb-4">
-                                <div>
-                                    <Button
-                                        label="Upload Digitized Files"
-                                        onClick={() => document.getElementById("file-digital").click()}
-                                        icon={<FaFileUpload />}
-                                        className="p-button-outlined p-button-rounded w-full"
-                                        style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                        disabled={digitalFiles.length >= 4}
-                                    />
-                                    <input
-                                        type="file"
-                                        id="file-digital"
-                                        accept=".zip"
-                                        onChange={(e) => handleImageUpload(e, "digital")}
-                                        className="hidden"
-                                        multiple
-                                    />
-                                </div>
+                            <h5 className="font-semibold text-lg mb-2">Digitized Files & Videos (Up to 4)</h5>
+                            <div className="flex flex-wrap gap-4 mb-4">
+                                <Button
+                                    label="Upload Digitized Files"
+                                    onClick={() => document.getElementById("file-digital").click()}
+                                    icon={<FaFileUpload />}
+                                    className="p-button-outlined p-button-rounded"
+                                    style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
+                                    disabled={digitalFiles.length >= 4}
+                                />
+                                <input
+                                    type="file"
+                                    id="file-digital"
+                                    accept=".zip,.emb,.dst,video/*"
+                                    onChange={(e) => handleImageUpload(e, "digital")}
+                                    className="hidden"
+                                    multiple
+                                />
                             </div>
 
                             {digitalFiles.length > 0 && (
@@ -627,51 +589,6 @@ const OrderDetail = () => {
                                                 <p className="text-xs truncate">{file.name}</p>
                                                 <button
                                                     onClick={() => removeDigitalFile(index)}
-                                                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                                                >
-                                                    <FaTimes />
-                                                </button>
-
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Video Upload */}
-                        <div className="mb-6">
-                            <h5 className="font-semibold text-lg mb-2">Order Videos (Up to 2)</h5>
-                            <div className="flex gap-4 mb-4">
-                                <div>
-                                    <Button
-                                        label="Upload Videos"
-                                        onClick={() => document.getElementById("file-video").click()}
-                                        icon={<FaVideo />}
-                                        className="p-button-outlined p-button-rounded w-full"
-                                        style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                        disabled={videoFiles.length >= 2}
-                                    />
-                                    <input
-                                        type="file"
-                                        id="file-video"
-                                        accept="video/*"
-                                        onChange={(e) => handleImageUpload(e, "video")}
-                                        className="hidden"
-                                        multiple
-                                    />
-                                </div>
-                            </div>
-
-                            {videoFiles.length > 0 && (
-                                <div className="mb-4">
-                                    <p className="text-sm text-gray-600 mb-2">Selected videos:</p>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                                        {videoFiles.map((file, index) => (
-                                            <div key={index} className="relative border rounded p-2">
-                                                <p className="text-xs truncate">{file.name}</p>
-                                                <button
-                                                    onClick={() => removeVideoFile(index)}
                                                     className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
                                                 >
                                                     <FaTimes />
@@ -691,7 +608,7 @@ const OrderDetail = () => {
                                 onClick={handleSubmit}
                                 className="p-button-success p-button-rounded w-full"
                                 style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                disabled={previewImages.length === 0 && digitalFiles.length === 0 && videoFiles.length === 0}
+                                disabled={previewImages.length === 0 && digitalFiles.length === 0}
                             />
                         </div>
                     </div>

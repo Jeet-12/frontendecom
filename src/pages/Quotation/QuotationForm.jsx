@@ -122,7 +122,7 @@ const QuotationForm = () => {
         formatRequired: data.format,
         timeToComplete: formatDate(new Date(data.timeTo_complete)),
         additionalInformation: data.additionalinformation?.trim() || "",
-        files: data?.files ? data.files[0] : null,
+        files: data?.files ? Array.from(data.files) : null,
         status: "inProgress",
       };
 

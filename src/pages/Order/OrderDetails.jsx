@@ -118,16 +118,6 @@ const OrderDetail = () => {
             });
 
             if (validFiles.length > 0) {
-                if (previewImages.length + validFiles.length > 4) {
-                    toast.current.show({
-                        severity: "error",
-                        summary: "Limit Exceeded",
-                        detail: "You can only upload up to 4 preview files (images/videos).",
-                        life: 3000,
-                    });
-                    return;
-                }
-
                 setPreviewImages(prev => [...prev, ...validFiles]);
                 toast.current.show({
                     severity: "success",
@@ -155,16 +145,6 @@ const OrderDetail = () => {
             });
 
             if (validFiles.length > 0) {
-                if (digitalFiles.length + validFiles.length > 4) {
-                    toast.current.show({
-                        severity: "error",
-                        summary: "Limit Exceeded",
-                        detail: "You can only upload up to 4 digitized files.",
-                        life: 3000,
-                    });
-                    return;
-                }
-
                 setDigitalFiles(prev => [...prev, ...validFiles]);
                 toast.current.show({
                     severity: "success",
@@ -191,9 +171,7 @@ const OrderDetail = () => {
         setDigitalFiles(prev => prev.filter((_, i) => i !== index));
     };
 
-    const removeDigitalFile = (index) => {
-        setDigitalFiles(prev => prev.filter((_, i) => i !== index));
-    };
+
 
     const handleSubmit = async () => {
             digitalFiles.forEach((file) => {
@@ -518,7 +496,7 @@ const OrderDetail = () => {
 
                         {/* Preview Files Upload */}
                         <div className="mb-6">
-                            <h5 className="font-semibold text-lg mb-2">Preview Images & Videos (Up to 4)</h5>
+                            <h5 className="font-semibold text-lg mb-2">Preview Images & Videos</h5>
                             <div className="flex flex-wrap gap-4 mb-4">
                                 <Button
                                     label="Upload Previews"
@@ -526,7 +504,7 @@ const OrderDetail = () => {
                                     icon={<FaFileUpload />}
                                     className="p-button-outlined p-button-rounded"
                                     style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                    disabled={previewImages.length >= 4}
+                                    disabled={false}
                                 />
                                 <input
                                     type="file"
@@ -560,7 +538,7 @@ const OrderDetail = () => {
 
                         {/* Digital Files Upload */}
                         <div className="mb-6">
-                            <h5 className="font-semibold text-lg mb-2">Digitized Files & Videos (Up to 4)</h5>
+                            <h5 className="font-semibold text-lg mb-2">Digitized Files & Videos</h5>
                             <div className="flex flex-wrap gap-4 mb-4">
                                 <Button
                                     label="Upload Digitized Files"
@@ -568,7 +546,7 @@ const OrderDetail = () => {
                                     icon={<FaFileUpload />}
                                     className="p-button-outlined p-button-rounded"
                                     style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                    disabled={digitalFiles.length >= 4}
+                                    disabled={false}
                                 />
                                 <input
                                     type="file"

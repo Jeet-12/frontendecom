@@ -114,24 +114,11 @@ const OrderForm = () => {
         toast.error(`Invalid file type: ${file.name}. Only JPEG, PNG, PDF, DOC are allowed.`);
         return false;
       }
-
-      const maxSize = 4 * 1024 * 1024;
-      if (file.size > maxSize) {
-        toast.error(`File too large: ${file.name}. Maximum size is 4MB.`);
-        return false;
-      }
-
       return true;
     });
 
-    // Add to existing files (limit to 4 files total)
-    setFiles(prev => {
-      const newFiles = [...prev, ...validFiles].slice(0, 4);
-      if (newFiles.length > 4) {
-        toast.warning("Maximum 4 files allowed. Only first 4 files will be uploaded.");
-      }
-      return newFiles;
-    });
+    // Add to existing files (no limit)
+    setFiles(prev => [...prev, ...validFiles]);
   };
 
   // Remove file
@@ -545,14 +532,14 @@ const OrderForm = () => {
                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#93C572] file:text-white hover:file:bg-[#79a759]"
                   />
                   <p className="text-xs text-gray-500 mt-2">
-                    Supported formats: JPEG, PNG, PDF, DOC, DOCX, MP4, MOV, WEBM (Max 4MB per file, max 4 files)
+                    Supported formats: JPEG, PNG, PDF, DOC, DOCX, MP4, MOV, WEBM
                   </p>
 
                   {/* File preview */}
                   {files.length > 0 && (
                     <div className="mt-3">
                       <p className="text-sm font-medium text-gray-700 mb-2">
-                        Uploaded files ({files.length}/4):
+                        Uploaded files ({files.length}):
                       </p>
                       <div className="space-y-2">
                         {files.map((file, index) => (

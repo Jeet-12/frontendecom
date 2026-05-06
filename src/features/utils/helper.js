@@ -2,10 +2,15 @@ const createObjectToFormData =(object)=>{
 
     const formData = new FormData()
     //   console.log(Object.keys(quotationData))
-      Object.keys(object).forEach(key=>{
-        // console.log(key)
-        formData.append(key, object[key])
-      })
+      Object.keys(object).forEach(key => {
+        if (Array.isArray(object[key])) {
+          object[key].forEach(item => {
+            formData.append(key, item);
+          });
+        } else {
+          formData.append(key, object[key]);
+        }
+      });
 
       return formData;
 }

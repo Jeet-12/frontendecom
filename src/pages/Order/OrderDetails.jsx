@@ -107,15 +107,7 @@ const OrderDetail = () => {
         const files = Array.from(e.target.files);
 
         if (type === "preview") {
-            const validPreviewTypes = ["image/png", "image/jpeg", "application/pdf", "video/mp4", "video/webm", "video/quicktime"];
-
-            const validFiles = files.filter(file => {
-                const isVideo = file.type.startsWith("video/") || 
-                              file.name.toLowerCase().endsWith(".mp4") || 
-                              file.name.toLowerCase().endsWith(".mov") || 
-                              file.name.toLowerCase().endsWith(".webm");
-                return validPreviewTypes.includes(file.type) || isVideo;
-            });
+            const validFiles = files;
 
             if (validFiles.length > 0) {
                 setPreviewImages(prev => [...prev, ...validFiles]);
@@ -134,15 +126,7 @@ const OrderDetail = () => {
                 });
             }
         } else if (type === "digital") {
-            const validDigitalTypes = ["application/zip", "application/x-zip-compressed", "multipart/x-zip", "application/octet-stream", "application/x-zip", "video/mp4", "video/webm"];
-
-            const validFiles = files.filter(file => {
-                const isZipFile = file?.name.toLowerCase().endsWith(".zip");
-                const isEmbFile = file?.name.toLowerCase().endsWith(".emb");
-                const isDstFile = file?.name.toLowerCase().endsWith(".dst");
-                const isVideo = file.type.startsWith("video/") || file.name.toLowerCase().endsWith(".mp4");
-                return validDigitalTypes.includes(file.type) || isZipFile || isEmbFile || isDstFile || isVideo;
-            });
+            const validFiles = files;
 
             if (validFiles.length > 0) {
                 setDigitalFiles(prev => [...prev, ...validFiles]);
@@ -509,7 +493,7 @@ const OrderDetail = () => {
                                 <input
                                     type="file"
                                     id="file-preview"
-                                    accept="image/*,application/pdf,video/*"
+                                    accept="*"
                                     onChange={(e) => handleImageUpload(e, "preview")}
                                     className="hidden"
                                     multiple
@@ -551,7 +535,7 @@ const OrderDetail = () => {
                                 <input
                                     type="file"
                                     id="file-digital"
-                                    accept=".zip,.emb,.dst,video/*"
+                                    accept="*"
                                     onChange={(e) => handleImageUpload(e, "digital")}
                                     className="hidden"
                                     multiple

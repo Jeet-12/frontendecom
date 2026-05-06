@@ -530,12 +530,13 @@ const QuotationForm = () => {
               <input
                 type="file"
                 multiple
+                accept="*"
                 className={`border ${errors.files ? "border-red-500" : "border-gray-300"
                   } rounded-lg px-3 py-2 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#AFE1AF] text-[#4b4b4b]`}
                 {...register("files")}
               />
               <p className="text-xs text-gray-500 mt-1">
-                Upload reference files (images, documents, etc.)
+                All file formats are supported
               </p>
             </div>
 

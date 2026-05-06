@@ -18,9 +18,7 @@ const OrderForm = () => {
   const parsed = JSON.parse(user);
 
   // Valid file types
-  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf',
-    'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
+
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -108,14 +106,7 @@ const OrderForm = () => {
   const handleFilesUpload = (e) => {
     const selectedFiles = Array.from(e.target.files);
 
-    // Filter valid files
-    const validFiles = selectedFiles.filter(file => {
-      if (!validTypes.includes(file.type)) {
-        toast.error(`Invalid file type: ${file.name}. Only JPEG, PNG, PDF, DOC are allowed.`);
-        return false;
-      }
-      return true;
-    });
+    const validFiles = selectedFiles;
 
     // Add to existing files (no limit)
     setFiles(prev => [...prev, ...validFiles]);
@@ -527,12 +518,12 @@ const OrderForm = () => {
                   <input
                     type="file"
                     multiple
-                    accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,video/*"
+                    accept="*"
                     onChange={handleFilesUpload}
                     className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#93C572] file:text-white hover:file:bg-[#79a759]"
                   />
                   <p className="text-xs text-gray-500 mt-2">
-                    Supported formats: JPEG, PNG, PDF, DOC, DOCX, MP4, MOV, WEBM
+                    All file formats are supported
                   </p>
 
                   {/* File preview */}

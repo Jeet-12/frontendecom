@@ -12,6 +12,8 @@ const OrderDetail = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [role, setRole] = useState(null);
+    const [uploading, setUploading] = useState(false);
+    const [progress, setProgress] = useState(0);
     const [previewImages, setPreviewImages] = useState([]);
     const [digitalFiles, setDigitalFiles] = useState([]);
     const token = localStorage.getItem("token");
@@ -158,10 +160,19 @@ const OrderDetail = () => {
 
 
     const handleSubmit = async () => {
+        if (previewImages.length > 0 || digitalFiles.length > 0) {
+            const formData = new FormData();
+
+            previewImages.forEach((file) => {
+                formData.append("previewImage", file);
+            });
+
             digitalFiles.forEach((file) => {
                 formData.append("digitalImage", file);
             });
 
+            setUploading(true);
+            setProgress(0);
             try {
                 const response = await axios.patch(
                     `http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/api/order/${id}/update-images`,
@@ -170,6 +181,10 @@ const OrderDetail = () => {
                         headers: {
                             "x-auth-token": token,
                             "Content-Type": "multipart/form-data",
+                        },
+                        onUploadProgress: (progressEvent) => {
+                            const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                            setProgress(percentCompleted);
                         },
                     }
                 );
@@ -193,12 +208,22 @@ const OrderDetail = () => {
                 }
             } catch (error) {
                 console.error("Upload error:", error);
+                let errorMessage = "Failed to upload files.";
+                if (error.message === "Network Error" || error.code === "ERR_CONNECTION_RESET") {
+                    errorMessage = "Connection reset by server. This usually happens when the file is too large for the server to process.";
+                } else if (error.response?.data?.message) {
+                    errorMessage = error.response.data.message;
+                }
+                
                 toast.current.show({
                     severity: "error",
                     summary: "Upload Error",
-                    detail: error.response?.data?.message || error.message || "Failed to upload files.",
-                    life: 3000,
+                    detail: errorMessage,
+                    life: 5000,
                 });
+            } finally {
+                setUploading(false);
+                setProgress(0);
             }
         } else {
             toast.current.show({
@@ -563,14 +588,23 @@ const OrderDetail = () => {
                         </div>
 
                         {/* Submit Button */}
-                        <div className="flex gap-4">
+                        <div className="flex flex-col gap-4">
+                            {uploading && (
+                                <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                                    <div 
+                                        className="bg-green-600 h-2.5 rounded-full transition-all duration-300" 
+                                        style={{ width: `${progress}%` }}
+                                    ></div>
+                                    <p className="text-center text-xs mt-1 font-semibold text-gray-600">Uploading: {progress}%</p>
+                                </div>
+                            )}
                             <Button
-                                label="Submit Files"
-                                icon={<FaCheckCircle />}
+                                label={uploading ? "Uploading..." : "Submit Files"}
+                                icon={uploading ? "pi pi-spin pi-spinner" : <FaCheckCircle />}
                                 onClick={handleSubmit}
                                 className="p-button-success p-button-rounded w-full"
                                 style={{ borderStyle: "none", backgroundColor: 'rgb(147, 197, 114)', borderColor: 'rgb(147, 197, 114)' }}
-                                disabled={previewImages.length === 0 && digitalFiles.length === 0}
+                                disabled={uploading || (previewImages.length === 0 && digitalFiles.length === 0)}
                             />
                         </div>
                     </div>

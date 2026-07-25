@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "primereact/button";
 import { useNavigate } from "react-router-dom";
-import { deleteQuotation, getQuotations } from "../../Services/Api";
+import { deleteQuotation, getQuotations, updateQuotation } from "../../Services/Api";
 import { Toast } from "primereact/toast";
 import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 import { FaSearch, FaEye, FaTrash, FaPlus, FaInfoCircle, FaCheckCircle, FaTimesCircle, FaClock, FaShoppingCart } from "react-icons/fa";
@@ -39,7 +39,9 @@ const ListQuotation = () => {
                 const data = await getQuotations(token);
                 // console.log(data);
 
-                const sortedData = data.sort((a, b) =>
+                const activeData = data.filter(q => q.isActive !== false);
+
+                const sortedData = activeData.sort((a, b) =>
                     new Date(b.createdAt) - new Date(a.createdAt)
                 );
 
@@ -166,6 +168,12 @@ const ListQuotation = () => {
             }
 
             const result = await response.json();
+
+            try {
+                await updateQuotation(quotation._id, { isActive: false }, token);
+            } catch (updateErr) {
+                console.error("Failed to deactivate quotation:", updateErr);
+            }
 
             toast.current.show({
                 severity: "success",

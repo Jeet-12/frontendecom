@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getQuotationById } from "../../Services/Api";
+import { getQuotationById, updateQuotation } from "../../Services/Api";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import JSZip from 'jszip';
@@ -124,6 +124,12 @@ const QuotationDetail = () => {
             const result = await createOrderWithFormData(formData, token);
             console.log("Order creation result:", result);
             
+            try {
+                await updateQuotation(quotation._id, { isActive: false }, token);
+            } catch (updateErr) {
+                console.error("Failed to deactivate quotation:", updateErr);
+            }
+            
             toast.current.show({
                 severity: "success",
                 summary: "Order Created",
@@ -212,6 +218,12 @@ const QuotationDetail = () => {
             }
 
             const result = await response.json();
+            
+            try {
+                await updateQuotation(quotation._id, { isActive: false }, token);
+            } catch (updateErr) {
+                console.error("Failed to deactivate quotation:", updateErr);
+            }
             
             toast.current.show({
                 severity: "success",
@@ -369,7 +381,7 @@ const QuotationDetail = () => {
                                     disabled={converting}
                                     style={{ borderStyle: "none" }}
                                 /> */}
-                                {status === "complete" && (
+                                {quotation?.status === "complete" && (
                                 <Button
                                     label={converting ? "Converting..." : "Convert to Order"}
                                     icon={converting ? "pi pi-spin pi-spinner" : "pi pi-shopping-cart"}

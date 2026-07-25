@@ -474,7 +474,8 @@ const OrderDetail = () => {
                                                     <a
                                                         href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
                                                         download
-                                                        className="flex items-center justify-center gap-2 px-3 py-2 bg-green-600 text-black rounded-lg hover:bg-green-700 transition-colors text-sm font-bold shadow-md"
+                                                        className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:opacity-90 transition-opacity"
+                                                        style={{ backgroundColor: 'rgb(147, 197, 114)', color: '#ffffff' }}
                                                     >
                                                         <FaFileDownload /> Download Video
                                                     </a>
@@ -484,7 +485,8 @@ const OrderDetail = () => {
                                                     key={idx}
                                                     href={`http://quickdigitizing-api.ap-south-1.elasticbeanstalk.com/${file}`}
                                                     download
-                                                    className="flex items-center gap-2 px-3 py-2 bg-green-600 text-black rounded-lg hover:bg-green-700 transition-colors text-sm font-bold shadow-md"
+                                                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold shadow-md hover:opacity-90 transition-opacity"
+                                                    style={{ backgroundColor: 'rgb(147, 197, 114)', color: '#ffffff' }}
                                                 >
                                                     <FaFileDownload /> Download File {idx + 1}
                                                 </a>
